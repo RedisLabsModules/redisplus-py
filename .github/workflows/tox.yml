@@ -1,0 +1,31 @@
+on:
+  push:
+  pull_request:
+
+jobs:
+  integration:
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 4
+      matrix:
+        python-verison: [3.9]
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python }}
+
+      - name: Install tox and friends
+        run: pip install tox tox-poetry
+
+      - name: Cache tox environments
+        uses: actions/cache@v1
+        with:
+          path: .tox
+          key: ${{ runner.os }}-${{ matrix.python }}-${{ hashFiles('pyproject.toml') }}-${{ hashFiles('tox.ini') }}
+
+      # add unmarked once they exist and separate into two
+
+      - name: run tests
+        run: tox -e redisearch
