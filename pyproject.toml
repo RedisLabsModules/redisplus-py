@@ -1,0 +1,27 @@
+[tool.poetry]
+name = "redisplus"
+version = "0.1.0"
+description = ""
+authors = ["RedisLabs OSS <oss@redislabs.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+redis = "^3.5.3"
+redisearch = {version = "^2.0.0", optional = true}
+rejson = {version = "^0.5.4", optional = true}
+redisai = {version = "^1.0.2", optional = true}
+redisgraph = {version = "^2.4.0", optional = true}
+redistimeseries = {version = "^1.4.3", optional = true}
+
+[tool.poetry.dev-dependencies]
+# flake8 = "^3.9.2"
+# bandit = "^1.7.0"
+# vulture = "^2.3"
+# tox = "^3.24.0"
+# tox-poetry = "^0.4.0"
+pytest = "^6.2.0"
+pytest-mock = "^3.6.1"
+
+[build-system]
+requires = ["poetry-core>=1.1.0"]
+build-backend = "poetry.core.masonry.api"
