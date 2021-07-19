@@ -1,23 +1,24 @@
 from typing import Dict, Optional
-from redis import Redis
+from redis.client import Redis
 import importlib
-import logging
+
 
 class RedisClient(object):
     """General client to be used for redis modules"""
 
-    def __init__(self, modules: Dict, client=None, logger_name=None): #: Optional(Redis)):
+    def __init__(self, modules: Dict, client=Optional[Redis]):
         """
-        Creates an all-purpose client and passes them in to all of the resulting modules.
+        Creates an all-purpose client and passes them in to
+        all of the resulting modules.
 
-        :param modules: A list of strings, containing redis modules 
-                        eg: redisearch, redisai, etc.
-
-        :param client_args: dictionary of dictionaries for modules in the module list
-                            eg: {'redisearch': {'index_name': 'foo'}, ...}
+        :param modules: A dictionary of dictionaries for modules in the module
+                        list.
+                        eg: {'redisearch': {'index_name': 'foo'}, ...}
+        :type modules: dict
 
         :param client: A pre-build client of type redis.Redis. This is used to
                        create all clients.
+        :type client: redis.Redis
         """
         if client is not None:
             self.CLIENT = client
