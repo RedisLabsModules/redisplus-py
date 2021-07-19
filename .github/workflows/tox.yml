@@ -17,7 +17,7 @@ jobs:
           python-version: ${{ matrix.python }}
 
       - name: Install tox and friends
-        run: pip install tox tox-poetry
+        run: pip install tox poetry tox-poetry
 
       - name: Cache tox environments
         uses: actions/cache@v1
