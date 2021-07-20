@@ -53,6 +53,8 @@ class RedisClient(object):
             self._load_module_commands()
 
     def _load_module_commands(self):
+        """Tries to load commands from modules into the client
+        namespace, where possible."""
         _commands = self.commands
         for r in self.modules:
             try:

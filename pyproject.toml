@@ -4,6 +4,21 @@ version = "0.1.0"
 description = "An all purpose client for redis modules."
 keywords = ["redis"]
 authors = ["RedisLabs OSS <oss@redislabs.com>"]
+license = "BSD-3-Clause"
+
+exclude = ["src/modules/"]
+packages = [
+
+]
+
+classifiers = [
+    'Topic :: Database',
+    'Programming Language :: Python',
+    'Intended Audience :: Developers',
+    'Programming Language :: Python :: 3.9',
+    'License :: OSI Approved :: BSD License',
+    'Development Status :: 3 - Alpha'
+]
 
 [tool.poetry.dependencies]
 python = "^3.9"
@@ -13,6 +28,7 @@ rejson = {version = "^0.5.4", optional = true}
 redisai = {version = "^1.0.2", optional = true}
 redisgraph = {version = "^2.4.0", optional = true}
 redistimeseries = {version = "^1.4.3", optional = true}
+redisbloom = {version = "^0.4.0", optional = true}
 
 [tool.poetry.dev-dependencies]
 flake8 = "^3.9.2"
@@ -24,11 +40,23 @@ pytest = "^6.2.0"
 flake8-docstrings = "^1.6.0"
 mock = "^4.0.3"
 
+[tool.poetry.extras]
+redisearch = ["redisearch"]
+rejson = ["rejson"]
+redistimeseries = ["redistimeseries"]
+redisgraph = ["redisgraph"]
+redisai = ["redisai"]
+redisbloom = ["redisbloom"]
+redismodules = ["redisai", "redisgraph", "redistimeseries", "redisearch", "rejson", "redisbloom"]
+
 [tool.pytest.ini_options]
 markers = [
     "redisearch: only redisearch tests",
     "unmarked: tests that are not limited to a specific module"
 ]
+
+[tool.poetry.urls]
+repository = "https://github.com/redislabsmodules/redisplus-py"
 
 [build-system]
 requires = ["poetry-core>=1.1.0"]
