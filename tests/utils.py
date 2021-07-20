@@ -7,3 +7,7 @@ def mockredisclient(stack):
     stack.enter_context(mock.patch("redis.connection.HiredisParser.can_read"))
     stack.enter_context(mock.patch("redis.exceptions.ConnectionError"))
     return stack
+
+def stockclosure(f):
+    with contextlib.ExitStack() as stack:
+        stack = mockredisclient(stack)

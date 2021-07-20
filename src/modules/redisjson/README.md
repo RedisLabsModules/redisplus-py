@@ -1,0 +1,1 @@
+Lifted directly from [redisjson](https://github.com/redisjson/redisjson-py), and reworked - purely for experimentation.

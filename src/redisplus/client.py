@@ -1,14 +1,16 @@
 from typing import Dict, Optional
 from redis.client import Redis
 import importlib
+import inspect
 
 
 class RedisClient(object):
     """General client to be used for redis modules"""
 
     __redis_modules__ = []
+    __commands__ = []
 
-    def __init__(self, modules: Dict, client=Optional[Redis], from_url=Optional[str]):
+    def __init__(self, modules: Dict, safe_load=False, client=Optional[Redis], from_url=Optional[str]):
         """
         Creates an all-purpose client and passes them in to
         all of the resulting modules.
@@ -17,6 +19,9 @@ class RedisClient(object):
                         list.
                         eg: {'redisearch': {'index_name': 'foo'}, ...}
         :type modules: dict
+
+        :param safe_load: Safely load modules, continuing if one fails to load
+        :type safe_load: bool
 
         :param client: A pre-build client of type redis.Redis. This is used to
                        create all clients.
@@ -36,31 +41,37 @@ class RedisClient(object):
             modclient = "{}_CLIENT".format(key.upper())
             try:
                 x = importlib.import_module(key)
-            except ModuleNotFoundError:
+            except (ModuleNotFoundError, ImportError):
                 x = importlib.import_module("modules.%s" % key)
             except:
-                raise AttributeError("No module {} found".format(key))
+                if safe_load is False:
+                    raise AttributeError("No module {} found".format(key))
+
             vals['conn'] = self.CLIENT  # NOTE redisearch only, each module is different
             setattr(self, modclient, x.Client(**vals))
             self.__redis_modules__.append(x)
+            self._load_module_commands()
+
+    def _load_module_commands(self):
+        _commands = self.commands
+        for r in self.modules:
+            try:
+                modcmds = r.commands
+            except AttributeError:
+                continue
+
+            for obj in inspect.getmembers(modcmds, inspect.isfunction):
+                if obj[1].__module__.find('commands') != -1:
+                    _commands.append(obj[0])
+                    setattr(self, obj[0], obj[1])
+        self.__commands__ = list(set(_commands))
 
     @property
     def modules(self):
+        """Returns the list of configured modules"""
         return self.__redis_modules__
 
     @property
     def commands(self):
-        key = '__commands__'
-        commands = getattr(self, key, {})
-        if commands != {}:
-            return commands
-
-        for r in self.modules:
-            cmds = r.commands
-            import inspect
-            # print(r.commands.__dict__.values())
-            print(inspect.getmembers(r.commands, inspect.isfunction))
-        return "moose"
-    #         commands.update(cmds)
-    #     setattr(self, key, commands)
-    #     return commands
+        """Accessor for the list of supported commands"""
+        return self.__commands__
