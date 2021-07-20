@@ -10,7 +10,13 @@ class RedisClient(object):
     __redis_modules__ = []
     __commands__ = []
 
-    def __init__(self, modules: Dict, safe_load=False, client=Optional[Redis], from_url=Optional[str]):
+    def __init__(
+        self,
+        modules: Dict,
+        safe_load=False,
+        client=Optional[Redis],
+        from_url=Optional[str],
+    ):
         """
         Creates an all-purpose client and passes them in to
         all of the resulting modules.
@@ -47,7 +53,7 @@ class RedisClient(object):
                 if safe_load is False:
                     raise AttributeError("No module {} found".format(key))
 
-            vals['conn'] = self.CLIENT  # NOTE redisearch only, each module is different
+            vals["conn"] = self.CLIENT  # NOTE redisearch only, each module is different
             setattr(self, modclient, x.Client(**vals))
             self.__redis_modules__.append(x)
             self._load_module_commands()
@@ -63,7 +69,7 @@ class RedisClient(object):
                 continue
 
             for obj in inspect.getmembers(modcmds, inspect.isfunction):
-                if obj[1].__module__.find('commands') != -1:
+                if obj[1].__module__.find("commands") != -1:
                     _commands.append(obj[0])
                     setattr(self, obj[0], obj[1])
         self.__commands__ = list(set(_commands))

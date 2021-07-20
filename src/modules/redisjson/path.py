@@ -2,12 +2,13 @@ class Path(object):
     """
     This class represents a path in a JSON value
     """
-    strPath = ''
+
+    strPath = ""
 
     @staticmethod
     def rootPath():
         "Returns the root path's string representation"
-        return '.'
+        return "."
 
     def __init__(self, path):
         """

@@ -1,13 +1,14 @@
 # from src.modules import redisjson
 from redis.client import Redis
+
 # import importlib
 # import inspect
 from . import commands as recmds
 
 from redisplus.modules import ModuleClient
 
-class Client(ModuleClient):
 
+class Client(ModuleClient):
     def __init__(self, conn: Redis):
         """
         Creates a client for talking to redisjson.
