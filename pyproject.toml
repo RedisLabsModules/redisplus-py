@@ -40,6 +40,7 @@ pytest = "^6.2.0"
 flake8-docstrings = "^1.6.0"
 mock = "^4.0.3"
 black = "^21.7b0"
+tox-docker = "^3.0.0"
 
 [tool.poetry.extras]
 redisearch = ["redisearch"]
@@ -52,6 +53,7 @@ redismodules = ["redisai", "redisgraph", "redistimeseries", "redisearch", "rejso
 
 [tool.pytest.ini_options]
 markers = [
+    "integrations: run integration tests against a redis docker",
     "redisearch: only redisearch tests",
     "unmarked: tests that are not limited to a specific module"
 ]
