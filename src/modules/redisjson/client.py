@@ -1,8 +1,6 @@
 # from src.modules import redisjson
 from redis.client import Redis
 
-# import importlib
-# import inspect
 from . import commands as recmds
 
 from redisplus.modules import ModuleClient
@@ -22,9 +20,8 @@ class Client(ModuleClient):
 
         self.CLIENT = conn
         super().__init__()
-        from .commands import jsonstrlen
 
-    def _execute_command(self, **kwargs):
-        return self.CLIENT.execute_command(**kwargs)
+    def execute_command(self, *args, **kwargs):
+        return self.CLIENT.execute_command(*args, **kwargs)
 
     commands = recmds

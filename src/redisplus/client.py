@@ -1,13 +1,17 @@
-from typing import Dict, Optional
-from redis.client import Redis
+import functools
 import importlib
 import inspect
+from typing import Dict, Optional
+from redis.client import Redis
 
 
 class RedisClient(object):
     """General client to be used for redis modules"""
 
-    __redis_modules__ = []
+    # modules that properly instantiated
+    __redis_modules__ = {}
+
+    # list of active commands
     __commands__ = []
 
     def __init__(
@@ -44,7 +48,7 @@ class RedisClient(object):
                 self.CLIENT = Redis()
 
         for key, vals in modules.items():
-            modclient = "{}_CLIENT".format(key.upper())
+            # modclient = "{}_CLIENT".format(key.upper())
             try:
                 x = importlib.import_module(key)
             except (ModuleNotFoundError, ImportError):
@@ -54,30 +58,42 @@ class RedisClient(object):
                     raise AttributeError("No module {} found".format(key))
 
             vals["conn"] = self.CLIENT  # NOTE redisearch only, each module is different
-            setattr(self, modclient, x.Client(**vals))
-            self.__redis_modules__.append(x)
+            # setattr(self, modclient, x.Client(**vals))
+            # print(key)
+            self.__redis_modules__[key] = x.Client(**vals)
             self._load_module_commands()
 
     def _load_module_commands(self):
         """Tries to load commands from modules into the client
         namespace, where possible."""
+
         _commands = self.commands
-        for r in self.modules:
+        for mod, client in self.__redis_modules__.items():
+            # print("HERE")
+            # print(r.commands)
             try:
-                modcmds = r.commands
+                modcmds = client.commands
             except AttributeError:
                 continue
 
+            # now, for each module, get all of the commands listed in the 
+            # command package, setting them on this class object
             for obj in inspect.getmembers(modcmds, inspect.isfunction):
                 if obj[1].__module__.find("commands") != -1:
+                    # client = getattr(self, "{}_CLIENT".format(r.upper()))
+
+                    # re-wrap the function so that it now takes all objects
+                    # other than a client - since we'll pass those in.
+                    part_cmd_wrapper = functools.partial(obj[1], client)
+                    setattr(self, obj[0], part_cmd_wrapper)
                     _commands.append(obj[0])
-                    setattr(self, obj[0], obj[1])
+
         self.__commands__ = list(set(_commands))
 
     @property
     def modules(self):
         """Returns the list of configured modules"""
-        return self.__redis_modules__
+        return list(self.__redis_modules__.keys())
 
     @property
     def commands(self):

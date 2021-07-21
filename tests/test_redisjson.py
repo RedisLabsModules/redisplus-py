@@ -4,7 +4,6 @@ from utils import mockredisclient
 import contextlib
 
 def test_json_init():
-    
     # try loading the module
     modules = {'redisjson': {}}
     rc = RedisClient(modules)

@@ -15,7 +15,7 @@ def test_client_init():
     with contextlib.ExitStack() as stack:
         stack = mockredisclient(stack)
         rc = RedisClient(modules=modules)
-        assert rc.REDISEARCH_CLIENT is not None
+        assert 'redisearch' in rc.modules
         assert rc.CLIENT is not None
 
     with contextlib.ExitStack() as stack:
@@ -29,3 +29,8 @@ def test_client_init():
         # create our own client
         rc = RedisClient(modules, from_url="redis://localhost:6379")
         assert rc.CLIENT is not None
+
+def test_module_list():
+    modules = {'redisjson': {}}
+    rc = RedisClient(modules)
+    assert 'redisjson' in rc.modules

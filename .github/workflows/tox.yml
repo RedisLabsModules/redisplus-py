@@ -1,5 +1,4 @@
 on:
-  push:
   pull_request:
 
 jobs:
@@ -17,7 +16,7 @@ jobs:
           python-version: ${{ matrix.python }}
 
       - name: Install tox and friends
-        run: pip install tox poetry tox-poetry
+        run: pip install tox poetry tox-poetry tox-docker
 
       - name: Cache tox environments
         uses: actions/cache@v1
@@ -25,7 +24,8 @@ jobs:
           path: .tox
           key: ${{ runner.os }}-${{ matrix.python }}-${{ hashFiles('pyproject.toml') }}-${{ hashFiles('tox.ini') }}
 
-      # add unmarked once they exist and separate into two
+      - name: linters
+        run: tox -e linters
 
-      - name: run tests
-        run: tox -e redisearch
+      - name: run all tests
+        run: tox -m "not integration"
