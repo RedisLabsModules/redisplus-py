@@ -34,3 +34,14 @@ def test_module_list():
     modules = {'redisjson': {}}
     rc = RedisClient(modules)
     assert 'redisjson' in rc.modules
+
+def test_local_init():
+    # try loading the module
+    modules = {'redisjson': {}}
+    rc = RedisClient(modules)
+
+def test_command_loader():
+    modules = {'redisjson': {}}
+    rc = RedisClient(modules)
+    assert len(rc.commands) > 1
+    assert isinstance(rc.commands, list)

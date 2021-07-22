@@ -17,9 +17,9 @@ class RedisClient(object):
     def __init__(
         self,
         modules: Dict,
-        safe_load=False,
-        client=Optional[Redis],
-        from_url=Optional[str],
+        safe_load: Optional[bool]=False,
+        client: Optional[Redis]=None,
+        from_url: Optional[str]=None,
     ):
         """
         Creates an all-purpose client and passes them in to

@@ -12,7 +12,7 @@ from .utils import bulk_of_jsons
 class Client(ModuleClient):
     def __init__(
         self,
-        conn: Redis,
+        conn,
         decoder: Optional[json.JSONDecoder] = json.JSONDecoder(),
         encoder: Optional[json.JSONEncoder] = json.JSONEncoder(),
     ):
