@@ -20,4 +20,4 @@ def test_called_function():
     with contextlib.ExitStack() as stack:
         stack = mockredisclient(stack)
         rc = RedisClient(modules, client=client)
-        rc.jsondelete(client, 'something')
+        rc.jsondel(client, 'something')

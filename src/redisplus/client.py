@@ -76,7 +76,7 @@ class RedisClient(object):
             except AttributeError:
                 continue
 
-            # now, for each module, get all of the commands listed in the 
+            # now, for each module, get all of the commands listed in the
             # command package, setting them on this class object
             for obj in inspect.getmembers(modcmds, inspect.isfunction):
                 if obj[1].__module__.find("commands") != -1:
