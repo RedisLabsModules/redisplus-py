@@ -54,17 +54,24 @@ class Client(ModuleClient):
             "JSON.OBJLEN": long,
         }
 
+        super().__init__()
         self.__encoder__ = encoder
         self.__decoder__ = decoder
-        super().__init__()
+
+        # the encoding happens on the client object
+        self.CLIENT.encode = encoder.encode
 
     def execute_command(self, *args, **kwargs):
         return self.CLIENT.execute_command(*args, **kwargs)
 
     def decode(self, obj):
-        return self.__decoder__.decode(obj)
+        if obj is None:
+            return None
+        try:
+            return self.__decoder__.decode(obj)
+        except TypeError:
+            return self.__decoder__.decode(obj.decode())
 
     def encode(self, obj):
         return self.__encoder__.encode(obj)
-
     commands = recmds

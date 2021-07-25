@@ -58,8 +58,6 @@ class RedisClient(object):
                     raise AttributeError("No module {} found".format(key))
 
             vals["conn"] = self.CLIENT  # NOTE redisearch only, each module is different
-            # setattr(self, modclient, x.Client(**vals))
-            # print(key)
             self.__redis_modules__[key] = x.Client(**vals)
             self._load_module_commands()
 
@@ -69,8 +67,6 @@ class RedisClient(object):
 
         _commands = self.commands
         for mod, client in self.__redis_modules__.items():
-            # print("HERE")
-            # print(r.commands)
             try:
                 modcmds = client.commands
             except AttributeError:
@@ -80,7 +76,6 @@ class RedisClient(object):
             # command package, setting them on this class object
             for obj in inspect.getmembers(modcmds, inspect.isfunction):
                 if obj[1].__module__.find("commands") != -1:
-                    # client = getattr(self, "{}_CLIENT".format(r.upper()))
 
                     # re-wrap the function so that it now takes all objects
                     # other than a client - since we'll pass those in.

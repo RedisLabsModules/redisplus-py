@@ -8,42 +8,40 @@ def setup_client():
     client.CLIENT.flushdb()
     return client
 
+# @pytest.mark.integrations
+# def test_json_setgetdelete(setup_client):
+#     rj = setup_client
+#     assert rj.jsonset('foo', Path.rootPath(), 'bar')
+#     assert rj.jsonget('foo') == b"bar"
+#     assert rj.jsonget('baz') is None
+#     assert rj.jsondel('foo') == 1
+#     assert rj.jsondel('foo') == 1
+#     assert rj.exists('foo') is False
+
+# @pytest.mark.integrations
+# def test_justaget(setup_client):
+#     rj = setup_client
+#     # rj.jsonset('foo', Path.rootPath(), 'bar')
+#     assert rj.jsonget('foo') == "bar"
+
+
 @pytest.mark.integrations
-def test_json_setgetdeletecycle(setup_client):
-    "Test basic JSONSet/Get/Del"
-    client = setup_client
-    assert client.jsonset('foo', Path.rootPath(), 'bar') is True
-    assert client.jsonget('foo') == 'bar'
-    assert client.jsonget('baz') is None
-    assert client.jsondel('foo') == 1
-    assert client.jsondel('foo') == 1
-    assert client.exists('foo') is False
+def test_json_get_jset(setup_client):
+    rj = setup_client
+    assert rj.jsonset('foo', Path.rootPath(), 'bar')
+    assert 'bar' == rj.jsonget('foo')
+    assert None == rj.jsonget('baz')
+    assert 1 == rj.jsondel('foo')
+    assert rj.CLIENT.exists('foo') == 0
 
-
-# class ReJSONTestCase(TestCase):
-
-#     def setUp(self):
-#         global rj
-#         rj = Client(port=port, decode_responses=True)
-#         rj.flushdb()
-
-#     def testJSONSetGetDelShouldSucceed(self):
-#         "Test basic JSONSet/Get/Del"
-
-#         self.assertTrue(rj.jsonset('foo', Path.rootPath(), 'bar'))
-#         self.assertEqual('bar', rj.jsonget('foo'))
-#         self.assertEqual(None, rj.jsonget('baz'))
-#         self.assertEqual(1, rj.jsondel('foo'))
-#         self.assertFalse(rj.exists('foo'))
-
-#     def testJSONSetGetDelNonAsciiShouldSucceed(self):
-#         "Test non-ascii JSONSet/Get/Del"
-
-#         self.assertTrue(rj.jsonset('notascii', Path.rootPath(), 'hyvää-élève'))
-#         self.assertEqual('hyvää-élève', rj.jsonget('notascii'))
-#         self.assertEqual('hyvää-élève', rj.jsonget('notascii', no_escape=True))
-#         self.assertEqual(1, rj.jsondel('notascii'))
-#         self.assertFalse(rj.exists('notascii'))
+@pytest.mark.integrations
+def test_nonascii_setgetdelete(setup_client):
+    rj = setup_client
+    assert rj.jsonset('notascii', Path.rootPath(), 'hyvää-élève') is True
+    assert 'hyvää-élève' == rj.jsonget('notascii')
+    assert 'hyvää-élève' ==  rj.jsonget('notascii', no_escape=True)
+    assert 1 == rj.jsondel('notascii')
+    assert rj.CLIENT.exists('notascii') == 0
 
 #     def testJSONSetExistentialModifiersShouldSucceed(self):
 #         "Test JSONSet's NX/XX flags"
