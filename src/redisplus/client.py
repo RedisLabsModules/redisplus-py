@@ -80,10 +80,15 @@ class RedisClient(object):
                     # re-wrap the function so that it now takes all objects
                     # other than a client - since we'll pass those in.
                     part_cmd_wrapper = functools.partial(obj[1], client)
-                    setattr(self, obj[0], part_cmd_wrapper)
+                    setattr(self.CLIENT, obj[0], part_cmd_wrapper)
                     _commands.append(obj[0])
 
         self.__commands__ = list(set(_commands))
+
+    @property
+    def client(self):
+        """Returns the redis client, used for this connection."""
+        return self.CLIENT
 
     @property
     def modules(self):

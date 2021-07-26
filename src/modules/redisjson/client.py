@@ -59,10 +59,10 @@ class Client(ModuleClient):
         self.__decoder__ = decoder
 
         # the encoding happens on the client object
-        self.CLIENT.encode = encoder.encode
+        self.client.encode = encoder.encode
 
     def execute_command(self, *args, **kwargs):
-        return self.CLIENT.execute_command(*args, **kwargs)
+        return self.client.execute_command(*args, **kwargs)
 
     def decode(self, obj):
         if obj is None:

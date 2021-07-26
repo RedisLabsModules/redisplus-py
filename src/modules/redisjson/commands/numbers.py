@@ -18,5 +18,5 @@ def jsonnummultby(client, name, path, number):
     ``path`` at key ``name`` with the provided ``number``
     """
     return client.execute_command(
-        "JSON.NUMMULTBY", name, str_path(path), client(number)
+        "JSON.NUMMULTBY", name, str_path(path), client.encode(number)
     )
