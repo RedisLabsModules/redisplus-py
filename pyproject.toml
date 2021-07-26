@@ -53,10 +53,12 @@ redismodules = ["redisai", "redisgraph", "redistimeseries", "redisearch", "rejso
 
 [tool.pytest.ini_options]
 markers = [
-    "integrations: run integration tests against a redis docker",
     "redisearch: only redisearch tests",
     "redisjson: only redisjson tests",
-    "unmarked: tests that are not limited to a specific module"
+    "unmarked: tests that are not limited to a specific module",
+
+    "integrations: run integration tests against a redis docker",
+    "pipeline: run only tests with a pipeline"
 ]
 
 [tool.poetry.urls]
