@@ -55,6 +55,7 @@ redismodules = ["redisai", "redisgraph", "redistimeseries", "redisearch", "rejso
 markers = [
     "integrations: run integration tests against a redis docker",
     "redisearch: only redisearch tests",
+    "redisjson: only redisjson tests",
     "unmarked: tests that are not limited to a specific module"
 ]
 

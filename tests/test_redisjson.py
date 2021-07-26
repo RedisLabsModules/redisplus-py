@@ -3,183 +3,225 @@ from redisplus.client import RedisClient
 from modules.redisjson.utils import Path
 
 @pytest.fixture
-def setup_client():
-    client = RedisClient({'redisjson': {}})
-    client.CLIENT.flushdb()
-    return client
+def client():
+    rc = RedisClient({'redisjson': {}})
+    rc.client.flushdb()
+    return rc.client
 
-# @pytest.mark.integrations
-# def test_json_setgetdelete(setup_client):
-#     rj = setup_client
-#     assert rj.jsonset('foo', Path.rootPath(), 'bar')
-#     assert rj.jsonget('foo') == b"bar"
-#     assert rj.jsonget('baz') is None
-#     assert rj.jsondel('foo') == 1
-#     assert rj.jsondel('foo') == 1
-#     assert rj.exists('foo') is False
+@pytest.mark.integrations
+@pytest.mark.redisjson
+def test_json_setgetdelete(client):
+    assert client.jsonset('foo', Path.rootPath(), 'bar')
+    assert client.jsonget('foo') == "bar"
+    assert client.jsonget('baz') is None
+    assert client.jsondel('foo') == 1
+    assert client.jsondel('foo') == 0 # second delete
+    assert client.exists('foo') == 0
 
-# @pytest.mark.integrations
-# def test_justaget(setup_client):
-#     rj = setup_client
-#     # rj.jsonset('foo', Path.rootPath(), 'bar')
-#     assert rj.jsonget('foo') == "bar"
+@pytest.mark.integrations
+@pytest.mark.redisjson
+def test_justaget(client):
+    client.jsonset('foo', Path.rootPath(), 'bar')
+    assert client.jsonget('foo') == "bar"
 
 
 @pytest.mark.integrations
-def test_json_get_jset(setup_client):
-    rj = setup_client
-    assert rj.jsonset('foo', Path.rootPath(), 'bar')
-    assert 'bar' == rj.jsonget('foo')
-    assert None == rj.jsonget('baz')
-    assert 1 == rj.jsondel('foo')
-    assert rj.CLIENT.exists('foo') == 0
+@pytest.mark.redisjson
+def test_json_get_jset(client):
+    assert client.jsonset('foo', Path.rootPath(), 'bar')
+    assert 'bar' == client.jsonget('foo')
+    assert None == client.jsonget('baz')
+    assert 1 == client.jsondel('foo')
+    assert client.exists('foo') == 0
 
 @pytest.mark.integrations
-def test_nonascii_setgetdelete(setup_client):
-    rj = setup_client
-    assert rj.jsonset('notascii', Path.rootPath(), 'hyvää-élève') is True
-    assert 'hyvää-élève' == rj.jsonget('notascii')
-    assert 'hyvää-élève' ==  rj.jsonget('notascii', no_escape=True)
-    assert 1 == rj.jsondel('notascii')
-    assert rj.CLIENT.exists('notascii') == 0
+@pytest.mark.redisjson
+def test_nonascii_setgetdelete(client):
+    assert client.jsonset('notascii', Path.rootPath(), 'hyvää-élève') is True
+    assert 'hyvää-élève' == client.jsonget('notascii')
+    assert 'hyvää-élève' ==  client.jsonget('notascii', no_escape=True)
+    assert 1 == client.jsondel('notascii')
+    assert client.exists('notascii') == 0
 
-#     def testJSONSetExistentialModifiersShouldSucceed(self):
-#         "Test JSONSet's NX/XX flags"
+@pytest.mark.integrations
+@pytest.mark.redisjson
+def test_jsonsetexistentialmodifiersshouldsucceed(client):
+    obj = { 'foo': 'bar' }
+    assert client.jsonset('obj', Path.rootPath(), obj)
 
-#         obj = { 'foo': 'bar' }
-#         self.assertTrue(rj.jsonset('obj', Path.rootPath(), obj))
+    # Test that flags prevent updates when conditions are unmet
+    assert client.jsonset('obj', Path('foo'), 'baz', nx=True) is None
+    assert client.jsonset('obj', Path('qaz'), 'baz', xx=True) is None
 
-#         # Test that flags prevent updates when conditions are unmet
-#         self.assertFalse(rj.jsonset('obj', Path('foo'), 'baz', nx=True))
-#         self.assertFalse(rj.jsonset('obj', Path('qaz'), 'baz', xx=True))
+    # Test that flags allow updates when conditions are met
+    assert client.jsonset('obj', Path('foo'), 'baz', xx=True)
+    assert client.jsonset('obj', Path('qaz'), 'baz', nx=True)
 
-#         # Test that flags allow updates when conditions are met
-#         self.assertTrue(rj.jsonset('obj', Path('foo'), 'baz', xx=True))
-#         self.assertTrue(rj.jsonset('obj', Path('qaz'), 'baz', nx=True))
+    # Test that flags are mutually exlusive
+    with pytest.raises(Exception):
+        client.jsonset('obj', Path('foo'), 'baz', nx=True, xx=True)
 
-#         # Test that flags are mutually exlusive
-#         with self.assertRaises(Exception) as context:
-#             rj.jsonset('obj', Path('foo'), 'baz', nx=True, xx=True)
+@pytest.mark.integrations
+@pytest.mark.redisjson
+def test_mgetshouldsucceed(client):
 
-#     def testMGetShouldSucceed(self):
-#         "Test JSONMGet"
+    client.jsonset('1', Path.rootPath(), 1)
+    client.jsonset('2', Path.rootPath(), 2)
+    r = client.jsonmget(Path.rootPath(), '1', '2')
+    e = [1, 2]
+    assert e == r
 
-#         rj.jsonset('1', Path.rootPath(), 1)
-#         rj.jsonset('2', Path.rootPath(), 2)
-#         r = rj.jsonmget(Path.rootPath(), '1', '2')
-#         e = [1, 2]
-#         self.assertListEqual(e, r)
+@pytest.mark.integrations
+@pytest.mark.redisjson
+def test_typeshouldsucceed(client):
 
-#     def testTypeShouldSucceed(self):
-#         "Test JSONType"
+    client.jsonset('1', Path.rootPath(), 1)
+    assert b'integer' == client.jsontype('1')
 
-#         rj.jsonset('1', Path.rootPath(), 1)
-#         self.assertEqual('integer', rj.jsontype('1'))
+@pytest.mark.integrations
+@pytest.mark.redisjson
+def test_numincrbyshouldsucceed(client):
+    client.jsonset('num', Path.rootPath(), 1)
+    assert 2 == client.jsonnumincrby('num', Path.rootPath(), 1)
+    assert 2.5 == client.jsonnumincrby('num', Path.rootPath(), 0.5)
+    assert 1.25 == client.jsonnumincrby('num', Path.rootPath(), -1.25)
 
-#     def testNumIncrByShouldSucceed(self):
-#         "Test JSONNumIncrBy"
+@pytest.mark.integrations
+@pytest.mark.redisjson
+def test_nummultbyshouldsucceed(client):
 
-#         rj.jsonset('num', Path.rootPath(), 1)
-#         self.assertEqual(2, rj.jsonnumincrby('num', Path.rootPath(), 1))
-#         self.assertEqual(2.5, rj.jsonnumincrby('num', Path.rootPath(), 0.5))
-#         self.assertEqual(1.25, rj.jsonnumincrby('num', Path.rootPath(), -1.25))
+    client.jsonset('num', Path.rootPath(), 1)
+    assert 2 == client.jsonnummultby('num', Path.rootPath(), 2)
+    assert 5 == client.jsonnummultby('num', Path.rootPath(), 2.5)
+    assert 2.5 == client.jsonnummultby('num', Path.rootPath(), 0.5)
 
-#     def testNumMultByShouldSucceed(self):
-#         "Test JSONNumIncrBy"
+@pytest.mark.integrations
+@pytest.mark.redisjson
+def test_strappendshouldsucceed(client):
 
-#         rj.jsonset('num', Path.rootPath(), 1)
-#         self.assertEqual(2, rj.jsonnummultby('num', Path.rootPath(), 2))
-#         self.assertEqual(5, rj.jsonnummultby('num', Path.rootPath(), 2.5))
-#         self.assertEqual(2.5, rj.jsonnummultby('num', Path.rootPath(), 0.5))
+    client.jsonset('str', Path.rootPath(), 'foo')
+    assert 6 == client.jsonstrappend('str', 'bar', Path.rootPath())
+    assert 'foobar' == client.jsonget('str', Path.rootPath())
 
-#     def testStrAppendShouldSucceed(self):
-#         "Test JSONStrAppend"
+@pytest.mark.integrations
+@pytest.mark.redisjson
+def test_strlenshouldsucceed(client):
 
-#         rj.jsonset('str', Path.rootPath(), 'foo')
-#         self.assertEqual(6, rj.jsonstrappend('str', 'bar', Path.rootPath()))
-#         self.assertEqual('foobar', rj.jsonget('str', Path.rootPath()))
+    client.jsonset('str', Path.rootPath(), 'foo')
+    assert 3 == client.jsonstrlen('str', Path.rootPath())
+    client.jsonstrappend('str', 'bar', Path.rootPath())
+    assert 6 == client.jsonstrlen('str', Path.rootPath())
 
-#     def testStrLenShouldSucceed(self):
-#         "Test JSONStrLen"
+@pytest.mark.integrations
+@pytest.mark.redisjson
+def test_arrappendshouldsucceed(client):
 
-#         rj.jsonset('str', Path.rootPath(), 'foo')
-#         self.assertEqual(3, rj.jsonstrlen('str', Path.rootPath()))
-#         rj.jsonstrappend('str', 'bar', Path.rootPath())
-#         self.assertEqual(6, rj.jsonstrlen('str', Path.rootPath()))
+    client.jsonset('arr', Path.rootPath(), [1])
+    assert 2 == client.jsonarrappend('arr', Path.rootPath(), 2)
+    assert 4 == client.jsonarrappend('arr', Path.rootPath(), 3, 4)
+    assert 7 == client.jsonarrappend('arr', Path.rootPath(), *[5, 6, 7])
 
-#     def testArrAppendShouldSucceed(self):
-#         "Test JSONSArrAppend"
+@pytest.mark.integrations
+@pytest.mark.redisjson
+def testArrIndexShouldSucceed(client):
 
-#         rj.jsonset('arr', Path.rootPath(), [1])
-#         self.assertEqual(2, rj.jsonarrappend('arr', Path.rootPath(), 2))
-#         self.assertEqual(4, rj.jsonarrappend('arr', Path.rootPath(), 3, 4))
-#         self.assertEqual(7, rj.jsonarrappend('arr', Path.rootPath(), *[5, 6, 7]))
+    client.jsonset('arr', Path.rootPath(), [0, 1, 2, 3, 4])
+    assert 1 == client.jsonarrindex('arr', Path.rootPath(), 1)
+    assert -1 == client.jsonarrindex('arr', Path.rootPath(), 1, 2)
 
-#     def testArrIndexShouldSucceed(self):
-#         "Test JSONSArrIndex"
+@pytest.mark.integrations
+@pytest.mark.redisjson
+def test_arrinsertshouldsucceed(client):
 
-#         rj.jsonset('arr', Path.rootPath(), [0, 1, 2, 3, 4])
-#         self.assertEqual(1, rj.jsonarrindex('arr', Path.rootPath(), 1))
-#         self.assertEqual(-1, rj.jsonarrindex('arr', Path.rootPath(), 1, 2))
+    client.jsonset('arr', Path.rootPath(), [0, 4])
+    assert 5 -- client.jsonarrinsert('arr', Path.rootPath(), 1, *[1, 2, 3, ])
+    assert [0, 1, 2, 3, 4] == client.jsonget('arr')
 
-#     def testArrInsertShouldSucceed(self):
-#         "Test JSONSArrInsert"
+@pytest.mark.integrations
+@pytest.mark.redisjson
+def test_arrlenshouldsucceed(client):
 
-#         rj.jsonset('arr', Path.rootPath(), [0, 4])
-#         self.assertEqual(5, rj.jsonarrinsert('arr',
-#                                              Path.rootPath(), 1, *[1, 2, 3, ]))
-#         self.assertListEqual([0, 1, 2, 3, 4], rj.jsonget('arr'))
+    client.jsonset('arr', Path.rootPath(), [0, 1, 2, 3, 4])
+    assert 5 == client.jsonarrlen('arr', Path.rootPath())
 
-#     def testArrLenShouldSucceed(self):
-#         "Test JSONSArrLen"
+@pytest.mark.integrations
+@pytest.mark.redisjson
+def test_arrpopshouldsucceed(client):
 
-#         rj.jsonset('arr', Path.rootPath(), [0, 1, 2, 3, 4])
-#         self.assertEqual(5, rj.jsonarrlen('arr', Path.rootPath()))
+    client.jsonset('arr', Path.rootPath(), [0, 1, 2, 3, 4])
+    assert 4 == client.jsonarrpop('arr', Path.rootPath(), 4)
+    assert 3 == client.jsonarrpop('arr', Path.rootPath(), -1)
+    assert 2 == client.jsonarrpop('arr', Path.rootPath())
+    assert 0 == client.jsonarrpop('arr', Path.rootPath(), 0)
+    assert [1] == client.jsonget('arr')
 
-#     def testArrPopShouldSucceed(self):
-#         "Test JSONSArrPop"
+@pytest.mark.integrations
+@pytest.mark.redisjson
+def test_arrtrimshouldsucceed(client):
 
-#         rj.jsonset('arr', Path.rootPath(), [0, 1, 2, 3, 4])
-#         self.assertEqual(4, rj.jsonarrpop('arr', Path.rootPath(), 4))
-#         self.assertEqual(3, rj.jsonarrpop('arr', Path.rootPath(), -1))
-#         self.assertEqual(2, rj.jsonarrpop('arr', Path.rootPath()))
-#         self.assertEqual(0, rj.jsonarrpop('arr', Path.rootPath(), 0))
-#         self.assertListEqual([1], rj.jsonget('arr'))
+    client.jsonset('arr', Path.rootPath(), [0, 1, 2, 3, 4])
+    assert 3 == client.jsonarrtrim('arr', Path.rootPath(), 1, 3)
+    assert [1, 2, 3] == client.jsonget('arr')
 
-#     def testArrTrimShouldSucceed(self):
-#         "Test JSONSArrPop"
+@pytest.mark.integrations
+@pytest.mark.redisjson
+def test_objkeysshouldsucceed(client):
 
-#         rj.jsonset('arr', Path.rootPath(), [0, 1, 2, 3, 4])
-#         self.assertEqual(3, rj.jsonarrtrim('arr', Path.rootPath(), 1, 3))
-#         self.assertListEqual([1, 2, 3], rj.jsonget('arr'))
+    obj = {'foo': 'bar', 'baz': 'qaz'}
+    client.jsonset('obj', Path.rootPath(), obj)
+    keys = client.jsonobjkeys('obj', Path.rootPath())
+    keys.sort()
+    exp = [k for k in obj.keys()]
+    exp.sort()
+    assert exp == keys
 
-#     def testObjKeysShouldSucceed(self):
-#         "Test JSONSObjKeys"
+@pytest.mark.integrations
+@pytest.mark.redisjson
+def test_objkeysshouldsucceed(client):
 
-#         obj = {'foo': 'bar', 'baz': 'qaz'}
-#         rj.jsonset('obj', Path.rootPath(), obj)
-#         keys = rj.jsonobjkeys('obj', Path.rootPath())
-#         keys.sort()
-#         exp = [k for k in six.iterkeys(obj)]
-#         exp.sort()
-#         self.assertListEqual(exp, keys)
+    obj = {'foo': 'bar', 'baz': 'qaz'}
+    client.jsonset('obj', Path.rootPath(), obj)
+    keys = client.jsonobjkeys('obj', Path.rootPath())
+    keys.sort()
+    exp = [k for k in obj.keys()]
+    exp.sort()
+    assert exp == keys
 
-#     def testObjLenShouldSucceed(self):
-#         "Test JSONSObjLen"
+def test_objlenshouldsucceed(client):
 
-#         obj = {'foo': 'bar', 'baz': 'qaz'}
-#         rj.jsonset('obj', Path.rootPath(), obj)
-#         self.assertEqual(len(obj), rj.jsonobjlen('obj', Path.rootPath()))
+    obj = {'foo': 'bar', 'baz': 'qaz'}
+    client.jsonset('obj', Path.rootPath(), obj)
+    assert len(obj) == client.jsonobjlen('obj', Path.rootPath())
 
-#     def testPipelineShouldSucceed(self):
-#         "Test pipeline"
+@pytest.mark.integrations
+@pytest.mark.pipeline
+@pytest.mark.redisjson
+def test_pipelineshouldsucceed(client):
 
-#         p = rj.pipeline()
-#         p.jsonset('foo', Path.rootPath(), 'bar')
-#         p.jsonget('foo')
-#         p.jsondel('foo')
-#         p.exists('foo')
-#         self.assertListEqual([True, 'bar', 1, False], p.execute())
+    p = client.pipeline()
+    p.jsonset('foo', Path.rootPath(), 'bar')
+    p.jsonget('foo')
+    p.jsondel('foo')
+    p.exists('foo')
+    assert [True, 'bar', 1, False] == p.execute()
+
+def test_objlenshouldsucceed(client):
+
+    obj = {'foo': 'bar', 'baz': 'qaz'}
+    client.jsonset('obj', Path.rootPath(), obj)
+    assert len(obj) == client.jsonobjlen('obj', Path.rootPath())
+
+@pytest.mark.integrations
+@pytest.mark.pipeline
+@pytest.mark.redisjson
+def test_pipelineshouldsucceed(client):
+
+    p = client.pipeline()
+    p.jsonset('foo', Path.rootPath(), 'bar')
+    p.jsonget('foo')
+    p.jsondel('foo')
+    p.exists('foo')
+    assert [True, 'bar', 1, False] == p.execute()
 
 #     def testCustomEncoderDecoderShouldSucceed(self):
 #         "Test a custom encoder and decoder"
@@ -225,45 +267,47 @@ def test_nonascii_setgetdelete(setup_client):
 #         self.assertEqual('foo', obj.key)
 #         self.assertEqual('bar', obj.val)
 
-#     def testUsageExampleShouldSucceed(self):
-#         "Test the usage example"
+@pytest.mark.integrations
+@pytest.mark.pipeline
+@pytest.mark.redisjson
+def test_usageexampleshouldsucceed(client):
 
-#         # Create a new rejson-py client
-#         rj = Client(host='localhost', port=port, decode_responses=True)
+    # Create a new rejson-py client
+    # rj = Client(host='localhost', port=port, decode_responses=True)
 
-#         # Set the key `obj` to some object
-#         obj = {
-#             'answer': 42,
-#             'arr': [None, True, 3.14],
-#             'truth': {
-#                 'coord': 'out there'
-#             }
-#         }
-#         rj.jsonset('obj', Path.rootPath(), obj)
+    # Set the key `obj` to some object
+    obj = {
+        'answer': 42,
+        'arr': [None, True, 3.14],
+        'truth': {
+            'coord': 'out there'
+        }
+    }
+    client.jsonset('obj', Path.rootPath(), obj)
 
-#         # Get something
-#         rv = rj.jsonget('obj', Path('.truth.coord'))
-#         self.assertEqual(obj['truth']['coord'], rv)
+    # Get something
+    rv = client.jsonget('obj', Path('.truth.coord'))
+    assert obj['truth']['coord'] == rv
 
-#         # Delete something (or perhaps nothing), append something and pop it
-#         value = "something"
-#         rj.jsondel('obj', Path('.arr[0]'))
-#         rj.jsonarrappend('obj', Path('.arr'), value)
-#         rv = rj.jsonarrpop('obj', Path('.arr'))
-#         self.assertEqual(value, rv)
+    # Delete something (or perhaps nothing), append something and pop it
+    value = "something"
+    client.jsondel('obj', Path('.arr[0]'))
+    client.jsonarrappend('obj', Path('.arr'), value)
+    rv = client.jsonarrpop('obj', Path('.arr'))
+    assert value == rv
 
-#         # Update something else
-#         value = 2.17
-#         rj.jsonset('obj', Path('.answer'), value)
-#         rv = rj.jsonget('obj', Path('.answer'))
-#         self.assertEqual(value, rv)
+    # Update something else
+    value = 2.17
+    client.jsonset('obj', Path('.answer'), value)
+    rv = client.jsonget('obj', Path('.answer'))
+    assert value == rv
 
-#         # And use just like the regular redis-py client
-#         jp = rj.pipeline()
-#         jp.set('foo', 'bar')
-#         jp.jsonset('baz', Path.rootPath(), 'qaz')
-#         jp.execute()
-#         rv1 = rj.get('foo')
-#         self.assertEqual('bar', rv1)
-#         rv2 = rj.jsonget('baz')
-#         self.assertEqual('qaz', rv2)
+    # And use just like the regular redis-py client
+    jp = client.pipeline()
+    jp.set('foo', 'bar')
+    jp.jsonset('baz', Path.rootPath(), 'qaz')
+    jp.execute()
+    rv1 = client.get('foo')
+    assert 'bar' == rv1
+    rv2 = client.jsonget('baz')
+    assert 'qaz' == rv2
