@@ -19,3 +19,8 @@ def bulk_of_jsons(d):
         return b
 
     return _f
+
+
+def delist(d):
+    """Given a list of binaries, return the stringified version"""
+    return [_.decode() for _ in d]

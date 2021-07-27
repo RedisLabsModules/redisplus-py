@@ -2,11 +2,10 @@ from typing import Optional
 import json
 
 from redis._compat import long, nativestr
-from redis.client import Redis
 from redisplus.modules import ModuleClient
 
 from . import commands as recmds
-from .utils import bulk_of_jsons
+from .utils import bulk_of_jsons, delist
 
 
 class Client(ModuleClient):
@@ -52,6 +51,7 @@ class Client(ModuleClient):
             "JSON.ARRPOP": self.decode,
             "JSON.ARRTRIM": long,
             "JSON.OBJLEN": long,
+            "JSON.OBJKEYS": delist,
         }
 
         super().__init__()
@@ -66,7 +66,8 @@ class Client(ModuleClient):
 
     def decode(self, obj):
         if obj is None:
-            return None
+            return obj
+
         try:
             return self.__decoder__.decode(obj)
         except TypeError:
@@ -74,4 +75,5 @@ class Client(ModuleClient):
 
     def encode(self, obj):
         return self.__encoder__.encode(obj)
+
     commands = recmds
