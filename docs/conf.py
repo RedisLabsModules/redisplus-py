@@ -32,7 +32,7 @@ extensions = [
 pygments_style = "sphinx"
 
 autoapi_type = 'python'
-autoapi_dirs = ['src/redisplus', 'src/modules']
+autoapi_dirs = ['../src/redisplus', '../src/modules']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
