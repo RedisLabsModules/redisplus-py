@@ -23,3 +23,9 @@ def jsonobjlen(client, name, path=Path.rootPath()):
     ``name``
     """
     return client.execute_command("JSON.OBJLEN", name, str_path(path))
+
+def jsondebug(client, name, path=Path.rootPath()):
+    """
+    Returns the memory usage in bytes of a value under ``path`` from key ``name``.
+    """
+    return client.execute_command("JSON.DEBUG", "MEMORY", name, str_path(path))
