@@ -8,6 +8,11 @@ def jsondel(client, name, path=Path.rootPath()):
     """
     return client.execute_command("JSON.DEL", name, str_path(path))
 
+def jsonforget(client, name, path=Path.rootPath()):
+    """
+    An alias for jsondel (deletes the JSON value)
+    """
+    return client.execute_command("JSON.FORGET", name, str_path(path))
 
 def jsonget(client, name, *args, no_escape=False):
     """
