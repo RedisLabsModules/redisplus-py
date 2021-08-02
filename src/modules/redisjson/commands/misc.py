@@ -8,6 +8,11 @@ def jsontype(client, name, path=Path.rootPath()):
     """
     return client.execute_command("JSON.TYPE", name, str_path(path))
 
+def jsonresp(client, name, path=Path.rootPath()):
+    """
+    Returns the JSON value under ``path`` at key ``name``
+    """
+    return client.execute_command("JSON.RESP", name, str_path(path))
 
 def jsonobjkeys(client, name, path=Path.rootPath()):
     """

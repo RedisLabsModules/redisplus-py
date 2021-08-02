@@ -52,6 +52,7 @@ class Client(ModuleClient):
             "JSON.ARRTRIM": long,
             "JSON.OBJLEN": long,
             "JSON.OBJKEYS": delist,
+            "JSON.RESP": delist
         }
 
         super().__init__()
