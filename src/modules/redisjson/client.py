@@ -37,6 +37,7 @@ class Client(ModuleClient):
         # Set the module commands' callbacks
         self.MODULE_CALLBACKS = {
             "JSON.DEL": long,
+            "JSON.FORGET": long,
             "JSON.GET": self.decode,
             "JSON.MGET": bulk_of_jsons(self.decode),
             "JSON.SET": lambda r: r and nativestr(r) == "OK",
