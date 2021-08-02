@@ -1,0 +1,1 @@
+Lifted directly from [redistimeseries](https://github.com/RedisTimeSeries/redistimeseries-py), and reworked - purely for experimentation.
