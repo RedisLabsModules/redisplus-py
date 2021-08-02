@@ -1,12 +1,11 @@
 from redis import Redis, DataError
-from redis.client import Pipeline
 from redis.client import bool_ok
 
 from .utils import parse_range, parse_get, parseToList, parse_m_get, parse_m_range
 from .TSInfo import TSInfo
 
 
-class Client(object): # changed from StrictRedis
+class Client(object):
     """
     This class subclasses redis-py's `Redis` and implements
     RedisTimeSeries's commands (prefixed with "ts").
@@ -86,7 +85,7 @@ class Client(object): # changed from StrictRedis
         if labels:
             params.append('LABELS')
             for k, v in labels.items():
-                params.extend([k,v])
+                params.extend([k, v])
 
     @staticmethod
     def appendCount(params, count):
@@ -106,8 +105,9 @@ class Client(object): # changed from StrictRedis
     @staticmethod
     def appendAggregation(params, aggregation_type,
                           bucket_size_msec):
-        params.append('AGGREGATION')
-        params.extend([aggregation_type, bucket_size_msec])
+        if aggregation_type is not None:
+            params.append('AGGREGATION')
+            params.extend([aggregation_type, bucket_size_msec])
 
     @staticmethod
     def appendChunkSize(params, chunk_size):

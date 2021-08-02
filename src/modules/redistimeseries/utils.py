@@ -27,7 +27,6 @@ def parse_m_get(response):
         else:
             res.append({nativestr(item[0]) : [list_to_dict(item[1]),
                                 int(item[2][0]), float(item[2][1])]})
-
     return res
 
 def parseToList(response):
