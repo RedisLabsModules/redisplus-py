@@ -25,14 +25,14 @@ release = pyproject["tool"]["poetry"]["version"]
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    'sphinx_search.extension',  # search tools
-    'sphinx.ext.autodoc',
+    'sphinx_search.extension',
+    'sphinx_automodapi.automodapi',
+    #'sphinx_automodapi.smart_resolver',
 ]
 
 pygments_style = "sphinx"
-
 autoapi_type = 'python'
-autoapi_dirs = ['../src/redisplus', '../src/modules']
+autoapi_dirs = ['../src']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
