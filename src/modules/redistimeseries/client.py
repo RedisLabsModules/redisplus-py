@@ -3,6 +3,7 @@ from redis.client import Pipeline, bool_ok
 from redis.commands import Commands as RedisCommands
 
 from ..utils import nativestr
+from .utils import *
 from .commands import CommandMixin
 
 
