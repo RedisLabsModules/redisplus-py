@@ -1,4 +1,4 @@
-from .path import Path, str_path
+src/modules/redisjson/commands/setters.pyfrom .path import Path, str_path
 
 
 class CommandMixin:
@@ -31,6 +31,13 @@ class CommandMixin:
         for o in args:
             pieces.append(self.encode(o))
         return self.execute_command("JSON.ARRINSERT", *pieces)
+
+    def jsonforget(self, name, path=Path.rootPath()):
+        """
+        An alias for jsondel (deletes the JSON value)
+        """
+        return self.execute_command("JSON.FORGET", name, str_path(path))
+
 
     def jsonarrlen(self, name, path=Path.rootPath()):
         """

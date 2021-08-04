@@ -20,12 +20,12 @@ def test_base():
 
 @pytest.mark.integrations
 @pytest.mark.redisjson
-def test_json_setgetdelete(client):
+def test_json_setgetdeleteforget(client):
     assert client.jsonset('foo', Path.rootPath(), 'bar')
     assert client.jsonget('foo') == "bar"
     assert client.jsonget('baz') is None
     assert client.jsondel('foo') == 1
-    assert client.jsondel('foo') == 0 # second delete
+    assert client.jsonforget('foo') == 0 # second delete
     assert client.exists('foo') == 0
 
 @pytest.mark.integrations
