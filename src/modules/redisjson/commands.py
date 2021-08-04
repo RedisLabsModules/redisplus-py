@@ -1,4 +1,4 @@
-src/modules/redisjson/commands/setters.pyfrom .path import Path, str_path
+from .path import Path, str_path
 
 
 class CommandMixin:

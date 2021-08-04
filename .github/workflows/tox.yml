@@ -2,38 +2,12 @@ on:
   pull_request:
 
 jobs:
-  linters:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
-        with:
-          python-version: 3.9
-
-      - name: Install tox and friends
-        run: pip install tox poetry tox-poetry tox-docker
-
-      - name: Cache tox environments
-        uses: actions/cache@v1
-        with:
-          path: .tox
-          key: ${{ runner.os }}-lintertox-${{ hashFiles('pyproject.toml') }}-${{ hashFiles('tox.ini') }}
-
-      - name: Cache pip
-        uses: actions/cache@v1
-        with:
-          path: .cachce/pip
-          key: ${{ runner.os }}-linterpip-${{ hashFiles('pyproject.toml') }}-${{ hashFiles('tox.ini') }}
-
-      - name: linters
-        run: tox -e linters
-
-  integration:
+  build:
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 4
       matrix:
-        python-verison: [3.6, 3.7, 3.8, 3.9]
+        python-version: [3.6, 3.7, 3.8, 3.9]
 
     steps:
       - uses: actions/checkout@v2
@@ -51,4 +25,4 @@ jobs:
           key: ${{ runner.os }}-${{ matrix.python }}-${{ hashFiles('pyproject.toml') }}-${{ hashFiles('tox.ini') }}
 
       - name: run integration tests
-        run: tox -e all
+        run: tox

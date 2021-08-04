@@ -2,16 +2,16 @@ import functools
 from typing import Optional
 import json
 
-from redis._compat import long, nativestr
+# from redis._compat import nativestr
 from redis.client import Pipeline, Redis
-from redis.commands import CommandMixin as CM
+from redis.commands import Commands as RedisCommands
 
 # from . import commands as recmds
-from .utils import bulk_of_jsons, delist
+from .utils import bulk_of_jsons, delist, nativestr
 from .commands import CommandMixin
 
 
-class Client(CommandMixin, CM, object):
+class Client(CommandMixin, RedisCommands, object):
     def __init__(
         self,
         client: Redis,
@@ -30,22 +30,22 @@ class Client(CommandMixin, CM, object):
 
         # Set the module commands' callbacks
         self.MODULE_CALLBACKS = {
-            "JSON.DEL": long,
-            "JSON.FORGET": long,
+            "JSON.DEL": int,
+            "JSON.FORGET": int,
             "JSON.GET": self.decode,
             "JSON.MGET": bulk_of_jsons(self.decode),
             "JSON.SET": lambda r: r and nativestr(r) == "OK",
             "JSON.NUMINCRBY": self.decode,
             "JSON.NUMMULTBY": self.decode,
-            "JSON.STRAPPEND": long,
-            "JSON.STRLEN": long,
-            "JSON.ARRAPPEND": long,
-            "JSON.ARRINDEX": long,
-            "JSON.ARRINSERT": long,
-            "JSON.ARRLEN": long,
+            "JSON.STRAPPEND": int,
+            "JSON.STRLEN": int,
+            "JSON.ARRAPPEND": int,
+            "JSON.ARRINDEX": int,
+            "JSON.ARRINSERT": int,
+            "JSON.ARRLEN": int,
             "JSON.ARRPOP": self.decode,
-            "JSON.ARRTRIM": long,
-            "JSON.OBJLEN": long,
+            "JSON.ARRTRIM": int,
+            "JSON.OBJLEN": int,
             "JSON.OBJKEYS": delist,
         }
 

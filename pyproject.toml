@@ -22,13 +22,14 @@ classifiers = [
 
 [tool.poetry.dependencies]
 python = "^3.9"
-redis = "^3.5.3"
+
 redisearch = {version = "^2.0.0", optional = true}
 rejson = {version = "^0.5.4", optional = true}
 redisai = {version = "^1.0.2", optional = true}
 redisgraph = {version = "^2.4.0", optional = true}
 redistimeseries = {version = "^1.4.3", optional = true}
 redisbloom = {version = "^0.4.0", optional = true}
+redis = {git = "https://github.com/chayim/redis-py", rev = "ck-commandmig"}
 
 [tool.poetry.dev-dependencies]
 flake8 = "^3.9.2"
@@ -41,6 +42,7 @@ flake8-docstrings = "^1.6.0"
 mock = "^4.0.3"
 black = "^21.7b0"
 tox-docker = "^3.0.0"
+tox-pyenv = "^1.1.0"
 
 [tool.poetry.extras]
 redisearch = ["redisearch"]
