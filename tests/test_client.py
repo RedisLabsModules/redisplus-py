@@ -1,4 +1,4 @@
-from redisplus.client import RedisClient
+from redisplus import RedisClient
 import redis
 
 def test_client_init():
