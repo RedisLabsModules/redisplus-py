@@ -2,7 +2,7 @@ from redis import Redis, DataError
 from redis.client import Pipeline, bool_ok
 from redis.commands import Commands as RedisCommands
 
-from .utils import *
+from ..utils import nativestr
 from .commands import CommandMixin
 
 
@@ -32,11 +32,11 @@ class Client(CommandMixin, RedisCommands, object):  # changed from StrictRedis
     INFO_CMD = 'TS.INFO'
     QUERYINDEX_CMD = 'TS.QUERYINDEX'
 
-    def __init__(self, conn=None, *args, **kwargs):
+    def __init__(self, client=None, *args, **kwargs):
         """
         Creates a new RedisTimeSeries client.
         """
-        self.redis = conn if conn is not None else Redis(*args, **kwargs)
+        self.redis = client if client is not None else Redis(*args, **kwargs)
 
         # Set the module commands' callbacks
         MODULE_CALLBACKS = {
