@@ -1,47 +1,23 @@
 from redisplus.client import RedisClient
-import contextlib
 import redis
-from utils import mockredisclient
-import pytest
 
-@pytest.mark.redisearch
 def test_client_init():
-    modules = {'redisearch': {'index_name': 'testtheindex'}}
+    modules = {'redisjson': {'client': redis.Redis()}}
 
-    with pytest.raises(TypeError):
-        RedisClient(from_url="redis://localhost:6379")
+    rc = RedisClient(modules)
+    assert getattr(rc, "REDISJSON", None) is not None
 
-    # limit validations to our library interaction - not redis
-    with contextlib.ExitStack() as stack:
-        stack = mockredisclient(stack)
-        rc = RedisClient(modules=modules)
-        assert 'redisearch' in rc.modules
-        assert rc.CLIENT is not None
+    rc = RedisClient(client=redis.Redis())
+    assert getattr(rc, "REDISJSON", None) is None
+    assert isinstance(getattr(rc, "CLIENT", None), redis.Redis)
 
-    with contextlib.ExitStack() as stack:
-        stack = mockredisclient(stack)
-        # create our own client
-        rc = RedisClient(modules=modules, client=redis.Redis(port=56789))
-        assert rc.CLIENT is not None
-
-    with contextlib.ExitStack() as stack:
-        stack = mockredisclient(stack)
-        # create our own client
-        rc = RedisClient(modules, from_url="redis://localhost:6379")
-        assert rc.CLIENT is not None
+    rc = RedisClient(client=redis.from_url("redis://localhost:6379"))
+    assert isinstance(getattr(rc, "CLIENT", None), redis.Redis)
 
 def test_module_list():
     modules = {'redisjson': {}}
-    rc = RedisClient(modules)
+    rc = RedisClient(modules, redis.Redis())
     assert 'redisjson' in rc.modules
 
-def test_local_init():
-    # try loading the module
-    modules = {'redisjson': {}}
-    rc = RedisClient(modules)
-
-def test_command_loader():
-    modules = {'redisjson': {}}
-    rc = RedisClient(modules)
-    assert len(rc.commands) > 1
-    assert isinstance(rc.commands, list)
+def test_refresh():
+    cl = redis.Redis()
