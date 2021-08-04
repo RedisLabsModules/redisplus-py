@@ -1,6 +1,6 @@
 import pytest
 from redis import Redis
-from redisplus.client import RedisClient
+from redisplus import RedisClient
 from modules.redisjson.path import Path
 
 @pytest.fixture
