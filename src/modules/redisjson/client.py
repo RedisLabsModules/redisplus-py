@@ -94,13 +94,14 @@ class Client(CommandMixin, CM, object):
             connection_pool=self.client.connection_pool,
             response_callbacks=self.client.response_callbacks,
             transaction=transaction,
-            shard_hint=shard_hint
+            shard_hint=shard_hint,
         )
         p.__encoder__ = self.__encoder__
         p.__decoder__ = self.__decoder__
         return p
 
     # commands = recmds
+
 
 class Pipeline(Pipeline, Client):
     """Pipeline for client"""

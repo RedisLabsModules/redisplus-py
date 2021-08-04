@@ -1,10 +1,7 @@
 from .path import Path, str_path
-from abc import ABCMeta
 
 
-class CommandMixin():
-
-
+class CommandMixin:
     def jsonarrappend(self, name, path=Path.rootPath(), *args):
         """
         Appends the objects ``args`` to the array under the ``path` in key
@@ -14,7 +11,6 @@ class CommandMixin():
         for o in args:
             pieces.append(self.encode(o))
         return self.execute_command("JSON.ARRAPPEND", *pieces)
-
 
     def jsonarrindex(self, name, path, scalar, start=0, stop=-1):
         """
@@ -26,7 +22,6 @@ class CommandMixin():
             "JSON.ARRINDEX", name, str_path(path), self.encode(scalar), start, stop
         )
 
-
     def jsonarrinsert(self, name, path, index, *args):
         """
         Inserts the objects ``args`` to the array at index ``index`` under the
@@ -37,7 +32,6 @@ class CommandMixin():
             pieces.append(self.encode(o))
         return self.execute_command("JSON.ARRINSERT", *pieces)
 
-
     def jsonarrlen(self, name, path=Path.rootPath()):
         """
         Returns the length of the array JSON value under ``path`` at key
@@ -45,14 +39,12 @@ class CommandMixin():
         """
         return self.execute_command("JSON.ARRLEN", name, str_path(path))
 
-
     def jsonarrpop(self, name, path=Path.rootPath(), index=-1):
         """
         Pops the element at ``index`` in the array JSON value under ``path`` at
         key ``name``
         """
         return self.execute_command("JSON.ARRPOP", name, str_path(path), index)
-
 
     def jsonarrtrim(self, name, path, start, stop):
         """
@@ -67,14 +59,12 @@ class CommandMixin():
         """
         return self.execute_command("JSON.TYPE", name, str_path(path))
 
-
     def jsonobjkeys(self, name, path=Path.rootPath()):
         """
         Returns the key names in the dictionary JSON value under ``path`` at key
         ``name``
         """
         return self.execute_command("JSON.OBJKEYS", name, str_path(path))
-
 
     def jsonobjlen(self, name, path=Path.rootPath()):
         """
@@ -92,8 +82,7 @@ class CommandMixin():
             "JSON.NUMINCRBY", name, str_path(path), self.encode(number)
         )
 
-
-    def jsonnummultby(self,name, path, number):
+    def jsonnummultby(self, name, path, number):
         """
         Multiplies the numeric (integer or floating point) JSON value under
         ``path`` at key ``name`` with the provided ``number``
@@ -102,13 +91,11 @@ class CommandMixin():
             "JSON.NUMMULTBY", name, str_path(path), self.encode(number)
         )
 
-
     def jsondel(self, name, path=Path.rootPath()):
         """
         Deletes the JSON value stored at key ``name`` under ``path``
         """
         return self.execute_command("JSON.DEL", name, str_path(path))
-
 
     def jsonget(self, name, *args, no_escape=False):
         """
@@ -134,7 +121,6 @@ class CommandMixin():
         except TypeError:
             return None
 
-
     def jsonmget(self, path, *args):
         """
         Gets the objects stored as a JSON values under ``path`` from
@@ -144,7 +130,6 @@ class CommandMixin():
         pieces.extend(args)
         pieces.append(str_path(path))
         return self.execute_command("JSON.MGET", *pieces)
-
 
     def jsonset(self, name, path, obj, nx=False, xx=False):
         """
@@ -166,14 +151,12 @@ class CommandMixin():
             pieces.append("XX")
         return self.execute_command("JSON.SET", *pieces)
 
-
     def jsonstrlen(self, name, path=Path.rootPath()):
         """
         Returns the length of the string JSON value under ``path`` at key
         ``name``
         """
         return self.execute_command("JSON.STRLEN", name, str_path(path))
-
 
     def jsonstrappend(self, name, string, path=Path.rootPath()):
         """

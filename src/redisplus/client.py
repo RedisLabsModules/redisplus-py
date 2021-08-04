@@ -1,6 +1,4 @@
-import functools
 import importlib
-import inspect
 from typing import Dict, Optional
 from redis.client import Redis
 
@@ -14,9 +12,10 @@ class RedisClient(object):
     # list of active commands
     __commands__ = []
 
-    def __init__(self,
-        modules: Dict={},
-        client: Optional[Redis]=None,
+    def __init__(
+        self,
+        modules: Dict = {},
+        client: Optional[Redis] = None,
         safe_load=False,
     ):
         """
@@ -30,11 +29,8 @@ class RedisClient(object):
 
         for key in modules.keys():
             self._initclient(key, safe_load)
-            # setattr(self, key.upper(), x.Client(**vals))
-            # self.__redis_modules__.append(key)
-            # self._load_module_commands(key, self.__redis_modules__[key])
 
-    def _initclient(self, module: str, safe_load=False):
+    def _initclient(self, module: str, safe_load=False, client: Optional[Redis] = None):
         mod = self.__module__init__.get(module, None)
         if mod is None:
             raise AttributeError("{} is not a valid module." % module)
@@ -47,18 +43,22 @@ class RedisClient(object):
             else:
                 return
 
-        con = mod.get("client", self.client)
+        if client is not None:
+            con = client
+        else:
+            con = mod.get("client", self.client)
         if con is None:
-            raise AttributeError("Either a redis client must be passed ",
-                                "into the class definition, or as an ",
-                                "object on the dictionary."
-                )
+            raise AttributeError(
+                "Either a redis client must be passed ",
+                "into the class definition, or as an ",
+                "object on the dictionary.",
+            )
         mod.update({"client": con})
         setattr(self, module.upper(), x.Client(**mod))
         if module not in self.__redis_modules__:
             self.__redis_modules__.append(module)
 
-    refresh=_initclient
+    refresh = _initclient
 
     @property
     def client(self):
