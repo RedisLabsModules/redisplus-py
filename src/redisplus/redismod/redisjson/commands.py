@@ -38,7 +38,6 @@ class CommandMixin:
         """
         return self.execute_command("JSON.FORGET", name, str_path(path))
 
-
     def jsonarrlen(self, name, path=Path.rootPath()):
         """
         Returns the length of the array JSON value under ``path`` at key
@@ -65,6 +64,12 @@ class CommandMixin:
         Gets the type of the JSON value under ``path`` from key ``name``
         """
         return self.execute_command("JSON.TYPE", name, str_path(path))
+
+    def jsonresp(self, name, path=Path.rootPath()):
+        """
+        Returns the JSON value under ``path`` at key ``name``
+        """
+        return self.execute_command("JSON.RESP", name, str_path(path))
 
     def jsonobjkeys(self, name, path=Path.rootPath()):
         """
