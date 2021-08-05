@@ -38,7 +38,7 @@ rc.redisjson.jsonset("foo", ".", "bar")
 rc.redisjson.exists("foo")
 ```
 
-------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------
 
 ## Getting Started
 
@@ -52,3 +52,7 @@ poetry install
 ```
 
 Tests are written with [pytest](https://docs.pytest.org), and most easily run by running *pytest*. Support for individual markers can be found in the project's [pyproject.toml](pyproject.toml) file. Similarly, if you have [pyenv](https://github.com/pyenv/pyenv) installed, tox uses pyenv to find versions of python, for validating tests across multiple python versions. *tox -listenvs* will output options.
+
+### Tasks
+
+redisplus uses [invoke](https://pyinvoke.org) once dependencies for convenience tasks. Run *invoke -l* to see the list of supported tasks.
