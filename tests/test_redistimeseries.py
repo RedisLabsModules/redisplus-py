@@ -415,6 +415,7 @@ def testQueryIndex(client):
 
 @pytest.mark.integrations
 @pytest.mark.redistimeseries
+@pytest.mark.pipeline
 def testPipeline(client):
     pipeline = client.pipeline()
     pipeline.create('with_pipeline')
