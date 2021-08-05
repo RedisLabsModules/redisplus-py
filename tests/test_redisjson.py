@@ -1,13 +1,13 @@
 import pytest
 from redis import Redis
-from redisplus.client import RedisClient
-from modules.redisjson.path import Path
+from redisplus import RedisClient
+from redisplus.redismod.redisjson.path import Path
 
 @pytest.fixture
 def client():
     rc = RedisClient(modules={'redisjson': {"client": Redis()}})
-    rc.REDISJSON.flushdb()
-    return rc.REDISJSON
+    rc.redisjson.flushdb()
+    return rc.redisjson
 
 @pytest.mark.redisjson
 def test_base():
