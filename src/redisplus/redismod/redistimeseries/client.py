@@ -1,4 +1,5 @@
 from redis import Redis, DataError
+import functools
 from redis.client import Pipeline, bool_ok
 from redis.commands import Commands as RedisCommands
 
@@ -54,8 +55,20 @@ class Client(CommandMixin, RedisCommands, object):  # changed from StrictRedis
             self.INFO_CMD: TSInfo,
             self.QUERYINDEX_CMD: parseToList,
         }
+
+
+        self.CLIENT = client
+        self.client.pipeline = functools.partial(self.pipeline, self)
+
         for k in MODULE_CALLBACKS:
             self.redis.set_response_callback(k, MODULE_CALLBACKS[k])
+
+    def execute_command(self, *args, **kwargs):
+        return self.client.execute_command(*args, **kwargs)
+
+    @property
+    def client(self):
+        return self.CLIENT
 
     @staticmethod
     def appendUncompressed(params, uncompressed):

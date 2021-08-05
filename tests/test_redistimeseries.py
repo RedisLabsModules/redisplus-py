@@ -5,12 +5,12 @@ from redisplus.client import RedisClient
 @pytest.fixture
 def client():
     rc = RedisClient(modules={'redistimeseries': {"client": Redis()}})
-    rc.REDISTIMESERIES.flushdb()
-    return rc.REDISTIMESERIES
+    rc.redistimeseries.flushdb()
+    return rc.redistimeseries
 
 @pytest.mark.redistimeseries
 def test_base(client):
 
     # base load
     rc = RedisClient(client=Redis())
-    rc.flushdb()
+    rc.client.flushdb()

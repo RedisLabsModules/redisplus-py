@@ -36,7 +36,7 @@ class RedisClient(object):
             raise AttributeError("{} is not a valid module." % module)
 
         try:
-            x = importlib.import_module("modules.%s" % module)
+            x = importlib.import_module("redisplus.redismod.%s" % module)
         except:
             if safe_load is False:
                 raise AttributeError("No module {} found".format(module))
@@ -54,7 +54,7 @@ class RedisClient(object):
                 "object on the dictionary.",
             )
         mod.update({"client": con})
-        setattr(self, module.upper(), x.Client(**mod))
+        setattr(self, module.lower(), x.Client(**mod))
         if module not in self.__redis_modules__:
             self.__redis_modules__.append(module)
 
