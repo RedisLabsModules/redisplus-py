@@ -1,5 +1,5 @@
-from redis import Redis, DataError
 import functools
+from redis import Redis, DataError
 from redis.client import Pipeline, bool_ok
 from redis.commands import Commands as RedisCommands
 
