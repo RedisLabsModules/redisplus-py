@@ -435,17 +435,3 @@ def testUncompressed(client):
     compressed_info = client.info('compressed')
     uncompressed_info = client.info('uncompressed')
     assert compressed_info.memory_usage != uncompressed_info.memory_usage
-
-"""
-@pytest.mark.redistimeseries
-def testPool(client):
-    redis = Redis(port=6379)
-    client = RedisClient(modules={'redistimeseries': {"client": Redis(port=666)}})
-
-    name = 'test'
-    client.create(name)
-    assert client.get(name) is None
-    client.add(name, 2, 3)
-    assert 2 == client.get(name)[0]
-    info = client.info(name)
-    assert 1 == info.total_samples"""
