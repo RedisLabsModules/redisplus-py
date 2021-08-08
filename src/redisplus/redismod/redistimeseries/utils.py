@@ -52,7 +52,7 @@ def parse_m_range(response):
     res = []
     for item in response:
         res.append({nativestr(item[0]): [list_to_dict(item[1]), parse_range(item[2])]})
-    return res
+    return sorted(res, key=lambda d: list(d.keys()))
 
 
 def parse_get(response):
@@ -76,8 +76,7 @@ def parse_m_get(response):
                     ]
                 }
             )
-
-    return res
+    return sorted(res, key=lambda d: list(d.keys()))
 
 
 def parseToList(response):

@@ -329,9 +329,8 @@ def testMultiReverseRange(client):
                      aggregation_type='avg', bucket_size_msec=10)
     assert 2 == len(res)
     assert 20 == len(res[0]['1'][1])
-
-    # test withlabels
     assert {} == res[0]['1'][0]
+    # test withlabels
     res = client.mrevrange(0, 200, filters=['Test=This'], with_labels=True)
     assert {'Test': 'This', 'team': 'ny'} == res[0]['1'][0]
     # test with selected labels
