@@ -186,8 +186,7 @@ class CommandMixin:
         """
         return self.redis.execute_command(self.DEL_CMD, key, from_time, to_time)
 
-    def createrule(self, source_key, dest_key,
-                   aggregation_type, bucket_size_msec):
+    def createrule(self, source_key, dest_key, aggregation_type, bucket_size_msec):
         """
         Creates a compaction rule from values added to ``source_key``
         into ``dest_key``. Aggregating for ``bucket_size_msec`` where an
@@ -218,9 +217,19 @@ class CommandMixin:
 
         return params
 
-    def range(self, key, from_time, to_time, count=None, aggregation_type=None,
-              bucket_size_msec=0, filter_by_ts=None, filter_by_min_value=None,
-              filter_by_max_value=None, align=None):
+    def range(
+            self,
+            key,
+            from_time,
+            to_time,
+            count=None,
+            aggregation_type=None,
+            bucket_size_msec=0,
+            filter_by_ts=None,
+            filter_by_min_value=None,
+            filter_by_max_value=None,
+            align=None
+    ):
         """
         Query a range in forward direction for a specific time-serie.
 
@@ -237,13 +246,33 @@ class CommandMixin:
             filter_by_max_value: Filter result by maximum value (must mention also filter_by_min_value).
             align: Timestamp for alignment control for aggregation.
         """
-        params = self.__range_params(key, from_time, to_time, count, aggregation_type, bucket_size_msec,
-                                     filter_by_ts, filter_by_min_value, filter_by_max_value, align)
+        params = self.__range_params(
+            key,
+            from_time,
+            to_time,
+            count,
+            aggregation_type,
+            bucket_size_msec,
+            filter_by_ts,
+            filter_by_min_value,
+            filter_by_max_value,
+            align
+        )
         return self.redis.execute_command(self.RANGE_CMD, *params)
 
-    def revrange(self, key, from_time, to_time, count=None, aggregation_type=None,
-                 bucket_size_msec=0, filter_by_ts=None, filter_by_min_value=None,
-                 filter_by_max_value=None, align=None):
+    def revrange(
+            self,
+            key,
+            from_time,
+            to_time,
+            count=None,
+            aggregation_type=None,
+            bucket_size_msec=0,
+            filter_by_ts=None,
+            filter_by_min_value=None,
+            filter_by_max_value=None,
+            align=None
+    ):
         """
         Query a range in reverse direction for a specific time-serie.
         Note: This command is only available since RedisTimeSeries >= v1.4
@@ -261,8 +290,18 @@ class CommandMixin:
             filter_by_max_value: Filter result by maximum value (must mention also filter_by_min_value).
             align: Timestamp for alignment control for aggregation.
         """
-        params = self.__range_params(key, from_time, to_time, count, aggregation_type, bucket_size_msec,
-                                     filter_by_ts, filter_by_min_value, filter_by_max_value, align)
+        params = self.__range_params(
+            key,
+            from_time,
+            to_time,
+            count,
+            aggregation_type,
+            bucket_size_msec,
+            filter_by_ts,
+            filter_by_min_value,
+            filter_by_max_value,
+            align
+        )
         return self.redis.execute_command(self.REVRANGE_CMD, *params)
 
     def __mrange_params(self, aggregation_type, bucket_size_msec, count, filters, from_time, to_time,
@@ -284,9 +323,23 @@ class CommandMixin:
         self.appendGroupbyReduce(params, groupby, reduce)
         return params
 
-    def mrange(self, from_time, to_time, filters, count=None, aggregation_type=None, bucket_size_msec=0,
-               with_labels=False, filter_by_ts=None, filter_by_min_value=None, filter_by_max_value=None,
-               groupby=None, reduce=None, select_labels=None, align=None):
+    def mrange(
+            self,
+            from_time,
+            to_time,
+            filters,
+            count=None,
+            aggregation_type=None,
+            bucket_size_msec=0,
+            with_labels=False,
+            filter_by_ts=None,
+            filter_by_min_value=None,
+            filter_by_max_value=None,
+            groupby=None,
+            reduce=None,
+            select_labels=None,
+            align=None
+    ):
         """
         Query a range across multiple time-series by filters in forward direction.
 
@@ -308,15 +361,42 @@ class CommandMixin:
             select_labels: Include in the reply only a subset of the key-value pair labels of a series.
             align: Timestamp for alignment control for aggregation.
         """
-        params = self.__mrange_params(aggregation_type, bucket_size_msec, count, filters, from_time, to_time,
-                                      with_labels, filter_by_ts, filter_by_min_value, filter_by_max_value,
-                                      groupby, reduce, select_labels, align)
+        params = self.__mrange_params(
+            aggregation_type,
+            bucket_size_msec,
+            count,
+            filters,
+            from_time,
+            to_time,
+            with_labels,
+            filter_by_ts,
+            filter_by_min_value,
+            filter_by_max_value,
+            groupby,
+            reduce,
+            select_labels,
+            align
+        )
 
         return self.redis.execute_command(self.MRANGE_CMD, *params)
 
-    def mrevrange(self, from_time, to_time, filters, count=None, aggregation_type=None, bucket_size_msec=0,
-                  with_labels=False, filter_by_ts=None, filter_by_min_value=None, filter_by_max_value=None,
-                  groupby=None, reduce=None, select_labels=None, align=None):
+    def mrevrange(
+            self,
+            from_time,
+            to_time,
+            filters,
+            count=None,
+            aggregation_type=None,
+            bucket_size_msec=0,
+            with_labels=False,
+            filter_by_ts=None,
+            filter_by_min_value=None,
+            filter_by_max_value=None,
+            groupby=None,
+            reduce=None,
+            select_labels=None,
+            align=None
+    ):
         """
         Query a range across multiple time-series by filters in reverse direction.
 
@@ -338,9 +418,21 @@ class CommandMixin:
             select_labels: Include in the reply only a subset of the key-value pair labels of a series.
             align: Timestamp for alignment control for aggregation.
         """
-        params = self.__mrange_params(aggregation_type, bucket_size_msec, count, filters, from_time, to_time,
-                                      with_labels, filter_by_ts, filter_by_min_value, filter_by_max_value,
-                                      groupby, reduce, select_labels, align)
+        params = self.__mrange_params(
+            aggregation_type,
+            bucket_size_msec,
+            count, filters,
+            from_time,
+            to_time,
+            with_labels,
+            filter_by_ts,
+            filter_by_min_value,
+            filter_by_max_value,
+            groupby,
+            reduce,
+            select_labels,
+            align
+        )
 
         return self.redis.execute_command(self.MREVRANGE_CMD, *params)
 
