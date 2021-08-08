@@ -20,6 +20,7 @@ classifiers = [
 
 [tool.poetry.dependencies]
 python = "^3.6.2"
+
 redisearch = {version = "^2.0.0", optional = true}
 rejson = {version = "^0.5.4", optional = true}
 redisai = {version = "^1.0.2", optional = true}
@@ -62,6 +63,7 @@ markers = [
     "redisjson: only redisjson tests",
     "redistimeseries: only redistimeseries tests",
     "unmarked: tests that are not limited to a specific module",
+    
     "integrations: run integration tests against a redis docker",
     "pipeline: run only tests with a pipeline"
 ]
