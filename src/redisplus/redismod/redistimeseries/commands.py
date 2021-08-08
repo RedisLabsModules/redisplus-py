@@ -1,5 +1,3 @@
-
-
 class CommandMixin:
     def create(self, key, **kwargs):
         """
@@ -38,7 +36,6 @@ class CommandMixin:
 
         return self.redis.execute_command(self.CREATE_CMD, *params)
 
-
     def alter(self, key, **kwargs):
         """
         Update the retention, labels of an existing key. The parameters
@@ -53,7 +50,6 @@ class CommandMixin:
         self.appendLabels(params, labels)
 
         return self.redis.execute_command(self.ALTER_CMD, *params)
-
 
     def add(self, key, timestamp, value, **kwargs):
         """
@@ -93,7 +89,6 @@ class CommandMixin:
         self.appendLabels(params, labels)
 
         return self.redis.execute_command(self.ADD_CMD, *params)
-
 
     def madd(self, ktv_tuples):
         """
@@ -316,21 +311,21 @@ class CommandMixin:
         return self.redis.execute_command(self.REVRANGE_CMD, *params)
 
     def mrange(
-            self,
-            from_time,
-            to_time,
-            filters,
-            count=None,
-            aggregation_type=None,
-            bucket_size_msec=0,
-            with_labels=False,
-            filter_by_ts=None,
-            filter_by_min_value=None,
-            filter_by_max_value=None,
-            groupby=None,
-            reduce=None,
-            select_labels=None,
-            align=None,
+        self,
+        from_time,
+        to_time,
+        filters,
+        count=None,
+        aggregation_type=None,
+        bucket_size_msec=0,
+        with_labels=False,
+        filter_by_ts=None,
+        filter_by_min_value=None,
+        filter_by_max_value=None,
+        groupby=None,
+        reduce=None,
+        select_labels=None,
+        align=None,
     ):
         """
         Query a range across multiple time-series by filters in forward direction.

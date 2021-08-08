@@ -8,9 +8,10 @@ def get_version():
         from importlib_metadata import version
 
     try:
-        md = importlib.metadata.metadata('redistimeseries')
-        return version('redistimeseries')
+        md = importlib.metadata.metadata("redistimeseries")
+        return version("redistimeseries")
     except:
-        return 'dev'
+        return "dev"
+
 
 __version__ = get_version()
