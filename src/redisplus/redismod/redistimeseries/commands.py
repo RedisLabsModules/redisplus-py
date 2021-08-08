@@ -279,7 +279,7 @@ class CommandMixin:
         if aggregation_type is not None:
             self.appendAggregation(params, aggregation_type, bucket_size_msec)
         self.appendWithLabels(params, with_labels, select_labels)
-        params.extend(['FILTER'])
+        params.extend(["FILTER"])
         params += filters
         self.appendGroupbyReduce(params, groupby, reduce)
         return params
@@ -352,7 +352,7 @@ class CommandMixin:
         """Get the last samples matching the specific ``filter``."""
         params = []
         self.appendWithLabels(params, with_labels)
-        params.extend(['FILTER'])
+        params.extend(["FILTER"])
         params += filters
         return self.redis.execute_command(self.MGET_CMD, *params)
 
