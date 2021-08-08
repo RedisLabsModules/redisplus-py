@@ -1,0 +1,62 @@
+name: Build and test
+on: [push, pull_request]
+
+jobs:
+
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+
+      - name: Install tox and friends
+        run: |
+          pip install --upgrade pip tox poetry tox-poetry tox-docker
+
+      - name: Cache tox environments
+        uses: actions/cache@v2
+        with:
+          path: |
+            .tox
+            ~/.cache
+            poetry.lock
+          key: ${{ runner.os }}-${{ matrix.python }}-${{ hashFiles('**/pyproject.toml', '**/tox.ini') }}
+          restore-keys: |
+            ${runner.os}}-${{ matrix.python }}-
+
+      - name: lint
+        run: tox -e linters
+
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 4
+      matrix:
+        python-version: [3.6, 3.7, 3.8, 3.9]
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python }}
+
+      - name: Install tox and friends
+        run: |
+          pip install --upgrade pip tox poetry tox-poetry tox-docker
+
+      - name: Cache tox environments
+        uses: actions/cache@v2
+        with:
+          path: |
+            .tox
+            ~/.cache
+            poetry.lock
+          key: ${{ runner.os }}-${{ matrix.python }}-${{ hashFiles('**/pyproject.toml', '**/tox.ini') }}
+          restore-keys: |
+            ${runner.os}}-${{ matrix.python }}-
+
+      - name: run integration tests
+        run: tox -e integrations

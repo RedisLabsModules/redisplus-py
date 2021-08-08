@@ -34,7 +34,6 @@ def test_justaget(client):
     client.jsonset('foo', Path.rootPath(), 'bar')
     assert client.jsonget('foo') == "bar"
 
-
 @pytest.mark.integrations
 @pytest.mark.redisjson
 def test_json_get_jset(client):
@@ -107,6 +106,13 @@ def test_strappendshouldsucceed(client):
     client.jsonset('str', Path.rootPath(), 'foo')
     assert 6 == client.jsonstrappend('str', 'bar', Path.rootPath())
     assert 'foobar' == client.jsonget('str', Path.rootPath())
+
+@pytest.mark.integrations
+@pytest.mark.redisjson
+def test_debug(client):
+
+    client.jsonset('str', Path.rootPath(), 'foo')
+    assert 24 == client.jsondebug('str', Path.rootPath())
 
 @pytest.mark.integrations
 @pytest.mark.redisjson

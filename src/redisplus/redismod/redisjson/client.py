@@ -48,6 +48,7 @@ class Client(CommandMixin, RedisCommands, object):
             "JSON.OBJLEN": int,
             "JSON.OBJKEYS": delist,
             #"JSON.RESP": delist,
+            "JSON.DEBUG": int,
         }
 
         # super().__init__()
