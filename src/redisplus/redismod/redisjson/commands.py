@@ -38,7 +38,6 @@ class CommandMixin:
         """
         return self.execute_command("JSON.FORGET", name, str_path(path))
 
-
     def jsonarrlen(self, name, path=Path.rootPath()):
         """
         Returns the length of the array JSON value under ``path`` at key
