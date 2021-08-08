@@ -38,7 +38,6 @@ class CommandMixin:
         """
         return self.execute_command("JSON.FORGET", name, str_path(path))
 
-
     def jsonarrlen(self, name, path=Path.rootPath()):
         """
         Returns the length of the array JSON value under ``path`` at key
@@ -173,3 +172,9 @@ class CommandMixin:
         return self.execute_command(
             "JSON.STRAPPEND", name, str_path(path), self.encode(string)
         )
+
+    def jsondebug(client, name, path=Path.rootPath()):
+        """
+        Returns the memory usage in bytes of a value under ``path`` from key ``name``.
+        """
+        return client.execute_command("JSON.DEBUG", "MEMORY", name, str_path(path))
