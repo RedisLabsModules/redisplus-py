@@ -24,11 +24,11 @@ class CommandMixin:
                               - 'max': only override if the value is higher than the existing value
                         When this is not set, the server-wide default will be used.
         """
-        retention_msecs = kwargs.get('retention_msecs', None)
-        uncompressed = kwargs.get('uncompressed', False)
-        labels = kwargs.get('labels', {})
-        chunk_size = kwargs.get('chunk_size', None)
-        duplicate_policy = kwargs.get('duplicate_policy', None)
+        retention_msecs = kwargs.get("retention_msecs", None)
+        uncompressed = kwargs.get("uncompressed", False)
+        labels = kwargs.get("labels", {})
+        chunk_size = kwargs.get("chunk_size", None)
+        duplicate_policy = kwargs.get("duplicate_policy", None)
         params = [key]
         self.appendRetention(params, retention_msecs)
         self.appendUncompressed(params, uncompressed)
@@ -44,9 +44,9 @@ class CommandMixin:
         Update the retention, labels of an existing key. The parameters
         are the same as TS.CREATE.
         """
-        retention_msecs = kwargs.get('retention_msecs', None)
-        labels = kwargs.get('labels', {})
-        duplicate_policy = kwargs.get('duplicate_policy', None)
+        retention_msecs = kwargs.get("retention_msecs", None)
+        labels = kwargs.get("labels", {})
+        duplicate_policy = kwargs.get("duplicate_policy", None)
         params = [key]
         self.appendRetention(params, retention_msecs)
         self.appendDuplicatePolicy(params, self.ALTER_CMD, duplicate_policy)
@@ -80,11 +80,11 @@ class CommandMixin:
                               - 'max': only override if the value is higher than the existing value
                         When this is not set, the server-wide default will be used.
         """
-        retention_msecs = kwargs.get('retention_msecs', None)
-        uncompressed = kwargs.get('uncompressed', False)
-        labels = kwargs.get('labels', {})
-        chunk_size = kwargs.get('chunk_size', None)
-        duplicate_policy = kwargs.get('duplicate_policy', None)
+        retention_msecs = kwargs.get("retention_msecs", None)
+        uncompressed = kwargs.get("uncompressed", False)
+        labels = kwargs.get("labels", {})
+        chunk_size = kwargs.get("chunk_size", None)
+        duplicate_policy = kwargs.get("duplicate_policy", None)
         params = [key, timestamp, value]
         self.appendRetention(params, retention_msecs)
         self.appendUncompressed(params, uncompressed)
@@ -127,11 +127,11 @@ class CommandMixin:
             chunk_size: Each time-series uses chunks of memory of fixed size for time series samples.
                         You can alter the default TSDB chunk size by passing the chunk_size argument (in Bytes).
         """
-        timestamp = kwargs.get('timestamp', None)
-        retention_msecs = kwargs.get('retention_msecs', None)
-        uncompressed = kwargs.get('uncompressed', False)
-        labels = kwargs.get('labels', {})
-        chunk_size = kwargs.get('chunk_size', None)
+        timestamp = kwargs.get("timestamp", None)
+        retention_msecs = kwargs.get("retention_msecs", None)
+        uncompressed = kwargs.get("uncompressed", False)
+        labels = kwargs.get("labels", {})
+        chunk_size = kwargs.get("chunk_size", None)
         params = [key, value]
         self.appendTimestamp(params, timestamp)
         self.appendRetention(params, retention_msecs)
@@ -156,14 +156,14 @@ class CommandMixin:
                         Adding this flag will keep data in an uncompressed form. Compression not only saves
                         memory but usually improve performance due to lower number of memory accesses
             labels: Set of label-value pairs that represent metadata labels of the key.
-            chunk_size: Each time-serie uses chunks of memory of fixed size for time series samples.
+            chunk_size: Each time-series uses chunks of memory of fixed size for time series samples.
                         You can alter the default TSDB chunk size by passing the chunk_size argument (in Bytes).
         """
-        timestamp = kwargs.get('timestamp', None)
-        retention_msecs = kwargs.get('retention_msecs', None)
-        uncompressed = kwargs.get('uncompressed', False)
-        labels = kwargs.get('labels', {})
-        chunk_size = kwargs.get('chunk_size', None)
+        timestamp = kwargs.get("timestamp", None)
+        retention_msecs = kwargs.get("retention_msecs", None)
+        uncompressed = kwargs.get("uncompressed", False)
+        labels = kwargs.get("labels", {})
+        chunk_size = kwargs.get("chunk_size", None)
         params = [key, value]
         self.appendTimestamp(params, timestamp)
         self.appendRetention(params, retention_msecs)
@@ -202,8 +202,19 @@ class CommandMixin:
         """Deletes a compaction rule"""
         return self.redis.execute_command(self.DELETERULE_CMD, source_key, dest_key)
 
-    def __range_params(self, key, from_time, to_time, count, aggregation_type, bucket_size_msec,
-                       filter_by_ts, filter_by_min_value, filter_by_max_value, align):
+    def __range_params(
+        self,
+        key,
+        from_time,
+        to_time,
+        count,
+        aggregation_type,
+        bucket_size_msec,
+        filter_by_ts,
+        filter_by_min_value,
+        filter_by_max_value,
+        align,
+    ):
         """
         Internal method to create TS.RANGE and TS.REVRANGE arguments
         """
@@ -218,17 +229,17 @@ class CommandMixin:
         return params
 
     def range(
-            self,
-            key,
-            from_time,
-            to_time,
-            count=None,
-            aggregation_type=None,
-            bucket_size_msec=0,
-            filter_by_ts=None,
-            filter_by_min_value=None,
-            filter_by_max_value=None,
-            align=None
+        self,
+        key,
+        from_time,
+        to_time,
+        count=None,
+        aggregation_type=None,
+        bucket_size_msec=0,
+        filter_by_ts=None,
+        filter_by_min_value=None,
+        filter_by_max_value=None,
+        align=None,
     ):
         """
         Query a range in forward direction for a specific time-serie.
@@ -256,22 +267,22 @@ class CommandMixin:
             filter_by_ts,
             filter_by_min_value,
             filter_by_max_value,
-            align
+            align,
         )
         return self.redis.execute_command(self.RANGE_CMD, *params)
 
     def revrange(
-            self,
-            key,
-            from_time,
-            to_time,
-            count=None,
-            aggregation_type=None,
-            bucket_size_msec=0,
-            filter_by_ts=None,
-            filter_by_min_value=None,
-            filter_by_max_value=None,
-            align=None
+        self,
+        key,
+        from_time,
+        to_time,
+        count=None,
+        aggregation_type=None,
+        bucket_size_msec=0,
+        filter_by_ts=None,
+        filter_by_min_value=None,
+        filter_by_max_value=None,
+        align=None,
     ):
         """
         Query a range in reverse direction for a specific time-serie.
@@ -300,28 +311,9 @@ class CommandMixin:
             filter_by_ts,
             filter_by_min_value,
             filter_by_max_value,
-            align
+            align,
         )
         return self.redis.execute_command(self.REVRANGE_CMD, *params)
-
-    def __mrange_params(self, aggregation_type, bucket_size_msec, count, filters, from_time, to_time,
-                        with_labels, filter_by_ts, filter_by_min_value, filter_by_max_value, groupby,
-                        reduce, select_labels, align):
-        """
-        Internal method to create TS.MRANGE and TS.MREVRANGE arguments
-        """
-        params = [from_time, to_time]
-        self.appendFilerByTs(params, filter_by_ts)
-        self.appendFilerByValue(params, filter_by_min_value, filter_by_max_value)
-        self.appendCount(params, count)
-        self.appendAlign(params, align)
-        if aggregation_type is not None:
-            self.appendAggregation(params, aggregation_type, bucket_size_msec)
-        self.appendWithLabels(params, with_labels, select_labels)
-        params.extend(["FILTER"])
-        params += filters
-        self.appendGroupbyReduce(params, groupby, reduce)
-        return params
 
     def mrange(
             self,
@@ -338,7 +330,7 @@ class CommandMixin:
             groupby=None,
             reduce=None,
             select_labels=None,
-            align=None
+            align=None,
     ):
         """
         Query a range across multiple time-series by filters in forward direction.
@@ -375,27 +367,60 @@ class CommandMixin:
             groupby,
             reduce,
             select_labels,
-            align
+            align,
         )
 
         return self.redis.execute_command(self.MRANGE_CMD, *params)
 
+    def __mrange_params(
+        self,
+        aggregation_type,
+        bucket_size_msec,
+        count,
+        filters,
+        from_time,
+        to_time,
+        with_labels,
+        filter_by_ts,
+        filter_by_min_value,
+        filter_by_max_value,
+        groupby,
+        reduce,
+        select_labels,
+        align,
+    ):
+        """
+        Internal method to create TS.MRANGE and TS.MREVRANGE arguments
+        """
+        params = [from_time, to_time]
+        self.appendFilerByTs(params, filter_by_ts)
+        self.appendFilerByValue(params, filter_by_min_value, filter_by_max_value)
+        self.appendCount(params, count)
+        self.appendAlign(params, align)
+        if aggregation_type is not None:
+            self.appendAggregation(params, aggregation_type, bucket_size_msec)
+        self.appendWithLabels(params, with_labels, select_labels)
+        params.extend(["FILTER"])
+        params += filters
+        self.appendGroupbyReduce(params, groupby, reduce)
+        return params
+
     def mrevrange(
-            self,
-            from_time,
-            to_time,
-            filters,
-            count=None,
-            aggregation_type=None,
-            bucket_size_msec=0,
-            with_labels=False,
-            filter_by_ts=None,
-            filter_by_min_value=None,
-            filter_by_max_value=None,
-            groupby=None,
-            reduce=None,
-            select_labels=None,
-            align=None
+        self,
+        from_time,
+        to_time,
+        filters,
+        count=None,
+        aggregation_type=None,
+        bucket_size_msec=0,
+        with_labels=False,
+        filter_by_ts=None,
+        filter_by_min_value=None,
+        filter_by_max_value=None,
+        groupby=None,
+        reduce=None,
+        select_labels=None,
+        align=None,
     ):
         """
         Query a range across multiple time-series by filters in reverse direction.
@@ -421,7 +446,8 @@ class CommandMixin:
         params = self.__mrange_params(
             aggregation_type,
             bucket_size_msec,
-            count, filters,
+            count,
+            filters,
             from_time,
             to_time,
             with_labels,
@@ -431,7 +457,7 @@ class CommandMixin:
             groupby,
             reduce,
             select_labels,
-            align
+            align,
         )
 
         return self.redis.execute_command(self.MREVRANGE_CMD, *params)
