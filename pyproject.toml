@@ -47,6 +47,7 @@ readthedocs-sphinx-search = "^0.1.0"
 toml = "^0.10.2"
 sphinx-automodapi = "^0.13"
 invoke = "^1.6.0"
+rmtest = {git = "https://github.com/RedisLabs/rmtest"}
 
 [tool.poetry.extras]
 redisearch = ["redisearch"]

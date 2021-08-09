@@ -1,4 +1,3 @@
-from ..utils import nativestr
 from .commands import CommandMixin
 from redis.commands import Commands as RedisCommands
 from redis import ConnectionPool
@@ -114,32 +113,18 @@ class Client(CommandMixin, RedisCommands, object):
             self.pipeline.execute()
             self.current_chunk = 0
 
-    def __init__(
-        self,
-        index_name,
-        host="localhost",
-        port=6379,
-        conn=None,
-        password=None,
-        decode_responses=True,
-    ):
+    def __init__(self, client, index_name):
         """
         Create a new Client for the given index_name, and optional host and port
 
         If conn is not None, we employ an already existing redis connection
         """
-
+        self.CLIENT = client
         self.index_name = index_name
 
-        self.redis = (
-            conn
-            if conn is not None
-            else Redis(
-                connection_pool=ConnectionPool(
-                    host=host,
-                    port=port,
-                    password=password,
-                    decode_responses=decode_responses,
-                )
-            )
-        )
+    def execute_command(self, *args, **kwargs):
+        return self.client.execute_command(*args, **kwargs)
+
+    @property
+    def client(self):
+        return self.CLIENT
