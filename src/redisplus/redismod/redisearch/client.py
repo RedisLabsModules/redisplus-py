@@ -113,7 +113,7 @@ class Client(CommandMixin, RedisCommands, object):
             self.pipeline.execute()
             self.current_chunk = 0
 
-    def __init__(self, client, index_name):
+    def __init__(self, client: Redis, index_name: str):
         """
         Create a new Client for the given index_name, and optional host and port
 
