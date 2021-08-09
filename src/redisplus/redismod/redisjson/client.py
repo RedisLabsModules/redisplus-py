@@ -30,6 +30,7 @@ class Client(CommandMixin, RedisCommands, object):
 
         # Set the module commands' callbacks
         self.MODULE_CALLBACKS = {
+            'JSON.CLEAR': int,
             "JSON.DEL": int,
             "JSON.FORGET": int,
             "JSON.GET": self.decode,
@@ -37,6 +38,7 @@ class Client(CommandMixin, RedisCommands, object):
             "JSON.SET": lambda r: r and nativestr(r) == "OK",
             "JSON.NUMINCRBY": self.decode,
             "JSON.NUMMULTBY": self.decode,
+            "JSON.TOGGLE": lambda b: b == b'true',
             "JSON.STRAPPEND": int,
             "JSON.STRLEN": int,
             "JSON.ARRAPPEND": int,
