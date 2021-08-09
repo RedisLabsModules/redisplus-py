@@ -71,6 +71,7 @@ class Client(CommandMixin, RedisCommands, object):  # changed from StrictRedis
         Creates a new RedisBloom client.
         """
         # Redis.__init__(self, *args, **kwargs)
+        self.CLIENT = client
 
         # Set the module commands' callbacks
         MODULE_CALLBACKS = {
