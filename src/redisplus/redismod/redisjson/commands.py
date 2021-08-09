@@ -103,7 +103,7 @@ class CommandMixin:
         deleting the array/object) returning the count of cleared paths
         (ignoring non-array and non-objects paths)
         """
-        return self.execute_command('JSON.CLEAR', name, str_path(path))
+        return self.execute_command("JSON.CLEAR", name, str_path(path))
 
     def jsondel(self, name, path=Path.rootPath()):
         """
@@ -177,7 +177,7 @@ class CommandMixin:
         Toggle boolean value under ``path`` at key ``name``,
         Returning the new value.
         """
-        return self.execute_command('JSON.TOGGLE', name, str_path(path))
+        return self.execute_command("JSON.TOGGLE", name, str_path(path))
 
     def jsonstrappend(self, name, string, path=Path.rootPath()):
         """
