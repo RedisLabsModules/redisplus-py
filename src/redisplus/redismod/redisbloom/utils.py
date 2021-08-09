@@ -2,7 +2,7 @@ from redis._compat import nativestr
 
 
 def bool_ok(response):
-    return nativestr(response) == 'OK'
+    return nativestr(response) == "OK"
 
 
 def spaceHolder(response):
