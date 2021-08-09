@@ -1,4 +1,3 @@
-from .client import Client
 import itertools
 import time
 import six
@@ -15,7 +14,7 @@ class CommandMixin:
         """
         Create a new batch indexer from the client with a given chunk size
         """
-        return Client.BatchIndexer(self, chunk_size=chunk_size)
+        return self.BatchIndexer(self, chunk_size=chunk_size)
 
     def create_index(
         self,
