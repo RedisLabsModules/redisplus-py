@@ -49,13 +49,14 @@ sphinx-automodapi = "^0.13"
 invoke = "^1.6.0"
 
 [tool.poetry.extras]
-redisearch = ["redisearch"]
-rejson = ["rejson"]
-redistimeseries = ["redistimeseries"]
-redisgraph = ["redisgraph"]
-redisai = ["redisai"]
-redisbloom = ["redisbloom"]
-redismodules = ["redisai", "redisgraph", "redistimeseries", "redisearch", "rejson", "redisbloom"]
+#redisearch = ["redisearch"]
+#rejson = ["rejson"]
+#redistimeseries = ["redistimeseries"]
+#redisgraph = ["redisgraph"]
+#redisai = ["redisai"]
+#redisbloom = ["redisbloom"]
+#redismodules = ["redisai", "redisgraph", "redistimeseries", "redisearch", "rejson", "redisbloom"]
+docs = ["sphinx", "sphinx-rtd-theme", "readthedocs-sphinx-search", "sphinx-automodapi", "toml"]
 
 [tool.pytest.ini_options]
 markers = [
@@ -69,7 +70,6 @@ markers = [
 ]
 
 [tool.poetry.urls]
-"Project URL" = ""
 Repository = "https://github.com/redislabsmodules/redisplus-py"
 Documentation = "https://redisplus.readhtedocs.io"
 
