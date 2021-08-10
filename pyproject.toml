@@ -73,5 +73,5 @@ Repository = "https://github.com/redislabsmodules/redisplus-py"
 Documentation = "https://redisplus.readhtedocs.io"
 
 [build-system]
-requires = ["poetry-core>=1.1.0"]
+requires = ["poetry-core>=1.0.3"]
 build-backend = "poetry.core.masonry.api"
