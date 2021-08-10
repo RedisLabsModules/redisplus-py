@@ -3,6 +3,7 @@ import redis
 from redis import Redis
 from redisplus import RedisClient
 from redisplus.redismod.redisjson.path import Path
+from .conftest import skip_ifmodversion_lt
 
 
 @pytest.fixture
@@ -89,6 +90,7 @@ def test_mgetshouldsucceed(client):
 
 @pytest.mark.integrations
 @pytest.mark.redisjson
+@skip_ifmodversion_lt("99.99.99", "ReJSON")  # need to update after the release
 def test_clearShouldSucceed(client):
     client.jsonset('arr', Path.rootPath(), [0, 1, 2, 3, 4])
     assert 1 == client.jsonclear('arr', Path.rootPath())
@@ -122,11 +124,12 @@ def test_nummultbyshouldsucceed(client):
 
 @pytest.mark.integrations
 @pytest.mark.redisjson
+@skip_ifmodversion_lt("99.99.99", "ReJSON")  # need to update after the release
 def test_toggleShouldSucceed(client):
     client.jsonset('bool', Path.rootPath(), False)
     print(client.jsontoggle('bool', Path.rootPath()))
     print(client.jsontoggle('bool', Path.rootPath()))
-    assert client.jsontoggle('bool', Path.rootPath()) == True
+    assert client.jsontoggle('bool', Path.rootPath())
     assert not client.jsontoggle('bool', Path.rootPath())
     # check non-boolean value
     client.jsonset('num', Path.rootPath(), 1)
