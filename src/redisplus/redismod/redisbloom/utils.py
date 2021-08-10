@@ -1,4 +1,4 @@
-from redis._compat import nativestr
+from ..utils import nativestr
 
 
 def bool_ok(response):

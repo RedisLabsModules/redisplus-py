@@ -69,15 +69,10 @@ class Client(CommandMixin, RedisCommands, object):  # changed from StrictRedis
     TDIGEST_MAX = "TDIGEST.MAX"
     TDIGEST_INFO = "TDIGEST.INFO"
 
-    def __init__(self, client: Redis = None, *args, **kwargs):
+    def __init__(self, client: Redis, *args, **kwargs):
         """
         Creates a new RedisBloom client.
         """
-        # Redis.__init__(self, *args, **kwargs)
-        self.CLIENT = client
-        self.redis = client if client is not None else Redis(*args, **kwargs)
-        self.client.pipeline = functools.partial(self.pipeline, self)
-
         # Set the module commands' callbacks
         MODULE_CALLBACKS = {
             self.BF_RESERVE: bool_ok,
@@ -122,8 +117,12 @@ class Client(CommandMixin, RedisCommands, object):  # changed from StrictRedis
             # self.TDIGEST_MAX: spaceHolder,
             self.TDIGEST_INFO: TDigestInfo,
         }
-        for k, v in six.iteritems(MODULE_CALLBACKS):
-            self.redis.set_response_callback(k, v)
+
+        self.CLIENT = client
+        self.client.pipeline = functools.partial(self.pipeline, self)
+
+        for k, v in MODULE_CALLBACKS.items():
+            self.client.set_response_callback(k, v)
 
     def execute_command(self, *args, **kwargs):
         return self.client.execute_command(*args, **kwargs)
