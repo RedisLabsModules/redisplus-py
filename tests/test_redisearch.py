@@ -3,23 +3,19 @@ import redis
 import bz2
 import csv
 import time
-import six
-import os, sys
+import os
+import sys
 
-from rmtest import DisposableRedis
-
-from src import redisplus
-
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 from io import TextIOWrapper
 
+
 from redis import Redis
-from src.redisplus.client import RedisClient
-from src.redisplus.redismod.redisearch import *
-from src.redisplus.redismod.redisearch.client import *
-import src.redisplus.redismod.redisearch.aggregation as aggregations
-import src.redisplus.redismod.redisearch.reducers as reducers
-import src.redisplus.redismod.redisjson
+from redisplus.client import RedisClient
+from redisplus.redismod.redisearch import *
+from redisplus.redismod.redisearch.client import *
+import redisplus.redismod.redisearch.aggregation as aggregations
+import redisplus.redismod.redisearch.reducers as reducers
+import redisplus.redismod.redisjson
 
 WILL_PLAY_TEXT = os.path.abspath(os.path.dirname(__file__)) + '/will_play_text.csv.bz2'
 
@@ -80,9 +76,7 @@ def createIndex(client, num_docs=100, definition=None):
         return createIndex(client, num_docs=num_docs, definition=definition)
 
     chapters = {}
-    bzfp = bz2.BZ2File(WILL_PLAY_TEXT)
-    if six.PY3:
-        bzfp = TextIOWrapper(bz2.BZ2File(WILL_PLAY_TEXT), encoding='utf8')
+    bzfp = TextIOWrapper(bz2.BZ2File(WILL_PLAY_TEXT), encoding='utf8')
 
     r = csv.reader(bzfp, delimiter=';')
     for n, line in enumerate(r):
@@ -102,14 +96,9 @@ def createIndex(client, num_docs=100, definition=None):
     assert isinstance(indexer, Client.BatchIndexer)
     assert 50 == indexer.chunk_size
 
-    for key, doc in six.iteritems(chapters):
+    for key, doc in chapters.items():
         indexer.add_document(key, **doc)
     indexer.commit()
-
-
-def redis(**kwargs):
-    return DisposableRedis(**kwargs)
-
 
 @pytest.fixture
 def client():

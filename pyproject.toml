@@ -21,13 +21,13 @@ classifiers = [
 [tool.poetry.dependencies]
 python = "^3.6.2"
 
-redisearch = {version = "^2.0.0", optional = true}
-rejson = {version = "^0.5.4", optional = true}
-redisai = {version = "^1.0.2", optional = true}
-redisgraph = {version = "^2.4.0", optional = true}
-redistimeseries = {version = "^1.4.3", optional = true}
-redisbloom = {version = "^0.4.0", optional = true}
-redis = {git = "https://github.com/chayim/redis-py", rev = "ck-commandmig"}
+# redisearch = {version = "^2.0.0", optional = true}
+# rejson = {version = "^0.5.4", optional = true}
+# redisai = {version = "^1.0.2", optional = true}
+# redisgraph = {version = "^2.4.0", optional = true}
+# redistimeseries = {version = "^1.4.3", optional = true}
+# redisbloom = {version = "^0.4.0", optional = true}
+# redis = {git = "https://github.com/chayim/redis-py", rev = "ck-commandmig"}
 
 [tool.poetry.dev-dependencies]
 flake8 = "^3.9.2"
@@ -47,16 +47,15 @@ readthedocs-sphinx-search = "^0.1.0"
 toml = "^0.10.2"
 sphinx-automodapi = "^0.13"
 invoke = "^1.6.0"
-rmtest = {git = "https://github.com/RedisLabs/rmtest"}
 
 [tool.poetry.extras]
-redisearch = ["redisearch"]
-rejson = ["rejson"]
-redistimeseries = ["redistimeseries"]
-redisgraph = ["redisgraph"]
-redisai = ["redisai"]
-redisbloom = ["redisbloom"]
-redismodules = ["redisai", "redisgraph", "redistimeseries", "redisearch", "rejson", "redisbloom"]
+# redisearch = ["redisearch"]
+# rejson = ["rejson"]
+# redistimeseries = ["redistimeseries"]
+# redisgraph = ["redisgraph"]
+# redisai = ["redisai"]
+# redisbloom = ["redisbloom"]
+# redismodules = ["redisai", "redisgraph", "redistimeseries", "redisearch", "rejson", "redisbloom"]
 
 [tool.pytest.ini_options]
 markers = [
