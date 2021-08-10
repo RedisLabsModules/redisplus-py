@@ -62,6 +62,7 @@ docs = ["sphinx", "sphinx-rtd-theme", "readthedocs-sphinx-search", "sphinx-autom
 markers = [
     "redisearch: only redisearch tests",
     "redisjson: only redisjson tests",
+    "redisbloom: only redisbloom tests",
     "unmarked: tests that are not limited to a specific module",
 
     "integrations: run integration tests against a redis docker",
