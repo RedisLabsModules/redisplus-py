@@ -112,8 +112,8 @@ class Client(CommandMixin, RedisCommands, object):  # changed from StrictRedis
             # self.TDIGEST_MERGE: spaceHolder,
             self.TDIGEST_CDF: float,
             self.TDIGEST_QUANTILE: float,
-            # self.TDIGEST_MIN: spaceHolder,
-            # self.TDIGEST_MAX: spaceHolder,
+            self.TDIGEST_MIN: float,
+            self.TDIGEST_MAX: float,
             self.TDIGEST_INFO: TDigestInfo,
         }
 

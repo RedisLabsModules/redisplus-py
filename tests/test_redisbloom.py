@@ -275,8 +275,8 @@ def testTDigestMinMax(client):
     # insert data-points into sketch
     assert (client.tdigestAdd('tDigest', [1, 2, 3], [1.0] * 3))
     # min/max
-    assert (3 == float(client.tdigestMax('tDigest')))
-    assert (1 == float(client.tdigestMin('tDigest')))
+    assert (3 == client.tdigestMax('tDigest'))
+    assert (1 == client.tdigestMin('tDigest'))
 
 
 @pytest.mark.integrations
@@ -287,12 +287,12 @@ def testTDigestQuantile(client):
     assert (client.tdigestAdd('tDigest', list([x * 0.01 for x in range(1, 10000)]), [1.0] * 10000))
     # assert min min/max have same result as quantile 0 and 1
     assert (
-            float(client.tdigestMax('tDigest')) ==
-            float(client.tdigestQuantile('tDigest', 1.0))
+            client.tdigestMax('tDigest') ==
+            client.tdigestQuantile('tDigest', 1.0)
     )
     assert (
-            float(client.tdigestMin('tDigest')) ==
-            float(client.tdigestQuantile('tDigest', 0.0))
+            client.tdigestMin('tDigest') ==
+            client.tdigestQuantile('tDigest', 0.0)
     )
 
     assert 1.0 == round(client.tdigestQuantile('tDigest', 0.01), 2)
