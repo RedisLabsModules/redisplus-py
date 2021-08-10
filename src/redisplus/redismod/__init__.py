@@ -1,4 +1,8 @@
+
+"""The list of supported redis modules."""
+
 all = [
     "redisjson",
-    "redistimeseries"
+    "redisbloom",
+    "redistimeseries",
 ]

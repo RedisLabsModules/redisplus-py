@@ -2,12 +2,11 @@ import functools
 from typing import Optional
 import json
 
-# from redis._compat import nativestr
 from redis.client import Pipeline, Redis
 from redis.commands import Commands as RedisCommands
 
 # from . import commands as recmds
-from .utils import bulk_of_jsons, delist, nativestr
+from ..utils import bulk_of_jsons, delist, nativestr
 from .commands import CommandMixin
 
 
