@@ -4,56 +4,56 @@ from time import sleep
 from redis import Redis
 from redisplus.client import RedisClient
 
+
 @pytest.fixture
 def client():
     global version
     rc = RedisClient(modules={'redistimeseries': {"client": Redis()}})
     rc.redistimeseries.flushdb()
-    # rsion = rc.version
+    version = rc.version
+    """
     modules = rc.redistimeseries.execute_command("module", "list")
     if modules is not None:
         for module_info in modules:
             if module_info[1] == b'timeseries':
                 version = int(module_info[3])
+    """
     return rc.redistimeseries
+
 
 @pytest.mark.redistimeseries
 def test_base(client):
     rc = RedisClient(modules={'redistimeseries': {"client": Redis()}})
     rc.redistimeseries.flushdb()
 
-@pytest.mark.integrations
-@pytest.mark.redistimeseries
-def testVersionRuntime(client):
-    import src.redisplus.redismod.redistimeseries as rts_pkg
-    assert "" != rts_pkg.__version__
 
 @pytest.mark.integrations
 @pytest.mark.redistimeseries
 def testCreate(client):
     assert client.create(1)
     assert client.create(2, retention_msecs=5)
-    assert client.create(3, labels={'Redis':'Labs'})
-    assert client.create(4, retention_msecs=20, labels={'Time':'Series'})
+    assert client.create(3, labels={'Redis': 'Labs'})
+    assert client.create(4, retention_msecs=20, labels={'Time': 'Series'})
     info = client.info(4)
     assert 20 == info.retention_msecs
     assert 'Series' == info.labels['Time']
-    assert version == 1400
+    assert version == 0
 
     if version is None or version < 14000:
         return
 
     # Test for a chunk size of 128 Bytes
-    assert client.create("time-serie-1",chunk_size=128)
+    assert client.create("time-serie-1", chunk_size=128)
     info = client.info("time-serie-1")
     assert 128, info.chunk_size
 
     # Test for duplicate policy
-    for duplicate_policy in ["block","last","first","min","max"]:
+    for duplicate_policy in ["block", "last", "first", "min", "max"]:
         ts_name = "time-serie-ooo-{0}".format(duplicate_policy)
         assert client.create(ts_name, duplicate_policy=duplicate_policy)
         info = client.info(ts_name)
         assert duplicate_policy == info.duplicate_policy
+
 
 @pytest.mark.integrations
 @pytest.mark.redistimeseries
@@ -77,12 +77,13 @@ def testAlter(client):
     info = client.info(1)
     assert 'min' == info.duplicate_policy
 
+
 @pytest.mark.integrations
 @pytest.mark.redistimeseries
 def testAdd(client):
     assert 1 == client.add(1, 1, 1)
     assert 2 == client.add(2, 2, 3, retention_msecs=10)
-    assert 3 == client.add(3, 3, 2, labels={'Redis':'Labs'})
+    assert 3 == client.add(3, 3, 2, labels={'Redis': 'Labs'})
     assert 4 == client.add(4, 4, 2, retention_msecs=10, labels={'Redis': 'Labs', 'Time': 'Series'})
     assert round(time.time()) == round(float(client.add(5, '*', 1)) / 1000)
 
@@ -125,11 +126,13 @@ def testAdd(client):
     assert 1 == client.add("time-serie-add-ooo-min", 1, 10.0, duplicate_policy='min')
     assert 5.0 == client.get("time-serie-add-ooo-min")[1]
 
+
 @pytest.mark.integrations
 @pytest.mark.redistimeseries
 def testMAdd(client):
     client.create('a')
     assert [1, 2, 3] == client.madd([('a', 1, 5), ('a', 2, 10), ('a', 3, 15)])
+
 
 @pytest.mark.integrations
 @pytest.mark.redistimeseries
@@ -162,6 +165,7 @@ def testIncrbyDecrby(client):
     info = client.info("time-serie-2")
     assert 128 == info.chunk_size
 
+
 @pytest.mark.integrations
 @pytest.mark.redistimeseries
 def testCreateAndDeleteRule(client):
@@ -183,6 +187,7 @@ def testCreateAndDeleteRule(client):
     info = client.info(1)
     assert not info.rules
 
+
 @pytest.mark.integrations
 @pytest.mark.redistimeseries
 def testDelRange(client):
@@ -201,6 +206,7 @@ def testDelRange(client):
     assert ([] == client.range(1, 0, 21))
     assert ([(22, 1.0)] == client.range(1, 22, 22))
 
+
 @pytest.mark.integrations
 @pytest.mark.redistimeseries
 def testRange(client):
@@ -217,13 +223,14 @@ def testRange(client):
     # available since RedisTimeSeries >= v1.4
     if version is None or version < 14000:
         return
-    
+
     assert (2 == len(client.range(1, 0, 500, filter_by_ts=[i for i in range(10, 20)],
                                   filter_by_min_value=1, filter_by_max_value=2)))
     assert ([(0, 10.0), (10, 1.0)] ==
-                     client.range(1, 0, 10, aggregation_type='count', bucket_size_msec=10, align='+'))
+            client.range(1, 0, 10, aggregation_type='count', bucket_size_msec=10, align='+'))
     assert ([(-5, 5.0), (5, 6.0)] ==
-                     client.range(1, 0, 10, aggregation_type='count', bucket_size_msec=10, align=5))
+            client.range(1, 0, 10, aggregation_type='count', bucket_size_msec=10, align=5))
+
 
 @pytest.mark.integrations
 @pytest.mark.redistimeseries
@@ -244,9 +251,10 @@ def testRevRange(client):
     assert (2 == len(client.revrange(1, 0, 500, filter_by_ts=[i for i in range(10, 20)], filter_by_min_value=1,
                                      filter_by_max_value=2)))
     assert ([(10, 1.0), (0, 10.0)] ==
-                     client.revrange(1, 0, 10, aggregation_type='count', bucket_size_msec=10, align='+'))
+            client.revrange(1, 0, 10, aggregation_type='count', bucket_size_msec=10, align='+'))
     assert ([(1, 10.0), (-9, 1.0)] ==
-                     client.revrange(1, 0, 10, aggregation_type='count', bucket_size_msec=10, align=1))
+            client.revrange(1, 0, 10, aggregation_type='count', bucket_size_msec=10, align=1))
+
 
 @pytest.mark.integrations
 @pytest.mark.redistimeseries
@@ -256,21 +264,21 @@ def testMultiRange(client):
     for i in range(100):
         client.add(1, i, i % 7)
         client.add(2, i, i % 11)
-    
+
     res = client.mrange(0, 200, filters=['Test=This'])
     assert 2 == len(res)
     assert 100 == len(res[0]['1'][1])
-    
+
     res = client.mrange(0, 200, filters=['Test=This'], count=10)
     assert 10 == len(res[0]['1'][1])
-    
+
     for i in range(100):
         client.add(1, i + 200, i % 7)
     res = client.mrange(0, 500, filters=['Test=This'],
-                     aggregation_type='avg', bucket_size_msec=10)
+                        aggregation_type='avg', bucket_size_msec=10)
     assert 2 == len(res)
     assert 20 == len(res[0]['1'][1])
-    
+
     # test withlabels
     assert {} == res[0]['1'][0]
     res = client.mrange(0, 200, filters=['Test=This'], with_labels=True)
@@ -279,7 +287,7 @@ def testMultiRange(client):
     # available since RedisTimeSeries >= v1.4
     if version is None or version < 14000:
         return
-    
+
     # test with selected labels
     res = client.mrange(0, 200, filters=['Test=This'], select_labels=['team'])
     assert {'team': 'ny'} == res[0]['1'][0]
@@ -302,6 +310,7 @@ def testMultiRange(client):
     assert [(0, 10.0), (10, 1.0)] == res[0]['1'][1]
     res = client.mrange(0, 10, filters=['team=ny'], aggregation_type='count', bucket_size_msec=10, align=5)
     assert [(-5, 5.0), (5, 6.0)] == res[0]['1'][1]
+
 
 @pytest.mark.integrations
 @pytest.mark.redistimeseries
@@ -326,7 +335,7 @@ def testMultiReverseRange(client):
     for i in range(100):
         client.add(1, i + 200, i % 7)
     res = client.mrevrange(0, 500, filters=['Test=This'],
-                     aggregation_type='avg', bucket_size_msec=10)
+                           aggregation_type='avg', bucket_size_msec=10)
     assert 2 == len(res)
     assert 20 == len(res[0]['1'][1])
     assert {} == res[0]['1'][0]
@@ -339,22 +348,23 @@ def testMultiReverseRange(client):
     assert {'team': 'sf'} == res[1]['2'][0]
     # test filterby
     res = client.mrevrange(0, 200, filters=['Test=This'], filter_by_ts=[i for i in range(10, 20)],
-                        filter_by_min_value=1, filter_by_max_value=2)
+                           filter_by_min_value=1, filter_by_max_value=2)
     assert [(16, 2.0), (15, 1.0)] == res[0]['1'][1]
     # test groupby
     res = client.mrevrange(0, 3, filters=['Test=This'], groupby='Test', reduce='sum')
     assert [(3, 6.0), (2, 4.0), (1, 2.0), (0, 0.0)] == res[0]['Test=This'][1]
     res = client.mrevrange(0, 3, filters=['Test=This'], groupby='Test', reduce='max')
-    assert [(3, 3.0), (2, 2.0),  (1, 1.0), (0, 0.0)] == res[0]['Test=This'][1]
+    assert [(3, 3.0), (2, 2.0), (1, 1.0), (0, 0.0)] == res[0]['Test=This'][1]
     res = client.mrevrange(0, 3, filters=['Test=This'], groupby='team', reduce='min')
     assert 2 == len(res)
-    assert [(3, 3.0), (2, 2.0),  (1, 1.0), (0, 0.0)] == res[0]['team=ny'][1]
-    assert [(3, 3.0), (2, 2.0),  (1, 1.0), (0, 0.0)] == res[1]['team=sf'][1]
+    assert [(3, 3.0), (2, 2.0), (1, 1.0), (0, 0.0)] == res[0]['team=ny'][1]
+    assert [(3, 3.0), (2, 2.0), (1, 1.0), (0, 0.0)] == res[1]['team=sf'][1]
     # test align
     res = client.mrevrange(0, 10, filters=['team=ny'], aggregation_type='count', bucket_size_msec=10, align='-')
     assert [(10, 1.0), (0, 10.0)] == res[0]['1'][1]
     res = client.mrevrange(0, 10, filters=['team=ny'], aggregation_type='count', bucket_size_msec=10, align=1)
     assert [(1, 10.0), (-9, 1.0)] == res[0]['1'][1]
+
 
 @pytest.mark.integrations
 @pytest.mark.redistimeseries
@@ -366,6 +376,7 @@ def testGet(client):
     assert 2 == client.get(name)[0]
     client.add(name, 3, 4)
     assert 4 == client.get(name)[1]
+
 
 @pytest.mark.integrations
 @pytest.mark.redistimeseries
@@ -388,6 +399,7 @@ def testMGet(client):
     res = client.mget(['Taste=That'], with_labels=True)
     assert {'Taste': 'That', 'Test': 'This'} == res[0]['2'][0]
 
+
 @pytest.mark.integrations
 @pytest.mark.redistimeseries
 def testInfo(client):
@@ -403,6 +415,7 @@ def testInfo(client):
     info = client.info('time-serie-2')
     assert 'min' == info.duplicate_policy
 
+
 @pytest.mark.integrations
 @pytest.mark.redistimeseries
 def testQueryIndex(client):
@@ -411,6 +424,7 @@ def testQueryIndex(client):
     assert 2 == len(client.queryindex(['Test=This']))
     assert 1 == len(client.queryindex(['Taste=That']))
     assert ['2'] == client.queryindex(['Taste=That'])
+
 
 @pytest.mark.integrations
 @pytest.mark.redistimeseries
@@ -426,6 +440,7 @@ def testPipeline(client):
     assert info.lastTimeStamp == 99
     assert info.total_samples == 100
     assert client.get('with_pipeline')[1] == 99 * 1.1
+
 
 @pytest.mark.integrations
 @pytest.mark.redistimeseries
