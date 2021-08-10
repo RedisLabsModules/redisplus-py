@@ -1,7 +1,9 @@
 import pytest
+import redis
 from redis import Redis
 from redisplus import RedisClient
 from redisplus.redismod.redisjson.path import Path
+
 
 @pytest.fixture
 def client():
@@ -9,14 +11,15 @@ def client():
     rc.redisjson.flushdb()
     return rc.redisjson
 
+
 @pytest.mark.redisjson
 def test_base():
-
     # base load
     rc = RedisClient(client=Redis())
 
     # try not to break the regular client init
     rc = RedisClient(modules={'redisjson': {'client': Redis()}})
+
 
 @pytest.mark.integrations
 @pytest.mark.redisjson
@@ -28,11 +31,13 @@ def test_json_setgetdeleteforget(client):
     assert client.jsonforget('foo') == 0  # second delete
     assert client.exists('foo') == 0
 
+
 @pytest.mark.integrations
 @pytest.mark.redisjson
 def test_justaget(client):
     client.jsonset('foo', Path.rootPath(), 'bar')
     assert client.jsonget('foo') == "bar"
+
 
 @pytest.mark.integrations
 @pytest.mark.redisjson
@@ -43,13 +48,15 @@ def test_json_get_jset(client):
     assert 1 == client.jsondel('foo')
     assert client.exists('foo') == 0
 
+
 @pytest.mark.integrations
 @pytest.mark.redisjson
 def test_nonascii_setgetdelete(client):
     assert client.jsonset('notascii', Path.rootPath(), 'hyvää-élève') is True
-    assert 'hyvää-élève' ==  client.jsonget('notascii', no_escape=True)
+    assert 'hyvää-élève' == client.jsonget('notascii', no_escape=True)
     assert 1 == client.jsondel('notascii')
     assert client.exists('notascii') == 0
+
 
 @pytest.mark.integrations
 @pytest.mark.redisjson
@@ -65,9 +72,10 @@ def test_jsonsetexistentialmodifiersshouldsucceed(client):
     assert client.jsonset('obj', Path('foo'), 'baz', xx=True)
     assert client.jsonset('obj', Path('qaz'), 'baz', nx=True)
 
-    # Test that flags are mutually exclusive
+    # Test that flags are mutually exlusive
     with pytest.raises(Exception):
         client.jsonset('obj', Path('foo'), 'baz', nx=True, xx=True)
+
 
 @pytest.mark.integrations
 @pytest.mark.redisjson
@@ -78,11 +86,21 @@ def test_mgetshouldsucceed(client):
     e = [1, 2]
     assert e == r
 
+
+@pytest.mark.integrations
+@pytest.mark.redisjson
+def test_clearShouldSucceed(client):
+    client.jsonset('arr', Path.rootPath(), [0, 1, 2, 3, 4])
+    assert 1 == client.jsonclear('arr', Path.rootPath())
+    assert [] == client.jsonget('arr')
+
+
 @pytest.mark.integrations
 @pytest.mark.redisjson
 def test_typeshouldsucceed(client):
     client.jsonset('1', Path.rootPath(), 1)
     assert b'integer' == client.jsontype('1')
+
 
 @pytest.mark.integrations
 @pytest.mark.redisjson
@@ -92,6 +110,7 @@ def test_numincrbyshouldsucceed(client):
     assert 2.5 == client.jsonnumincrby('num', Path.rootPath(), 0.5)
     assert 1.25 == client.jsonnumincrby('num', Path.rootPath(), -1.25)
 
+
 @pytest.mark.integrations
 @pytest.mark.redisjson
 def test_nummultbyshouldsucceed(client):
@@ -100,6 +119,21 @@ def test_nummultbyshouldsucceed(client):
     assert 5 == client.jsonnummultby('num', Path.rootPath(), 2.5)
     assert 2.5 == client.jsonnummultby('num', Path.rootPath(), 0.5)
 
+
+@pytest.mark.integrations
+@pytest.mark.redisjson
+def test_toggleShouldSucceed(client):
+    client.jsonset('bool', Path.rootPath(), False)
+    print(client.jsontoggle('bool', Path.rootPath()))
+    print(client.jsontoggle('bool', Path.rootPath()))
+    assert client.jsontoggle('bool', Path.rootPath()) == True
+    assert not client.jsontoggle('bool', Path.rootPath())
+    # check non-boolean value
+    client.jsonset('num', Path.rootPath(), 1)
+    with pytest.raises(redis.exceptions.ResponseError):
+        client.jsontoggle('num', Path.rootPath())
+
+
 @pytest.mark.integrations
 @pytest.mark.redisjson
 def test_strappendshouldsucceed(client):
@@ -107,12 +141,13 @@ def test_strappendshouldsucceed(client):
     assert 6 == client.jsonstrappend('str', 'bar', Path.rootPath())
     assert 'foobar' == client.jsonget('str', Path.rootPath())
 
+
 @pytest.mark.integrations
 @pytest.mark.redisjson
 def test_debug(client):
-
     client.jsonset('str', Path.rootPath(), 'foo')
     assert 24 == client.jsondebug('str', Path.rootPath())
+
 
 @pytest.mark.integrations
 @pytest.mark.redisjson
@@ -122,6 +157,7 @@ def test_strlenshouldsucceed(client):
     client.jsonstrappend('str', 'bar', Path.rootPath())
     assert 6 == client.jsonstrlen('str', Path.rootPath())
 
+
 @pytest.mark.integrations
 @pytest.mark.redisjson
 def test_arrappendshouldsucceed(client):
@@ -130,6 +166,7 @@ def test_arrappendshouldsucceed(client):
     assert 4 == client.jsonarrappend('arr', Path.rootPath(), 3, 4)
     assert 7 == client.jsonarrappend('arr', Path.rootPath(), *[5, 6, 7])
 
+
 @pytest.mark.integrations
 @pytest.mark.redisjson
 def testArrIndexShouldSucceed(client):
@@ -137,18 +174,21 @@ def testArrIndexShouldSucceed(client):
     assert 1 == client.jsonarrindex('arr', Path.rootPath(), 1)
     assert -1 == client.jsonarrindex('arr', Path.rootPath(), 1, 2)
 
+
 @pytest.mark.integrations
 @pytest.mark.redisjson
 def test_arrinsertshouldsucceed(client):
     client.jsonset('arr', Path.rootPath(), [0, 4])
-    assert 5 -- client.jsonarrinsert('arr', Path.rootPath(), 1, *[1, 2, 3, ])
+    assert 5 - - client.jsonarrinsert('arr', Path.rootPath(), 1, *[1, 2, 3, ])
     assert [0, 1, 2, 3, 4] == client.jsonget('arr')
+
 
 @pytest.mark.integrations
 @pytest.mark.redisjson
 def test_arrlenshouldsucceed(client):
     client.jsonset('arr', Path.rootPath(), [0, 1, 2, 3, 4])
     assert 5 == client.jsonarrlen('arr', Path.rootPath())
+
 
 @pytest.mark.integrations
 @pytest.mark.redisjson
@@ -160,6 +200,7 @@ def test_arrpopshouldsucceed(client):
     assert 0 == client.jsonarrpop('arr', Path.rootPath(), 0)
     assert [1] == client.jsonget('arr')
 
+
 @pytest.mark.integrations
 @pytest.mark.redisjson
 def test_arrtrimshouldsucceed(client):
@@ -167,14 +208,6 @@ def test_arrtrimshouldsucceed(client):
     assert 3 == client.jsonarrtrim('arr', Path.rootPath(), 1, 3)
     assert [1, 2, 3] == client.jsonget('arr')
 
-@pytest.mark.integrations
-@pytest.mark.redisjson
-def test_respshouldsucceed(client):
-    obj = {'foo': 'bar', 'baz': 1, 'qaz': True}
-    client.jsonset('obj', Path.rootPath(), obj)
-    assert b'bar' == client.jsonresp('obj', Path('foo'))
-    assert 1 == client.jsonresp('obj', Path('baz'))
-    assert client.jsonresp('obj', Path('qaz'))
 
 @pytest.mark.integrations
 @pytest.mark.redisjson
@@ -187,12 +220,14 @@ def test_objkeysshouldsucceed(client):
     exp.sort()
     assert exp == keys
 
+
 @pytest.mark.integrations
 @pytest.mark.redisjson
 def test_objlenshouldsucceed(client):
     obj = {'foo': 'bar', 'baz': 'qaz'}
     client.jsonset('obj', Path.rootPath(), obj)
     assert len(obj) == client.jsonobjlen('obj', Path.rootPath())
+
 
 @pytest.mark.integrations
 @pytest.mark.pipeline
