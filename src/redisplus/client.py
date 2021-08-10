@@ -58,12 +58,6 @@ class RedisClient(object):
         if module not in self.__redis_modules__:
             self.__redis_modules__.append(module)
 
-        modules = con.execute_command("module", "list")
-        if modules is not None:
-            for module_info in modules:
-                if module_info[1].decode() == module:
-                    self._version = int(module_info[3])
-
     refresh = _initclient
 
     @property
