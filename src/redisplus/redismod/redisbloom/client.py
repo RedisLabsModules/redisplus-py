@@ -1,4 +1,3 @@
-import six
 import functools
 from redis import Redis
 from redis.client import Pipeline, bool_ok
