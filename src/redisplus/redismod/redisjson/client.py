@@ -49,6 +49,7 @@ class Client(CommandMixin, RedisCommands, object):
             "JSON.ARRTRIM": int,
             "JSON.OBJLEN": int,
             "JSON.OBJKEYS": delist,
+            # "JSON.RESP": delist,
             "JSON.DEBUG": int,
         }
 
