@@ -25,6 +25,7 @@ WILL_PLAY_TEXT = os.path.abspath(os.path.dirname(__file__)) + '/will_play_text.c
 
 TITLES_CSV = os.path.abspath(os.path.dirname(__file__)) + '/titles.csv'
 
+v = 0
 
 def waitForIndex(env, idx, timeout=None):
     delay = 0.1
