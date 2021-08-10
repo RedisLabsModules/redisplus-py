@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "redisplus"
-version = "0.1.0"
+version = "0.0.1"
 description = "An all purpose client for redis modules."
 keywords = ["redis"]
 authors = ["RedisLabs OSS <oss@redislabs.com>"]
@@ -49,13 +49,14 @@ sphinx-automodapi = "^0.13"
 invoke = "^1.6.0"
 
 [tool.poetry.extras]
-redisearch = ["redisearch"]
-rejson = ["rejson"]
-redistimeseries = ["redistimeseries"]
-redisgraph = ["redisgraph"]
-redisai = ["redisai"]
-redisbloom = ["redisbloom"]
-redismodules = ["redisai", "redisgraph", "redistimeseries", "redisearch", "rejson", "redisbloom"]
+#redisearch = ["redisearch"]
+#rejson = ["rejson"]
+#redistimeseries = ["redistimeseries"]
+#redisgraph = ["redisgraph"]
+#redisai = ["redisai"]
+#redisbloom = ["redisbloom"]
+#redismodules = ["redisai", "redisgraph", "redistimeseries", "redisearch", "rejson", "redisbloom"]
+docs = ["sphinx", "sphinx-rtd-theme", "readthedocs-sphinx-search", "sphinx-automodapi", "toml"]
 
 [tool.pytest.ini_options]
 markers = [
@@ -69,10 +70,9 @@ markers = [
 ]
 
 [tool.poetry.urls]
-"Project URL" = ""
 Repository = "https://github.com/redislabsmodules/redisplus-py"
 Documentation = "https://redisplus.readhtedocs.io"
 
 [build-system]
-requires = ["poetry-core>=1.1.0"]
+requires = ["poetry-core>=1.0.3"]
 build-backend = "poetry.core.masonry.api"
