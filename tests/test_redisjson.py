@@ -211,6 +211,16 @@ def test_arrtrimshouldsucceed(client):
 
 @pytest.mark.integrations
 @pytest.mark.redisjson
+def test_respshouldsucceed(client):
+    obj = {'foo': 'bar', 'baz': 1, 'qaz': True}
+    client.jsonset('obj', Path.rootPath(), obj)
+    assert b'bar' == client.jsonresp('obj', Path('foo'))
+    assert 1 == client.jsonresp('obj', Path('baz'))
+    assert client.jsonresp('obj', Path('qaz'))
+
+
+@pytest.mark.integrations
+@pytest.mark.redisjson
 def test_objkeysshouldsucceed(client):
     obj = {'foo': 'bar', 'baz': 'qaz'}
     client.jsonset('obj', Path.rootPath(), obj)
