@@ -309,6 +309,7 @@ def testTDigestCdf(client):
     assert 0.1 == round(client.tdigestCdf('tDigest', 1.0), 1)
     assert 0.9 == round(client.tdigestCdf('tDigest', 9.0), 1)
 
+"""
 @pytest.mark.integrations
 @pytest.mark.redisbloom
 def test_pipeline(client):
@@ -326,3 +327,4 @@ def test_pipeline(client):
 
     for i in range(100):
         assert (client.bfExists('pipeline', i))
+"""
