@@ -9,6 +9,7 @@ def client():
     global version
     rc = RedisClient(modules={'redistimeseries': {"client": Redis()}})
     rc.redistimeseries.flushdb()
+    # rsion = rc.version
     modules = rc.redistimeseries.execute_command("module", "list")
     if modules is not None:
         for module_info in modules:
@@ -37,6 +38,7 @@ def testCreate(client):
     info = client.info(4)
     assert 20 == info.retention_msecs
     assert 'Series' == info.labels['Time']
+    assert version == 1400
 
     if version is None or version < 14000:
         return
