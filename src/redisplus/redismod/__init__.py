@@ -1,6 +1,7 @@
-# pass  # again, for the pyenv loader
+"""The list of supported redis modules."""
 
 all = [
     "redisjson",
+    "redisbloom",
     "redisearch",
 ]

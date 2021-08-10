@@ -3,7 +3,7 @@ from typing import Dict, Optional
 from redis.client import Redis
 
 
-class RedisClient(object):
+class RedisPlus(object):
     """General client to be used for redis modules"""
 
     # modules that properly instantiated
@@ -21,7 +21,7 @@ class RedisClient(object):
         """
         :param modules: A list of dictionaries for modules to configure and
             their values.
-            eg: {'redisearch': {'index_name: 'foo'}, ...}
+            eg: {'redisearch': {'index_name': 'foo'}, ...}
         :type modules: dist
         """
         self.CLIENT = client
