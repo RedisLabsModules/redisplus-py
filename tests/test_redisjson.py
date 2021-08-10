@@ -246,7 +246,6 @@ def test_objlenshouldsucceed(client):
 @pytest.mark.pipeline
 @pytest.mark.redisjson
 def test_pipelineshouldsucceed(client):
-
     p = client.pipeline()
     p.jsonset('foo', Path.rootPath(), 'bar')
     p.jsonget('foo')
