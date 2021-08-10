@@ -1,6 +1,9 @@
 import six
-from redis.client import Redis, Pipeline
+import functools
+from redis import Redis
+from redis.client import Pipeline, bool_ok
 from redis.commands import Commands as RedisCommands
+
 from .commands import CommandMixin
 from .utils import *
 from .info import *
@@ -66,12 +69,14 @@ class Client(CommandMixin, RedisCommands, object):  # changed from StrictRedis
     TDIGEST_MAX = "TDIGEST.MAX"
     TDIGEST_INFO = "TDIGEST.INFO"
 
-    def __init__(self, client: Redis, *args, **kwargs):
+    def __init__(self, client: Redis = None, *args, **kwargs):
         """
         Creates a new RedisBloom client.
         """
         # Redis.__init__(self, *args, **kwargs)
         self.CLIENT = client
+        self.redis = client if client is not None else Redis(*args, **kwargs)
+        self.client.pipeline = functools.partial(self.pipeline, self)
 
         # Set the module commands' callbacks
         MODULE_CALLBACKS = {
@@ -118,7 +123,14 @@ class Client(CommandMixin, RedisCommands, object):  # changed from StrictRedis
             self.TDIGEST_INFO: TDigestInfo,
         }
         for k, v in six.iteritems(MODULE_CALLBACKS):
-            self.set_response_callback(k, v)
+            self.redis.set_response_callback(k, v)
+
+    def execute_command(self, *args, **kwargs):
+        return self.client.execute_command(*args, **kwargs)
+
+    @property
+    def client(self):
+        return self.CLIENT
 
     @staticmethod
     def appendItems(params, items):
@@ -177,13 +189,6 @@ class Client(CommandMixin, RedisCommands, object):  # changed from StrictRedis
     def appendBucketSize(params, bucket_size):
         if bucket_size is not None:
             params.extend(["BUCKETSIZE", bucket_size])
-
-    def execute_command(self, *args, **kwargs):
-        return self.client.execute_command(*args, **kwargs)
-
-    @property
-    def client(self):
-        return self.CLIENT
 
     def pipeline(self, transaction=True, shard_hint=None):
         """
