@@ -1,10 +1,6 @@
 from ..utils import nativestr
 
 
-def bool_ok(response):
-    return nativestr(response) == "OK"
-
-
 def spaceHolder(response):
     return response
 
