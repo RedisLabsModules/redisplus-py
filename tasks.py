@@ -1,7 +1,5 @@
 from invoke import task
 import shutil
-import http.server
-import os
 import tox
 
 

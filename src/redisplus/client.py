@@ -26,7 +26,6 @@ class RedisClient(object):
         """
         self.CLIENT = client
         self.__module__init__ = modules
-        self._version = None
 
         for key in modules.keys():
             self._initclient(key, safe_load)
@@ -76,8 +75,3 @@ class RedisClient(object):
     def modules(self):
         """Returns the list of configured modules"""
         return self.__redis_modules__
-
-    @property
-    def version(self):
-        """Returns the version of the current """
-        return self._version

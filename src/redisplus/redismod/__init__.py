@@ -1,3 +1,4 @@
-# pass  # again, for the pyenv loader
-
-all = ["redisjson"]
+all = [
+    "redisjson",
+    "redistimeseries"
+]
