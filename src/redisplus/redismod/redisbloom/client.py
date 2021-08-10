@@ -130,13 +130,6 @@ class Client(CommandMixin, RedisCommands, object):  # changed from StrictRedis
     def client(self):
         return self.CLIENT
 
-    def execute_command(self, *args, **kwargs):
-        return self.client.execute_command(*args, **kwargs)
-
-    @property
-    def client(self):
-        return self.CLIENT
-
     @staticmethod
     def appendItems(params, items):
         params.extend(["ITEMS"])
@@ -225,3 +218,6 @@ class Pipeline(Pipeline, Client):
 
         self.watching = False
         self.reset()
+
+    def pipeline(self):
+        raise AttributeError("Pipelines cannot be created within pipelines.")

@@ -207,28 +207,27 @@ def testClient(client):
     client.delete_document('doc-5ghs2')
 
 def testAddHash(client):
-    conn = client.redis()
 
-    with conn as r:
-        if check_version(r, 20000):
-            return
-        # Creating a client with a given index name
-        client = Client('idx', port=conn.port)
+    # with conn as r:
+    #     if check_version(r, 20000):
+    #         return
+    #     # Creating a client with a given index name
+    client = Client('idx', port=conn.port)
 
-        client.redis.flushdb()
-        # Creating the index definition and schema
-        client.create_index((TextField('title', weight=5.0), TextField('body')))
+    client.flushdb()
+    # Creating the index definition and schema
+    client.create_index((TextField('title', weight=5.0), TextField('body')))
 
-        client.redis.hset(
-            'doc1',
-            mapping={
-                'title': 'RediSearch',
-                'body': 'Redisearch impements a search engine on top of redis'
-            })
+    client.hset(
+        'doc1',
+        mapping={
+            'title': 'RediSearch',
+            'body': 'Redisearch impements a search engine on top of redis'
+        })
 
-        client.add_document_hash('doc1')
+    client.add_document_hash('doc1')
 
-        # Searching with complext parameters:
-        q = Query("search engine").verbatim().no_content().paging(0, 5)
-        res = client.search(q)
-        assert ('doc1' == res.docs[0].id)
+    # Searching with complext parameters:
+    q = Query("search engine").verbatim().no_content().paging(0, 5)
+    res = client.search(q)
+    assert ('doc1' == res.docs[0].id)

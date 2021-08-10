@@ -2,7 +2,7 @@ import functools
 from typing import Optional
 import json
 
-from redis.client import Pipeline, Redis
+from redis.client import Pipeline as Pipeline, Redis
 from redis.commands import Commands as RedisCommands
 
 # from . import commands as recmds
@@ -103,8 +103,6 @@ class Client(CommandMixin, RedisCommands, object):
         p.__encoder__ = self.__encoder__
         p.__decoder__ = self.__decoder__
         return p
-
-    # commands = recmds
 
 
 class Pipeline(Pipeline, Client):
