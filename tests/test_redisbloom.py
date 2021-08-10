@@ -1,13 +1,13 @@
 import pytest
 from redis import Redis
-from redisplus.client import RedisClient
+from redisplus.client import RedisPlus
 
 i = lambda l: [int(v) for v in l]
 
 
 @pytest.fixture
 def client():
-    rc = RedisClient(modules={'redisbloom': {"client": Redis()}})
+    rc = RedisPlus(modules={'redisbloom': {"client": Redis()}})
     rc.redisbloom.flushdb()
 
     return rc.redisbloom
@@ -15,7 +15,7 @@ def client():
 
 @pytest.mark.redisbloom
 def test_base(client):
-    rc = RedisClient(modules={'redisbloom': {"client": Redis()}})
+    rc = RedisPlus(modules={'redisbloom': {"client": Redis()}})
     rc.redisbloom.flushdb()
 
 

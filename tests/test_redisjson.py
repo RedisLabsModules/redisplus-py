@@ -1,13 +1,13 @@
 import pytest
 import redis
 from redis import Redis
-from redisplus import RedisClient
+from redisplus import RedisPlus
 from redisplus.redismod.redisjson.path import Path
 
 
 @pytest.fixture
 def client():
-    rc = RedisClient(modules={'redisjson': {"client": Redis()}})
+    rc = RedisPlus(modules={'redisjson': {"client": Redis()}})
     rc.redisjson.flushdb()
     return rc.redisjson
 
@@ -15,10 +15,10 @@ def client():
 @pytest.mark.redisjson
 def test_base():
     # base load
-    rc = RedisClient(client=Redis())
+    rc = RedisPlus(client=Redis())
 
     # try not to break the regular client init
-    rc = RedisClient(modules={'redisjson': {'client': Redis()}})
+    rc = RedisPlus(modules={'redisjson': {'client': Redis()}})
 
 
 @pytest.mark.integrations

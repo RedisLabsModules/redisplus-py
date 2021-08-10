@@ -16,18 +16,18 @@ Quick Start
 Connect using a pre-build redis client, for all modules::
 
     import redis
-    from redisplus import RedisClient
+    from redisplus import RedisPlus
 
     r = redis.Redis()
-    rc = RedisClient(r)
+    rc = RedisPlus(r)
     rc.client.status()
 
 Access json features, setting a json key::
 
     import redis
-    from redisplus import RedisClient
+    from redisplus import RedisPlus
 
     r = redis.Redis()
-    rc = RedisClient(modules={"redisjson": {"client": r}})
+    rc = RedisPlus(modules={"redisjson": {"client": r}})
     rc.redisjson.jsonset("foo", ".", "bar")
     rc.redisjson.exists("foo")
