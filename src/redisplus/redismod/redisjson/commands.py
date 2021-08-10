@@ -65,6 +65,12 @@ class CommandMixin:
         """
         return self.execute_command("JSON.TYPE", name, str_path(path))
 
+    def jsonresp(self, name, path=Path.rootPath()):
+        """
+        Returns the JSON value under ``path`` at key ``name``
+        """
+        return self.execute_command("JSON.RESP", name, str_path(path))
+
     def jsonobjkeys(self, name, path=Path.rootPath()):
         """
         Returns the key names in the dictionary JSON value under ``path`` at key
