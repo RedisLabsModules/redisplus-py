@@ -18,10 +18,8 @@ def client():
 
 @pytest.mark.redistimeseries
 def test_base(client):
-
-    # base load
-    rc = RedisClient(client=Redis())
-    rc.client.flushdb()
+    rc = RedisClient(modules={'redistimeseries': {"client": Redis()}})
+    rc.redistimeseries.flushdb()
 
 @pytest.mark.integrations
 @pytest.mark.redistimeseries

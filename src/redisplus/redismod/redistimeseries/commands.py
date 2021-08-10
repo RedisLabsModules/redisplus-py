@@ -218,8 +218,7 @@ class CommandMixin:
         self.appendFilerByValue(params, filter_by_min_value, filter_by_max_value)
         self.appendCount(params, count)
         self.appendAlign(params, align)
-        if aggregation_type is not None:
-            self.appendAggregation(params, aggregation_type, bucket_size_msec)
+        self.appendAggregation(params, aggregation_type, bucket_size_msec)
 
         return params
 
@@ -392,8 +391,7 @@ class CommandMixin:
         self.appendFilerByValue(params, filter_by_min_value, filter_by_max_value)
         self.appendCount(params, count)
         self.appendAlign(params, align)
-        if aggregation_type is not None:
-            self.appendAggregation(params, aggregation_type, bucket_size_msec)
+        self.appendAggregation(params, aggregation_type, bucket_size_msec)
         self.appendWithLabels(params, with_labels, select_labels)
         params.extend(["FILTER"])
         params += filters

@@ -120,8 +120,9 @@ class Client(CommandMixin, RedisCommands, object):  # changed from StrictRedis
 
     @staticmethod
     def appendAggregation(params, aggregation_type, bucket_size_msec):
-        params.append("AGGREGATION")
-        params.extend([aggregation_type, bucket_size_msec])
+        if aggregation_type is not None:
+            params.append("AGGREGATION")
+            params.extend([aggregation_type, bucket_size_msec])
 
     @staticmethod
     def appendChunkSize(params, chunk_size):
