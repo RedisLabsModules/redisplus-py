@@ -10,7 +10,7 @@ from io import TextIOWrapper
 
 
 from redis import Redis
-from redisplus.client import RedisClient
+from redisplus.client import RedisPlus
 from redisplus.redismod.redisearch import *
 from redisplus.redismod.redisearch.client import *
 import redisplus.redismod.redisearch.aggregation as aggregations
@@ -66,7 +66,6 @@ def getCleanClient(name):
 
 
 def createIndex(client, num_docs=100, definition=None):
-    assert isinstance(client, redisplus.redismod.redisearch.client.Client)
     try:
         client.create_index((TextField('play', weight=5.0),
                              TextField('txt'),
@@ -102,7 +101,7 @@ def createIndex(client, num_docs=100, definition=None):
 
 @pytest.fixture
 def client():
-    rc = RedisClient(modules={'redisearch': {"client": Redis(), "index_name": "test"}})
+    rc = RedisPlus(modules={'redisearch': {"client": Redis(), "index_name": "test"}})
     rc.redisearch.flushdb()
     return rc.redisearch
 
@@ -110,7 +109,7 @@ def client():
 @pytest.mark.redisearch
 def test_base():
     # try not to break the regular client init
-    rc = RedisClient(modules={'redisearch': {'client': Redis(), 'index_name': "name"}})
+    rc = RedisPlus(modules={'redisearch': {'client': Redis(), 'index_name': "name"}})
 
 
 @pytest.mark.integrations
@@ -120,7 +119,7 @@ def testClient(client):
     num_docs = 500
     r = client
     r.flushdb()
-    # createIndex(client.client, num_docs=num_docs)
+    createIndex(client, num_docs=num_docs)
     # for _ in r.retry_with_rdb_reload():
     waitForIndex(r, 'test')
     # verify info
