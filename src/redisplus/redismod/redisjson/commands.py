@@ -65,6 +65,12 @@ class CommandMixin:
         """
         return self.execute_command("JSON.TYPE", name, str_path(path))
 
+    def jsonresp(self, name, path=Path.rootPath()):
+        """
+        Returns the JSON value under ``path`` at key ``name``
+        """
+        return self.execute_command("JSON.RESP", name, str_path(path))
+
     def jsonobjkeys(self, name, path=Path.rootPath()):
         """
         Returns the key names in the dictionary JSON value under ``path`` at key
@@ -96,6 +102,14 @@ class CommandMixin:
         return self.execute_command(
             "JSON.NUMMULTBY", name, str_path(path), self.encode(number)
         )
+
+    def jsonclear(self, name, path=Path.rootPath()):
+        """
+        Emptying arrays and objects (to have zero slots/keys without
+        deleting the array/object) returning the count of cleared paths
+        (ignoring non-array and non-objects paths)
+        """
+        return self.execute_command("JSON.CLEAR", name, str_path(path))
 
     def jsondel(self, name, path=Path.rootPath()):
         """
@@ -163,6 +177,13 @@ class CommandMixin:
         ``name``
         """
         return self.execute_command("JSON.STRLEN", name, str_path(path))
+
+    def jsontoggle(self, name, path=Path.rootPath()):
+        """
+        Toggle boolean value under ``path`` at key ``name``,
+        Returning the new value.
+        """
+        return self.execute_command("JSON.TOGGLE", name, str_path(path))
 
     def jsonstrappend(self, name, string, path=Path.rootPath()):
         """
