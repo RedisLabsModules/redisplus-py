@@ -97,6 +97,14 @@ class CommandMixin:
             "JSON.NUMMULTBY", name, str_path(path), self.encode(number)
         )
 
+    def jsonclear(self, name, path=Path.rootPath()):
+        """
+        Emptying arrays and objects (to have zero slots/keys without
+        deleting the array/object) returning the count of cleared paths
+        (ignoring non-array and non-objects paths)
+        """
+        return self.execute_command("JSON.CLEAR", name, str_path(path))
+
     def jsondel(self, name, path=Path.rootPath()):
         """
         Deletes the JSON value stored at key ``name`` under ``path``
@@ -163,6 +171,13 @@ class CommandMixin:
         ``name``
         """
         return self.execute_command("JSON.STRLEN", name, str_path(path))
+
+    def jsontoggle(self, name, path=Path.rootPath()):
+        """
+        Toggle boolean value under ``path`` at key ``name``,
+        Returning the new value.
+        """
+        return self.execute_command("JSON.TOGGLE", name, str_path(path))
 
     def jsonstrappend(self, name, string, path=Path.rootPath()):
         """
