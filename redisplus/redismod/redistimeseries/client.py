@@ -3,17 +3,22 @@ from redis import Redis, DataError
 from redis.client import Pipeline, bool_ok
 from redis.commands import Commands as RedisCommands
 
-from ..utils import nativestr
-from .utils import *
+from .utils import (
+    parse_range,
+    parse_get,
+    parse_m_range,
+    parse_m_get,
+    parseToList,
+    TSInfo,
+)
 from .commands import CommandMixin
 
 
 class Client(CommandMixin, RedisCommands, object):  # changed from StrictRedis
     """
-    This class subclasses redis-py's `Redis` and implements
-    RedisTimeSeries's commands (prefixed with "ts").
-    The client allows to interact with RedisTimeSeries and use all of
-    it's functionality.
+    This class subclasses redis-py's `Redis` and implements RedisTimeSeries's commands (prefixed with "ts").
+
+    The client allows to interact with RedisTimeSeries and use all of it's functionality.
     """
 
     CREATE_CMD = "TS.CREATE"
@@ -35,9 +40,7 @@ class Client(CommandMixin, RedisCommands, object):  # changed from StrictRedis
     QUERYINDEX_CMD = "TS.QUERYINDEX"
 
     def __init__(self, client=None, *args, **kwargs):
-        """
-        Creates a new RedisTimeSeries client.
-        """
+        """Create a new RedisTimeSeries client."""
         self.redis = client if client is not None else Redis(*args, **kwargs)
 
         # Set the module commands' callbacks
@@ -63,6 +66,7 @@ class Client(CommandMixin, RedisCommands, object):  # changed from StrictRedis
             self.redis.set_response_callback(k, MODULE_CALLBACKS[k])
 
     def execute_command(self, *args, **kwargs):
+        """Execute redis command."""
         return self.client.execute_command(*args, **kwargs)
 
     @property
@@ -149,11 +153,11 @@ class Client(CommandMixin, RedisCommands, object):  # changed from StrictRedis
 
     def pipeline(self, transaction=True, shard_hint=None):
         """
-        Return a new pipeline object that can queue multiple commands for
-        later execution. ``transaction`` indicates whether all commands
-        should be executed atomically. Apart from making a group of operations
-        atomic, pipelines are useful for reducing the back-and-forth overhead
-        between the client and server.
+        Return a new pipeline object that can queue multiple commands for later execution.
+
+        ``transaction`` indicates whether all commands should be executed atomically.
+        Apart from making a group of operations atomic, pipelines are useful for reducing
+        the back-and-forth overhead between the client and server.
         Overridden in order to provide the right client through the pipeline.
         """
         p = Pipeline(
@@ -167,4 +171,4 @@ class Client(CommandMixin, RedisCommands, object):  # changed from StrictRedis
 
 
 class Pipeline(Pipeline, Client):
-    "Pipeline for Redis TimeSeries Client"
+    """Pipeline for Redis TimeSeries Client."""

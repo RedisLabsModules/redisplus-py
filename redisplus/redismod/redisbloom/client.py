@@ -10,8 +10,8 @@ from .info import *
 
 class Client(CommandMixin, RedisCommands, object):  # changed from StrictRedis
     """
-    This class subclasses redis-py's `Redis` and implements
-    RedisBloom's commands.
+    This class subclasses redis-py's `Redis` and implements RedisBloom's commands.
+
     The client allows to interact with RedisBloom and use all of
     it's functionality.
     Prefix is according to the DS used.
@@ -69,9 +69,7 @@ class Client(CommandMixin, RedisCommands, object):  # changed from StrictRedis
     TDIGEST_INFO = "TDIGEST.INFO"
 
     def __init__(self, client: Redis, *args, **kwargs):
-        """
-        Creates a new RedisBloom client.
-        """
+        """Create a new RedisBloom client."""
         # Set the module commands' callbacks
         MODULE_CALLBACKS = {
             self.BF_RESERVE: bool_ok,
@@ -123,19 +121,14 @@ class Client(CommandMixin, RedisCommands, object):  # changed from StrictRedis
         for k, v in MODULE_CALLBACKS.items():
             self.client.set_response_callback(k, v)
 
-    def execute_command(self, *args, **kwargs):
-        return self.client.execute_command(*args, **kwargs)
-
     @property
     def client(self):
+        """Get the client."""
         return self.CLIENT
 
     def execute_command(self, *args, **kwargs):
+        """Execute redis command."""
         return self.client.execute_command(*args, **kwargs)
-
-    @property
-    def client(self):
-        return self.CLIENT
 
     @staticmethod
     def appendItems(params, items):
@@ -197,11 +190,11 @@ class Client(CommandMixin, RedisCommands, object):  # changed from StrictRedis
 
     def pipeline(self, transaction=True, shard_hint=None):
         """
-        Return a new pipeline object that can queue multiple commands for
-        later execution. ``transaction`` indicates whether all commands
-        should be executed atomically. Apart from making a group of operations
-        atomic, pipelines are useful for reducing the back-and-forth overhead
-        between the client and server.
+        Return a new pipeline object that can queue multiple commands for later execution.
+
+        ``transaction`` indicates whether all commands should be executed atomically.
+        Apart from making a group of operations atomic, pipelines are useful for reducing
+        the back-and-forth overhead between the client and server.
         Overridden in order to provide the right client through the pipeline.
         """
         p = Pipeline(
@@ -214,9 +207,10 @@ class Client(CommandMixin, RedisCommands, object):  # changed from StrictRedis
 
 
 class Pipeline(Pipeline, Client):
-    "Pipeline for RedisBloom Client"
+    """Pipeline for RedisBloom Client."""
 
     def __init__(self, connection_pool, response_callbacks, transaction, shard_hint):
+        """Pipeline for RedisBloom Client."""
         self.connection_pool = connection_pool
         self.connection = None
         self.response_callbacks = response_callbacks

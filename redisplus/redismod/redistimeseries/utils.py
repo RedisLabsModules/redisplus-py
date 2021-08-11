@@ -30,7 +30,7 @@ class TSInfo(object):
         if "maxSamplesPerChunk" in response:
             self.max_samples_per_chunk = response["maxSamplesPerChunk"]
             self.chunk_size = (
-                self.max_samples_per_chunk * 16
+                    self.max_samples_per_chunk * 16
             )  # backward compatible changes
         if "chunkSize" in response:
             self.chunk_size = response["chunkSize"]
@@ -45,10 +45,12 @@ def list_to_dict(aList):
 
 
 def parse_range(response):
-    return [tuple((l[0], float(l[1]))) for l in response]
+    """Parse range response. Used by TS.RANGE and TS.REVRANGE."""
+    return [tuple((r[0], float(r[1]))) for r in response]
 
 
 def parse_m_range(response):
+    """Parse multi range response. Used by TS.MRANGE and TS.MREVRANGE."""
     res = []
     for item in response:
         res.append({nativestr(item[0]): [list_to_dict(item[1]), parse_range(item[2])]})
@@ -56,12 +58,14 @@ def parse_m_range(response):
 
 
 def parse_get(response):
+    """Parse get response. Used by TS.GET."""
     if response == []:
         return None
     return (int(response[0]), float(response[1]))
 
 
 def parse_m_get(response):
+    """Parse multi get response. Used by TS.MGET."""
     res = []
     for item in response:
         if item[2] == []:
@@ -80,6 +84,7 @@ def parse_m_get(response):
 
 
 def parseToList(response):
+    """Parse the response to list. Used by TS.QUERYINDEX."""
     res = []
     for item in response:
         res.append(nativestr(item))
