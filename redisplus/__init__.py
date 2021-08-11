@@ -1,4 +1,4 @@
-from .client import RedisClient
+from .client import RedisPlus
 import pkg_resources
 
 def version():
@@ -7,4 +7,4 @@ def version():
     except:
         __version__ = "99.99.99"  # developing
 
-__all__ = ["RedisClient"]
+__all__ = ["RedisPlus"]

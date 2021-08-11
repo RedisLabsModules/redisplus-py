@@ -3,7 +3,7 @@ from typing import Dict, Optional
 from redis.client import Redis
 
 
-class RedisClient(object):
+class RedisPlus(object):
     """General client to be used for redis modules"""
 
     # modules that properly instantiated
