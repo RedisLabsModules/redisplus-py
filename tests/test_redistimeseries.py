@@ -101,10 +101,8 @@ def testAddDuplicatePolicy(client):
 
     # Test for duplicate policy BLOCK
     assert 1 == client.add("time-serie-add-ooo-block", 1, 5.0)
-    try:
+    with pytest.raises(Exception):
         client.add("time-serie-add-ooo-block", 1, 5.0, duplicate_policy='block')
-    except Exception as e:
-        assert "TSDB: Error at upsert, update is not supported in BLOCK mode" == e.__str__()
 
     # Test for duplicate policy LAST
     assert 1 == client.add("time-serie-add-ooo-last", 1, 5.0)
