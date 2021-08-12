@@ -2,6 +2,12 @@ from ..utils import nativestr
 
 
 class TSInfo(object):
+    """
+    Hold information and statistics on the time-series.
+
+    Can be created using ``tsinfo`` command https://oss.redis.com/redistimeseries/commands/#tsinfo
+    """
+
     rules = []
     labels = []
     sourceKey = None
@@ -17,10 +23,29 @@ class TSInfo(object):
     duplicate_policy = None
 
     def __init__(self, args):
+        """
+        Hold information and statistics on the time-series.
+
+        The supported params that can be passed as args:
+        ::rules:: A list of compaction rules of the time series.
+        ::sourceKey:: Key name for source time series in case the current series
+        is a target of a rule.
+        ::chunkCount:: Number of Memory Chunks used for the time series.
+        ::memoryUsage:: Total number of bytes allocated for the time series.
+        ::totalSamples:: Total number of samples in the time series.
+        ::labels:: A list of label-value pairs that represent the metadata labels of the time series.
+        ::retentionTime:: Retention time, in milliseconds, for the time series.
+        ::lastTimestamp:: Last timestamp present in the time series.
+        ::firstTimestamp:: First timestamp present in the time series.
+        ::maxSamplesPerChunk::
+        ::chunkSize:: Amount of memory, in bytes, allocated for data.
+        ::duplicatePolicy:: Policy that will define handling of duplicate samples.
+        Can read more about on https://oss.redis.com/redistimeseries/configuration/#duplicate_policy
+        """
         response = dict(zip(map(nativestr, args[::2]), args[1::2]))
         self.rules = response["rules"]
-        self.sourceKey = response["sourceKey"]
-        self.chunkCount = response["chunkCount"]
+        self.source_key = response["sourceKey"]
+        self.chunk_count = response["chunkCount"]
         self.memory_usage = response["memoryUsage"]
         self.total_samples = response["totalSamples"]
         self.labels = list_to_dict(response["labels"])
@@ -29,9 +54,7 @@ class TSInfo(object):
         self.first_time_stamp = response["firstTimestamp"]
         if "maxSamplesPerChunk" in response:
             self.max_samples_per_chunk = response["maxSamplesPerChunk"]
-            self.chunk_size = (
-                    self.max_samples_per_chunk * 16
-            )  # backward compatible changes
+            self.chunk_size = (self.max_samples_per_chunk * 16)  # backward compatible changes
         if "chunkSize" in response:
             self.chunk_size = response["chunkSize"]
         if "duplicatePolicy" in response:
@@ -59,16 +82,16 @@ def parse_m_range(response):
 
 def parse_get(response):
     """Parse get response. Used by TS.GET."""
-    if response == []:
+    if not response:
         return None
-    return (int(response[0]), float(response[1]))
+    return int(response[0]), float(response[1])
 
 
 def parse_m_get(response):
     """Parse multi get response. Used by TS.MGET."""
     res = []
     for item in response:
-        if item[2] == []:
+        if not item[2]:
             res.append({nativestr(item[0]): [list_to_dict(item[1]), None, None]})
         else:
             res.append(
