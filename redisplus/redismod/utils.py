@@ -1,4 +1,3 @@
-
 def bulk_of_jsons(d):
     """Replace serialized JSON values with objects in a bulk array response (list)."""
 

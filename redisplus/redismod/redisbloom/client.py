@@ -132,59 +132,70 @@ class Client(CommandMixin, RedisCommands, object):  # changed from StrictRedis
 
     @staticmethod
     def appendItems(params, items):
+        """Append ITEMS to params."""
         params.extend(["ITEMS"])
         params += items
 
     @staticmethod
     def appendError(params, error):
+        """Append ERROR to params."""
         if error is not None:
             params.extend(["ERROR", error])
 
     @staticmethod
     def appendCapacity(params, capacity):
+        """Append CAPACITY to params."""
         if capacity is not None:
             params.extend(["CAPACITY", capacity])
 
     @staticmethod
     def appendExpansion(params, expansion):
+        """Append EXPANSION to params."""
         if expansion is not None:
             params.extend(["EXPANSION", expansion])
 
     @staticmethod
     def appendNoScale(params, noScale):
+        """Append NONSCALING tag to params."""
         if noScale is not None:
             params.extend(["NONSCALING"])
 
     @staticmethod
     def appendWeights(params, weights):
+        """Append WEIGHTS to params."""
         if len(weights) > 0:
             params.append("WEIGHTS")
             params += weights
 
     @staticmethod
     def appendNoCreate(params, noCreate):
+        """Append NOCREATE tag to params."""
         if noCreate is not None:
             params.extend(["NOCREATE"])
 
     @staticmethod
     def appendItemsAndIncrements(params, items, increments):
+        """Append pairs of items and increments to params."""
         for i in range(len(items)):
             params.append(items[i])
             params.append(increments[i])
 
     @staticmethod
     def appendValuesAndWeights(params, items, weights):
+        """Append pairs of items and weights to params."""
         for i in range(len(items)):
             params.append(items[i])
             params.append(weights[i])
 
     @staticmethod
     def appendMaxIterations(params, max_iterations):
+        """Append MAXITERATIONS to params."""
         if max_iterations is not None:
             params.extend(["MAXITERATIONS", max_iterations])
 
     @staticmethod
     def appendBucketSize(params, bucket_size):
+        """Append BUCKETSIZE to params."""
         if bucket_size is not None:
             params.extend(["BUCKETSIZE", bucket_size])
 
