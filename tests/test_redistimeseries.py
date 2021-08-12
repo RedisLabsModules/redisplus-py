@@ -186,7 +186,7 @@ def testCreateAndDeleteRule(client):
 
 @pytest.mark.integrations
 @pytest.mark.redistimeseries
-@skip_ifmodversion_lt("99.99.99", "timeseries")  # need to update after the release
+@skip_ifmodversion_lt("99.99.99", "timeseries")  # todo: update after the release
 def testDelRange(client):
     try:
         client.delrange('test', 0, 100)
@@ -216,7 +216,7 @@ def testRange(client):
 
 @pytest.mark.integrations
 @pytest.mark.redistimeseries
-@skip_ifmodversion_lt("99.99.99", "timeseries")  # need to update after the release
+@skip_ifmodversion_lt("99.99.99", "timeseries")  # todo: update after the release
 def testRangeAdvanced(client):
     for i in range(100):
         client.add(1, i, i % 7)
@@ -232,7 +232,7 @@ def testRangeAdvanced(client):
 
 @pytest.mark.integrations
 @pytest.mark.redistimeseries
-@skip_ifmodversion_lt("99.99.99", "timeseries")  # need to update after the release
+@skip_ifmodversion_lt("99.99.99", "timeseries")  # todo: update after the release
 def testRevRange(client):
     for i in range(100):
         client.add(1, i, i % 7)
@@ -282,7 +282,7 @@ def testMultiRange(client):
 
 @pytest.mark.integrations
 @pytest.mark.redistimeseries
-@skip_ifmodversion_lt("99.99.99", "timeseries")  # need to update after the release
+@skip_ifmodversion_lt("99.99.99", "timeseries")  # todo: update after the release
 def testMultiRangeAdvanced(client):
     client.create(1, labels={'Test': 'This', 'team': 'ny'})
     client.create(2, labels={'Test': 'This', 'Taste': 'That', 'team': 'sf'})
@@ -294,10 +294,12 @@ def testMultiRangeAdvanced(client):
     res = client.mrange(0, 200, filters=['Test=This'], select_labels=['team'])
     assert {'team': 'ny'} == res[0]['1'][0]
     assert {'team': 'sf'} == res[1]['2'][0]
+
     # test with filterby
     res = client.mrange(0, 200, filters=['Test=This'], filter_by_ts=[i for i in range(10, 20)],
                         filter_by_min_value=1, filter_by_max_value=2)
     assert [(15, 1.0), (16, 2.0)] == res[0]['1'][1]
+
     # test groupby
     res = client.mrange(0, 3, filters=['Test=This'], groupby='Test', reduce='sum')
     assert [(0, 0.0), (1, 2.0), (2, 4.0), (3, 6.0)] == res[0]['Test=This'][1]
@@ -307,6 +309,7 @@ def testMultiRangeAdvanced(client):
     assert 2 == len(res)
     assert [(0, 0.0), (1, 1.0), (2, 2.0), (3, 3.0)] == res[0]['team=ny'][1]
     assert [(0, 0.0), (1, 1.0), (2, 2.0), (3, 3.0)] == res[1]['team=sf'][1]
+
     # test align
     res = client.mrange(0, 10, filters=['team=ny'], aggregation_type='count', bucket_size_msec=10, align='-')
     assert [(0, 10.0), (10, 1.0)] == res[0]['1'][1]
@@ -316,7 +319,7 @@ def testMultiRangeAdvanced(client):
 
 @pytest.mark.integrations
 @pytest.mark.redistimeseries
-@skip_ifmodversion_lt("99.99.99", "timeseries")  # need to update after the release
+@skip_ifmodversion_lt("99.99.99", "timeseries")  # todo: update after the release
 def testMultiReverseRange(client):
     client.create(1, labels={'Test': 'This', 'team': 'ny'})
     client.create(2, labels={'Test': 'This', 'Taste': 'That', 'team': 'sf'})
@@ -338,17 +341,21 @@ def testMultiReverseRange(client):
     assert 2 == len(res)
     assert 20 == len(res[0]['1'][1])
     assert {} == res[0]['1'][0]
+
     # test withlabels
     res = client.mrevrange(0, 200, filters=['Test=This'], with_labels=True)
     assert {'Test': 'This', 'team': 'ny'} == res[0]['1'][0]
+
     # test with selected labels
     res = client.mrevrange(0, 200, filters=['Test=This'], select_labels=['team'])
     assert {'team': 'ny'} == res[0]['1'][0]
     assert {'team': 'sf'} == res[1]['2'][0]
+
     # test filterby
     res = client.mrevrange(0, 200, filters=['Test=This'], filter_by_ts=[i for i in range(10, 20)],
                            filter_by_min_value=1, filter_by_max_value=2)
     assert [(16, 2.0), (15, 1.0)] == res[0]['1'][1]
+
     # test groupby
     res = client.mrevrange(0, 3, filters=['Test=This'], groupby='Test', reduce='sum')
     assert [(3, 6.0), (2, 4.0), (1, 2.0), (0, 0.0)] == res[0]['Test=This'][1]
@@ -358,6 +365,7 @@ def testMultiReverseRange(client):
     assert 2 == len(res)
     assert [(3, 3.0), (2, 2.0), (1, 1.0), (0, 0.0)] == res[0]['team=ny'][1]
     assert [(3, 3.0), (2, 2.0), (1, 1.0), (0, 0.0)] == res[1]['team=sf'][1]
+
     # test align
     res = client.mrevrange(0, 10, filters=['team=ny'], aggregation_type='count', bucket_size_msec=10, align='-')
     assert [(10, 1.0), (0, 10.0)] == res[0]['1'][1]
