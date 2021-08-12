@@ -2,20 +2,20 @@ import pytest
 import time
 from time import sleep
 from redis import Redis
-from redisplus.client import RedisClient
+from redisplus.client import RedisPlus
 from .conftest import skip_ifmodversion_lt
 
 
 @pytest.fixture
 def client():
-    rc = RedisClient(modules={'redistimeseries': {"client": Redis()}})
+    rc = RedisPlus(modules={'redistimeseries': {"client": Redis()}})
     rc.redistimeseries.flushdb()
     return rc.redistimeseries
 
 
 @pytest.mark.redistimeseries
 def test_base(client):
-    rc = RedisClient(modules={'redistimeseries': {"client": Redis()}})
+    rc = RedisPlus(modules={'redistimeseries': {"client": Redis()}})
     rc.redistimeseries.flushdb()
 
 
