@@ -47,7 +47,7 @@ class Client(RedisCommands, object):
         self.CLIENT = client
         # if debug:
         #     self.execute_command = enable_debug(super().execute_command)
-        # self.enable_postprocess = enable_postprocess
+        self.enable_postprocess = enable_postprocess
 
     def execute_command(self, *args, **kwargs):
         return self.client.execute_command(*args, **kwargs)

@@ -4,8 +4,8 @@ from typing import AnyStr, Sequence, Union
 import numpy as np
 import redis
 
-from redisai import command_builder as builder
-from redisai.postprocessor import Processor
+from . import command_builder as builder
+from .postprocessor import Processor
 
 processor = Processor()
 

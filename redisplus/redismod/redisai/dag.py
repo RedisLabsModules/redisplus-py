@@ -3,8 +3,8 @@ from typing import Any, AnyStr, List, Sequence, Union
 
 import numpy as np
 
-from redisai import command_builder as builder
-from redisai.postprocessor import Processor
+from . import command_builder as builder
+from .postprocessor import Processor
 from deprecated import deprecated
 import warnings
 
