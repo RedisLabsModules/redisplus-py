@@ -1,4 +1,6 @@
 class CommandMixin:
+    """RedisTimeSeries Commands."""
+
     def create(self, key, **kwargs):
         """
         Create a new time-series.
@@ -38,8 +40,9 @@ class CommandMixin:
 
     def alter(self, key, **kwargs):
         """
-        Update the retention, labels of an existing key. The parameters
-        are the same as TS.CREATE.
+        Update the retention, labels of an existing key.
+
+        The parameters are the same as TS.CREATE.
         """
         retention_msecs = kwargs.get("retention_msecs", None)
         labels = kwargs.get("labels", {})
@@ -92,10 +95,10 @@ class CommandMixin:
 
     def madd(self, ktv_tuples):
         """
-        Appends (or creates and appends) a new ``value`` to series
-        ``key`` with ``timestamp``. Expects a list of ``tuples`` as
-        (``key``,``timestamp``, ``value``). Return value is an
-        array with timestamps of insertions.
+        Append (or create and append) a new ``value`` to series ``key`` with ``timestamp``.
+
+        Expects a list of ``tuples`` as (``key``,``timestamp``, ``value``).
+        Return value is an array with timestamps of insertions.
         """
         params = []
         for ktv in ktv_tuples:
@@ -107,6 +110,7 @@ class CommandMixin:
     def incrby(self, key, value, **kwargs):
         """
         Increment (or create an time-series and increment) the latest sample's of a series.
+
         This command can be used as a counter or gauge that automatically gets history as a time series.
 
         Args:
@@ -139,6 +143,7 @@ class CommandMixin:
     def decrby(self, key, value, **kwargs):
         """
         Decrement (or create an time-series and decrement) the latest sample's of a series.
+
         This command can be used as a counter or gauge that automatically gets history as a time series.
 
         Args:
@@ -171,6 +176,7 @@ class CommandMixin:
     def delrange(self, key, from_time, to_time):
         """
         Delete data points for a given timeseries and interval range in the form of start and end delete timestamps.
+
         The given timestamp interval is closed (inclusive), meaning start and end data points will also be deleted.
         Return the count for deleted items.
 
@@ -183,10 +189,10 @@ class CommandMixin:
 
     def createrule(self, source_key, dest_key, aggregation_type, bucket_size_msec):
         """
-        Creates a compaction rule from values added to ``source_key``
-        into ``dest_key``. Aggregating for ``bucket_size_msec`` where an
-        ``aggregation_type`` can be ['avg', 'sum', 'min', 'max',
-        'range', 'count', 'first', 'last', 'std.p', 'std.s', 'var.p', 'var.s']
+        Create a compaction rule from values added to ``source_key`` into ``dest_key``.
+
+        Aggregating for ``bucket_size_msec`` where an ``aggregation_type`` can be
+        ['avg', 'sum', 'min', 'max', 'range', 'count', 'first', 'last', 'std.p', 'std.s', 'var.p', 'var.s']
         """
         params = [source_key, dest_key]
         self.appendAggregation(params, aggregation_type, bucket_size_msec)
@@ -194,7 +200,7 @@ class CommandMixin:
         return self.redis.execute_command(self.CREATERULE_CMD, *params)
 
     def deleterule(self, source_key, dest_key):
-        """Deletes a compaction rule"""
+        """Delete a compaction rule."""
         return self.redis.execute_command(self.DELETERULE_CMD, source_key, dest_key)
 
     def __range_params(
@@ -210,9 +216,7 @@ class CommandMixin:
         filter_by_max_value,
         align,
     ):
-        """
-        Internal method to create TS.RANGE and TS.REVRANGE arguments
-        """
+        """Create TS.RANGE and TS.REVRANGE arguments."""
         params = [key, from_time, to_time]
         self.appendFilerByTs(params, filter_by_ts)
         self.appendFilerByValue(params, filter_by_min_value, filter_by_max_value)
@@ -279,7 +283,8 @@ class CommandMixin:
         align=None,
     ):
         """
-        Query a range in reverse direction for a specific time-serie.
+        Query a range in reverse direction for a specific time-series.
+
         Note: This command is only available since RedisTimeSeries >= v1.4
 
         Args:
@@ -383,9 +388,7 @@ class CommandMixin:
         select_labels,
         align,
     ):
-        """
-        Internal method to create TS.MRANGE and TS.MREVRANGE arguments
-        """
+        """Create TS.MRANGE and TS.MREVRANGE arguments."""
         params = [from_time, to_time]
         self.appendFilerByTs(params, filter_by_ts)
         self.appendFilerByValue(params, filter_by_min_value, filter_by_max_value)
@@ -456,7 +459,7 @@ class CommandMixin:
         return self.redis.execute_command(self.MREVRANGE_CMD, *params)
 
     def get(self, key):
-        """Gets the last sample of ``key``"""
+        """Get the last sample of ``key``."""
         return self.redis.execute_command(self.GET_CMD, key)
 
     def mget(self, filters, with_labels=False):
@@ -468,7 +471,7 @@ class CommandMixin:
         return self.redis.execute_command(self.MGET_CMD, *params)
 
     def info(self, key):
-        """Gets information of ``key``"""
+        """Get information of ``key``."""
         return self.redis.execute_command(self.INFO_CMD, key)
 
     def queryindex(self, filters):
