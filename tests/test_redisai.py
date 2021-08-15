@@ -217,7 +217,7 @@ def test_deprecated_modelset(client):
             "device": "cpu",
             "inputs": ["a", "b"],
             "minbatchsize": 0,
-            # "minbatchtimeout": 0,  todo: new property - need to update the AI version
+            "minbatchtimeout": 0,
             "outputs": ["mul"],
             "tag": "v1.0",
         }
@@ -320,7 +320,7 @@ def test_modelget_meta(client):
             "device": "cpu",
             "inputs": ["a", "b"],
             "minbatchsize": 0,
-            # "minbatchtimeout": 0,   todo: new property - need to update the AI version
+            "minbatchtimeout": 0,
             "outputs": ["mul"],
             "tag": "v1.0",
         },
