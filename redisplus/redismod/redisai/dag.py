@@ -18,8 +18,10 @@ class Dag:
         self.deprecatedDagrunMode = load is None and persist is None and routing is None
         self.readonly = readonly
         self.executor = executor
+        self._init_commands(load, persist, routing, timeout)
 
-        if readonly and persist:
+    def _init_commands(self, load, persist, routing, timeout):
+        if self.readonly and persist:
             raise RuntimeError(
                 "READONLY requests cannot write (duh!) and should not "
                 "have PERSISTing values"
@@ -30,13 +32,13 @@ class Dag:
             warnings.warn("Creating Dag without any of LOAD, PERSIST and ROUTING arguments"
                           "is allowed only in deprecated AI.DAGRUN or AI.DAGRUN_RO commands", DeprecationWarning)
             # Use dagrun
-            if readonly:
+            if self.readonly:
                 self.commands = ["AI.DAGRUN_RO"]
             else:
                 self.commands = ["AI.DAGRUN"]
         else:
             # Use dagexecute
-            if readonly:
+            if self.readonly:
                 self.commands = ["AI.DAGEXECUTE_RO"]
             else:
                 self.commands = ["AI.DAGEXECUTE"]

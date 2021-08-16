@@ -23,26 +23,8 @@ def modelstore(
     inputs: Union[AnyStr, List[AnyStr]],
     outputs: Union[AnyStr, List[AnyStr]],
 ) -> Sequence:
-    if name is None:
-        raise ValueError("Model name was not given")
-    if device.upper() not in utils.allowed_devices:
-        raise ValueError(f"Device not allowed. Use any from {utils.allowed_devices}")
-    if backend.upper() not in utils.allowed_backends:
-        raise ValueError(f"Backend not allowed. Use any from {utils.allowed_backends}")
-    args = ["AI.MODELSTORE", name, backend, device]
-
-    if tag is not None:
-        args += ["TAG", tag]
-    if batch is not None:
-        args += ["BATCHSIZE", batch]
-    if minbatch is not None:
-        if batch is None:
-            raise ValueError("Minbatch is not allowed without batch")
-        args += ["MINBATCHSIZE", minbatch]
-    if minbatchtimeout is not None:
-        if minbatch is None:
-            raise ValueError("Minbatchtimeout is not allowed without minbatch")
-        args += ["MINBATCHTIMEOUT", minbatchtimeout]
+    args = _model_args("AI.MODELSTORE", name, backend, device, batch,
+                       minbatch, minbatchtimeout, tag)
 
     if backend.upper() == "TF":
         if not all((inputs, outputs)):
@@ -81,20 +63,8 @@ def modelset(
     inputs: Union[AnyStr, List[AnyStr]],
     outputs: Union[AnyStr, List[AnyStr]],
 ) -> Sequence:
-    if device.upper() not in utils.allowed_devices:
-        raise ValueError(f"Device not allowed. Use any from {utils.allowed_devices}")
-    if backend.upper() not in utils.allowed_backends:
-        raise ValueError(f"Backend not allowed. Use any from {utils.allowed_backends}")
-    args = ["AI.MODELSET", name, backend, device]
-
-    if tag is not None:
-        args += ["TAG", tag]
-    if batch is not None:
-        args += ["BATCHSIZE", batch]
-    if minbatch is not None:
-        if batch is None:
-            raise ValueError("Minbatch is not allowed without batch")
-        args += ["MINBATCHSIZE", minbatch]
+    args = _model_args("AI.MODELSET", name, backend, device, batch,
+                       minbatch, None, tag)
 
     if backend.upper() == "TF":
         if not (all((inputs, outputs))):
@@ -105,6 +75,31 @@ def modelset(
     data_chunks = [data[i: i + chunk_size] for i in range(0, len(data), chunk_size)]
     # TODO: need a test case for this
     args += ["BLOB", *data_chunks]
+    return args
+
+
+def _model_args(command, name, backend, device, batch,
+                minbatch, minbatchtimeout, tag):
+    if name is None:
+        raise ValueError("Model name was not given")
+    if device.upper() not in utils.allowed_devices:
+        raise ValueError(f"Device not allowed. Use any from {utils.allowed_devices}")
+    if backend.upper() not in utils.allowed_backends:
+        raise ValueError(f"Backend not allowed. Use any from {utils.allowed_backends}")
+    args = [command, name, backend, device]
+
+    if tag is not None:
+        args += ["TAG", tag]
+    if batch is not None:
+        args += ["BATCHSIZE", batch]
+    if minbatch is not None:
+        if batch is None:
+            raise ValueError("Minbatch is not allowed without batch")
+        args += ["MINBATCHSIZE", minbatch]
+    if minbatchtimeout is not None:
+        if minbatch is None:
+            raise ValueError("Minbatchtimeout is not allowed without minbatch")
+        args += ["MINBATCHTIMEOUT", minbatchtimeout]
     return args
 
 

@@ -6,12 +6,10 @@ import numpy as np
 from deprecated import deprecated
 from redis.commands import Commands as RedisCommands
 
-from ..utils import nativestr
 from . import command_builder as builder
 from .dag import Dag
 from .pipeline import Pipeline
 from .postprocessor import Processor
-from .utils import *
 
 processor = Processor()
 
