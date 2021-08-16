@@ -1,7 +1,7 @@
 """
 Welcome to RedisPlus module.
 With this module you can enjoy the commands of all redis modules,
-including RedisTimeSeries, RedisBloom, RedisJson, RedisAIת RedisGraph and RediSearch.
+including RedisTimeSeries, RedisBloom, RedisJson, RedisAI, RedisGraph and RediSearch.
 """
 
 
