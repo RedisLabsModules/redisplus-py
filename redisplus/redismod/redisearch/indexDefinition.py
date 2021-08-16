@@ -26,7 +26,7 @@ class IndexDefinition(object):
         self._appendIndexType(index_type)
         self._appendPrefix(prefix)
         self._appendFilter(filter)
-        self._appendLanguageField(language_field, language)
+        self._appendLanguage(language_field, language)
         self._appendScore(score_field, score)
         self._appendPayload(payload_field)
 
