@@ -52,7 +52,7 @@ class Dag:
             self.commands += [
                 "PERSIST",
                 len(utils.listify(persist)),
-                *utils.listify(persist)
+                *utils.listify(persist),
             ]
         if routing is not None:
             self.commands += ["ROUTING", routing]
