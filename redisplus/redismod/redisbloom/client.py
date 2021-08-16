@@ -4,7 +4,7 @@ from redis.client import Pipeline, bool_ok
 from redis.commands import Commands as RedisCommands
 
 from .commands import CommandMixin
-from .utils import parseToList, spaceHolder
+from .utils import parseToList
 from .info import (
     BFInfo,
     CFInfo,
