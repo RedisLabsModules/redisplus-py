@@ -2,7 +2,7 @@ import os.path
 from skimage.io import imread
 from skimage.transform import resize
 
-from test_redisai import *
+from .test_redisai import *
 
 
 def load_image():
