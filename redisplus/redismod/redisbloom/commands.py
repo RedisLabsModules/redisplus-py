@@ -1,8 +1,7 @@
 class CommandMixin:
     """RedisBloom commands."""
 
-    ################## Bloom Filter Functions ######################
-
+    # region Bloom Filter Functions
     def bfCreate(self, key, errorRate, capacity, expansion=None, noScale=None):
         """
         Create a new Bloom Filter ``key`` with desired probability of false positives ``errorRate`` expected entries to be inserted as ``capacity``.
@@ -89,8 +88,9 @@ class CommandMixin:
         """Return capacity, size, number of filters, number of items inserted, and expansion rate."""
         return self.execute_command(self.BF_INFO, key)
 
-    ################## Cuckoo Filter Functions ######################
+    # endregion
 
+    # region Cuckoo Filter Functions
     def cfCreate(
         self, key, capacity, expansion=None, bucket_size=None, max_iterations=None
     ):
@@ -181,8 +181,9 @@ class CommandMixin:
         """Return size, number of buckets, number of filter, number of items inserted, number of items deleted, bucket size, expansion rate, and max iteration."""
         return self.execute_command(self.CF_INFO, key)
 
-    ################## Count-Min Sketch Functions ##################
+    # endregion
 
+    # region Count-Min Sketch Functions
     def cmsInitByDim(self, key, width, depth):
         """Initialize a Count-Min Sketch ``key`` to dimensions (``width``, ``depth``) specified by user."""
         params = [key, width, depth]
@@ -227,8 +228,9 @@ class CommandMixin:
         """Return width, depth and total count of the sketch."""
         return self.execute_command(self.CMS_INFO, key)
 
-    ################## Top-K Functions ##################
+    # endregion
 
+    # region Top-K Functions
     def topkReserve(self, key, k, width, depth, decay):
         """Create a new Cuckoo Filter ``key`` with desired probability of false positives ``errorRate`` expected entries to be inserted as ``size``."""
         params = [key, k, width, depth, decay]
@@ -260,8 +262,9 @@ class CommandMixin:
         """Return k, width, depth and decay values of ``key``."""
         return self.execute_command(self.TOPK_INFO, key)
 
-    ################## T-Digest Functions ##################
+    # endregion
 
+    # region T-Digest Functions
     def tdigestCreate(self, key, compression):
         """Allocate the memory and initialize the t-digest."""
         params = [key, compression]
@@ -308,3 +311,5 @@ class CommandMixin:
     def tdigestInfo(self, key):
         """Return Compression, Capacity, Merged Nodes, Unmerged Nodes, Merged Weight, Unmerged Weight and Total Compressions."""
         return self.execute_command(self.TDIGEST_INFO, key)
+
+    # endregion
