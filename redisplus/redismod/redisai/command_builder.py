@@ -23,8 +23,9 @@ def modelstore(
     inputs: Union[AnyStr, List[AnyStr]],
     outputs: Union[AnyStr, List[AnyStr]],
 ) -> Sequence:
-    args = _model_args("AI.MODELSTORE", name, backend, device, batch,
-                       minbatch, minbatchtimeout, tag)
+    args = _model_args(
+        "AI.MODELSTORE", name, backend, device, batch, minbatch, minbatchtimeout, tag
+    )
 
     if backend.upper() == "TF":
         if not all((inputs, outputs)):
@@ -46,7 +47,7 @@ def modelstore(
             "Inputs and outputs keywords should not be specified for this backend"
         )
     chunk_size = 500 * 1024 * 1024  # TODO: this should be configurable.
-    data_chunks = [data[i: i + chunk_size] for i in range(0, len(data), chunk_size)]
+    data_chunks = [data[i : i + chunk_size] for i in range(0, len(data), chunk_size)]
     # TODO: need a test case for this
     args += ["BLOB", *data_chunks]
     return args
@@ -63,8 +64,9 @@ def modelset(
     inputs: Union[AnyStr, List[AnyStr]],
     outputs: Union[AnyStr, List[AnyStr]],
 ) -> Sequence:
-    args = _model_args("AI.MODELSET", name, backend, device, batch,
-                       minbatch, None, tag)
+    args = _model_args(
+        "AI.MODELSET", name, backend, device, batch, minbatch, None, tag
+    )
 
     if backend.upper() == "TF":
         if not (all((inputs, outputs))):
@@ -72,14 +74,13 @@ def modelset(
         args += ["INPUTS", *utils.listify(inputs)]
         args += ["OUTPUTS", *utils.listify(outputs)]
     chunk_size = 500 * 1024 * 1024
-    data_chunks = [data[i: i + chunk_size] for i in range(0, len(data), chunk_size)]
+    data_chunks = [data[i : i + chunk_size] for i in range(0, len(data), chunk_size)]
     # TODO: need a test case for this
     args += ["BLOB", *data_chunks]
     return args
 
 
-def _model_args(command, name, backend, device, batch,
-                minbatch, minbatchtimeout, tag):
+def _model_args(command, name, backend, device, batch, minbatch, minbatchtimeout, tag):
     if name is None:
         raise ValueError("Model name was not given")
     if device.upper() not in utils.allowed_devices:
@@ -200,11 +201,11 @@ def tensorget(key: AnyStr, as_numpy: bool = True, meta_only: bool = False) -> Se
 
 
 def scriptstore(
-        name: AnyStr,
-        device: str,
-        script: str,
-        entry_points: Union[str, Sequence[str]],
-        tag: AnyStr = None
+    name: AnyStr,
+    device: str,
+    script: str,
+    entry_points: Union[str, Sequence[str]],
+    tag: AnyStr = None,
 ) -> Sequence:
     if device.upper() not in utils.allowed_devices:
         raise ValueError(f"Device not allowed. Use any from {utils.allowed_devices}")
@@ -213,7 +214,11 @@ def scriptstore(
     args = ["AI.SCRIPTSTORE", name, device]
     if tag:
         args += ["TAG", tag]
-    args += ["ENTRY_POINTS", len(utils.listify(entry_points)), *utils.listify(entry_points)]
+    args += [
+        "ENTRY_POINTS",
+        len(utils.listify(entry_points)),
+        *utils.listify(entry_points),
+    ]
     args.append("SOURCE")
     args.append(script)
     return args

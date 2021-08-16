@@ -30,8 +30,11 @@ class Dag:
     def _init_commands(self, load, persist, routing, timeout):
         if self.deprecatedDagrunMode:
             # Throw warning about using deprecated dagrun
-            warnings.warn("Creating Dag without any of LOAD, PERSIST and ROUTING arguments"
-                          "is allowed only in deprecated AI.DAGRUN or AI.DAGRUN_RO commands", DeprecationWarning)
+            warnings.warn(
+                "Creating Dag without any of LOAD, PERSIST and ROUTING arguments"
+                "is allowed only in deprecated AI.DAGRUN or AI.DAGRUN_RO commands",
+                DeprecationWarning,
+            )
             # Use dagrun
             if self.readonly:
                 self.commands = ["AI.DAGRUN_RO"]
@@ -46,7 +49,11 @@ class Dag:
         if load is not None:
             self.commands += ["LOAD", len(utils.listify(load)), *utils.listify(load)]
         if persist is not None:
-            self.commands += ["PERSIST", len(utils.listify(persist)), *utils.listify(persist)]
+            self.commands += [
+                "PERSIST",
+                len(utils.listify(persist)),
+                *utils.listify(persist)
+            ]
         if routing is not None:
             self.commands += ["ROUTING", routing]
         if timeout is not None:
@@ -89,10 +96,10 @@ class Dag:
 
     @deprecated(version="1.2.0", reason="Use modelexecute instead")
     def modelrun(
-            self,
-            key: AnyStr,
-            inputs: Union[AnyStr, List[AnyStr]],
-            outputs: Union[AnyStr, List[AnyStr]],
+        self,
+        key: AnyStr,
+        inputs: Union[AnyStr, List[AnyStr]],
+        outputs: Union[AnyStr, List[AnyStr]],
     ) -> Any:
         if self.deprecatedDagrunMode:
             args = builder.modelrun(key, inputs, outputs)
@@ -131,9 +138,7 @@ class Dag:
         outputs: Union[AnyStr, List[AnyStr]] = None,
     ) -> Any:
         if self.readonly:
-            raise RuntimeError(
-                "AI.SCRIPTEXECUTE cannot be used in readonly mode"
-            )
+            raise RuntimeError("AI.SCRIPTEXECUTE cannot be used in readonly mode")
         if self.deprecatedDagrunMode:
             raise RuntimeError(
                 "You are using deprecated version of DAG, that does not supports SCRIPTEXECUTE."

@@ -41,7 +41,7 @@ class Client(RedisCommands, object):
 
     REDISAI_COMMANDS_RESPONSE_CALLBACKS = {}
 
-    def __init__(self, client=None, debug=False, enable_postprocess=True, *args, **kwargs):
+    def __init__(self, client=None, debug=False, enable_postprocess=True):
         self.CLIENT = client
         # if debug:
         #     self.execute_command = enable_debug(super().execute_command)
@@ -82,7 +82,7 @@ class Client(RedisCommands, object):
         persist: Sequence = None,
         routing: AnyStr = None,
         timeout: int = None,
-        readonly: bool = False
+        readonly: bool = False,
     ) -> "Dag":
         """
         It returns a DAG object on which other DAG-allowed operations can be called. For
@@ -548,7 +548,12 @@ class Client(RedisCommands, object):
         )
 
     def scriptstore(
-        self, key: AnyStr, device: str, script: str, entry_points: Union[str, Sequence[str]], tag: AnyStr = None
+        self,
+        key: AnyStr,
+        device: str,
+        script: str,
+        entry_points: Union[str, Sequence[str]],
+        tag: AnyStr = None,
     ) -> str:
         """
         Set the script to RedisAI. The difference from scriptset is that in scriptstore
@@ -791,7 +796,9 @@ class Client(RedisCommands, object):
         >>>                   outputs=['result{tag}'])
         'OK'
         """
-        args = builder.scriptexecute(key, function, keys, inputs, args, outputs, timeout)
+        args = builder.scriptexecute(
+            key, function, keys, inputs, args, outputs, timeout
+        )
         res = self.execute_command(*args)
         return res if not self.enable_postprocess else processor.scriptexecute(res)
 
