@@ -1,3 +1,5 @@
+"""General client to be used for redis modules."""
+
 import importlib
 from typing import Dict, Optional
 from redis.client import Redis
