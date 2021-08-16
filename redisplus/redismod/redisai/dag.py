@@ -3,6 +3,7 @@ from typing import Any, AnyStr, List, Sequence, Union
 
 import numpy as np
 
+from . import utils
 from . import command_builder as builder
 from .postprocessor import Processor
 from deprecated import deprecated
@@ -18,15 +19,15 @@ class Dag:
         self.deprecatedDagrunMode = load is None and persist is None and routing is None
         self.readonly = readonly
         self.executor = executor
-        self._init_commands(load, persist, routing, timeout)
-
-    def _init_commands(self, load, persist, routing, timeout):
         if self.readonly and persist:
             raise RuntimeError(
                 "READONLY requests cannot write (duh!) and should not "
                 "have PERSISTing values"
             )
 
+        self._init_commands(load, persist, routing, timeout)
+
+    def _init_commands(self, load, persist, routing, timeout):
         if self.deprecatedDagrunMode:
             # Throw warning about using deprecated dagrun
             warnings.warn("Creating Dag without any of LOAD, PERSIST and ROUTING arguments"
@@ -43,15 +44,9 @@ class Dag:
             else:
                 self.commands = ["AI.DAGEXECUTE"]
         if load is not None:
-            if not isinstance(load, (list, tuple)):
-                self.commands += ["LOAD", 1, load]
-            else:
-                self.commands += ["LOAD", len(load), *load]
+            self.commands += ["LOAD", len(utils.listify(load)), *utils.listify(load)]
         if persist is not None:
-            if not isinstance(persist, (list, tuple)):
-                self.commands += ["PERSIST", 1, persist]
-            else:
-                self.commands += ["PERSIST", len(persist), *persist]
+            self.commands += ["PERSIST", len(utils.listify(persist)), *utils.listify(persist)]
         if routing is not None:
             self.commands += ["ROUTING", routing]
         if timeout is not None:
