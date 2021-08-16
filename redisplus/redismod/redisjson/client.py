@@ -11,6 +11,16 @@ from .commands import CommandMixin
 
 
 class Client(CommandMixin, RedisCommands, object):
+    """
+    Create a client for talking to redisjson.
+
+    :param decoder:
+    :type json.JSONDecoder: An instance of json.JSONDecoder
+
+    :param encoder:
+    :type json.JSONEncoder: An instance of json.JSONEncoder
+    """
+
     def __init__(
         self,
         client: Redis,
@@ -18,7 +28,7 @@ class Client(CommandMixin, RedisCommands, object):
         encoder: Optional[json.JSONEncoder] = json.JSONEncoder(),
     ):
         """
-        Creates a client for talking to redisjson.
+        Create a client for talking to redisjson.
 
         :param decoder:
         :type json.JSONDecoder: An instance of json.JSONDecoder
@@ -26,7 +36,6 @@ class Client(CommandMixin, RedisCommands, object):
         :param encoder:
         :type json.JSONEncoder: An instance of json.JSONEncoder
         """
-
         # Set the module commands' callbacks
         self.MODULE_CALLBACKS = {
             "JSON.CLEAR": int,
@@ -66,13 +75,16 @@ class Client(CommandMixin, RedisCommands, object):
         # # the encoding happens on the client object
 
     def execute_command(self, *args, **kwargs):
+        """Execute redis command."""
         return self.client.execute_command(*args, **kwargs)
 
     @property
     def client(self):
+        """Get the client instance."""
         return self.CLIENT
 
     def decode(self, obj):
+        """Get the decoder."""
         if obj is None:
             return obj
 
@@ -82,16 +94,16 @@ class Client(CommandMixin, RedisCommands, object):
             return self.__decoder__.decode(obj.decode())
 
     def encode(self, obj):
+        """Get the encoder."""
         return self.__encoder__.encode(obj)
 
     def pipeline(self, transaction=True, shard_hint=None):
         """
-        Return a new pipeline object that can queue multiple commands for
-        later execution. ``transaction`` indicates whether all commands
-        should be executed atomically. Apart from making a group of operations
-        atomic, pipelines are useful for reducing the back-and-forth overhead
-        between the client and server.
+        Return a new pipeline object that can queue multiple commands for later execution.
 
+        ``transaction`` indicates whether all commands should be executed atomically.
+        Apart from making a group of operations atomic, pipelines are useful for reducing
+        the back-and-forth overhead between the client and server.
         Overridden in order to provide the right client through the pipeline.
         """
         p = Pipeline(
@@ -106,7 +118,8 @@ class Client(CommandMixin, RedisCommands, object):
 
 
 class Pipeline(Pipeline, Client):
-    """Pipeline for client"""
+    """Pipeline for client."""
 
     def pipeline(self):
+        """Create a pipeline."""
         raise AttributeError("Pipelines cannot be created within pipelines.")
