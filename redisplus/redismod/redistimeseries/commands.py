@@ -1,3 +1,6 @@
+"""RedisTimeSeries Commands."""
+
+
 class CommandMixin:
     """RedisTimeSeries Commands."""
 

@@ -1,3 +1,5 @@
+"""Client for redistimeseries module."""
+
 import functools
 from redis import Redis, DataError
 from redis.client import Pipeline, bool_ok
