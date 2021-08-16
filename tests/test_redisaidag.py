@@ -1,4 +1,6 @@
 import os.path
+import warnings
+
 from skimage.io import imread
 from skimage.transform import resize
 
@@ -8,7 +10,6 @@ from .test_redisai import *
 def load_image():
     image_filename = os.path.join(MODEL_DIR, dog_img)
     img_height, img_width = 224, 224
-
     img = imread(image_filename)
     img = resize(img, (img_height, img_width), mode='constant', anti_aliasing=True)
     img = img.astype(np.uint8)

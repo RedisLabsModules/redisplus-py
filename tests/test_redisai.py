@@ -1,14 +1,13 @@
 import os.path
 import sys
 import pytest
-import warnings
 
 import numpy as np
 from io import StringIO
 from ml2rt import load_model
-from redis.exceptions import ResponseError
 
 from redis import Redis
+from redis.exceptions import ResponseError
 from redisplus.client import RedisPlus
 
 
