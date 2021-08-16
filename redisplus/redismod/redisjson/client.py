@@ -1,3 +1,5 @@
+"""Client for redisjson module."""
+
 import functools
 from typing import Optional
 import json

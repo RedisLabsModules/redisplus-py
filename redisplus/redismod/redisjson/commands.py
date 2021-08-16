@@ -1,3 +1,5 @@
+"""RedisJSON commands."""
+
 from .path import Path, str_path
 
 

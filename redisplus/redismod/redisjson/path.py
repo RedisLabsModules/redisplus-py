@@ -1,3 +1,6 @@
+"""This module includes path utils."""
+
+
 def str_path(p):
     """Return the string representation of a path if it is of class Path."""
     if isinstance(p, Path):
