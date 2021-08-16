@@ -1,3 +1,6 @@
+"""RedisBloom commands."""
+
+
 class CommandMixin:
     """RedisBloom commands."""
 
