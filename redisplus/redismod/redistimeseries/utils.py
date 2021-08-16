@@ -1,3 +1,5 @@
+"""Utils functions for redistimeseries module."""
+
 from ..utils import nativestr
 
 
