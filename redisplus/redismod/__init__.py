@@ -1,7 +1,6 @@
-
 """The list of supported redis modules."""
 
-all = [
+__all__ = [
     "redisjson",
     "redisbloom",
     "redistimeseries",
