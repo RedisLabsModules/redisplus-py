@@ -10,10 +10,10 @@ from io import TextIOWrapper
 # from .conftest import skip_ifmodversion_lt
 from redis import Redis
 from redisplus.client import RedisPlus
-from redisplus.redismod.redisearch import *
 from redisplus.redismod.redisjson.path import Path
 import redisplus.redismod.redisearch.aggregation as aggregations
 import redisplus.redismod.redisearch.reducers as reducers
+from redisplus.redismod.redisearch import *
 
 
 WILL_PLAY_TEXT = os.path.abspath(os.path.dirname(__file__)) + '/will_play_text.csv.bz2'

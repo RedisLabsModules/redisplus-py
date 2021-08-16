@@ -37,29 +37,21 @@ class Query(object):
         self._language = None
 
     def query_string(self):
-        """
-        Return the query string of this query only
-        """
+        """Return the query string of this query only."""
         return self._query_string
 
     def limit_ids(self, *ids):
-        """
-        Limit the results to a specific set of pre-known document ids of any length
-        """
+        """Limit the results to a specific set of pre-known document ids of any length."""
         self._ids = ids
         return self
 
     def return_fields(self, *fields):
-        """
-        Add fields to return fields
-        """
+        """Add fields to return fields."""
         self._return_fields += fields
         return self
 
     def return_field(self, field, as_field=None):
-        """
-        Add field to return fields (Optional: add 'AS' name to the field)
-        """
+        """Add field to return fields (Optional: add 'AS' name to the field)."""
         self._return_fields.append(field)
         if as_field is not None:
             self._return_fields += ("AS", as_field)
@@ -102,7 +94,7 @@ class Query(object):
 
     def highlight(self, fields=None, tags=None):
         """
-        Apply specified markup to matched term(s) within the returned field(s)
+        Apply specified markup to matched term(s) within the returned field(s).
 
         - **fields** If specified then only those mentioned fields are highlighted, otherwise all fields are highlighted
         - **tags** A list of two strings to surround the match.
@@ -119,16 +111,15 @@ class Query(object):
 
     def language(self, language):
         """
-        Analyze the query as being in the specified language
+        Analyze the query as being in the specified language.
+
         :param language: The language (e.g. `chinese` or `english`)
         """
         self._language = language
         return self
 
     def slop(self, slop):
-        """
-        Allow a masimum of N intervening non matched terms between phrase terms (0 means exact phrase)
-        """
+        """Allow a maximum of N intervening non matched terms between phrase terms (0 means exact phrase)."""
         self._slop = slop
         return self
 
@@ -142,73 +133,63 @@ class Query(object):
 
     def scorer(self, scorer):
         """
-        Use a different scoring function to evaluate document relevance. Default is `TFIDF`
+        Use a different scoring function to evaluate document relevance.
+        Default is `TFIDF`.
+
         :param scorer: The scoring function to use (e.g. `TFIDF.DOCNORM` or `BM25`)
         """
         self._scorer = scorer
         return self
 
     def get_args(self):
-        """
-        Format the redis arguments for this query and return them
-        """
-
+        """Format the redis arguments for this query and return them."""
         args = [self._query_string]
+        args += self._get_args_tags()
+        args += self._summarize_fields + self._highlight_fields
+        args += ["LIMIT", self._offset, self._num]
+        return args
 
+    def _get_args_tags(self):
+        args = []
         if self._no_content:
             args.append("NOCONTENT")
-
         if self._fields:
             args.append("INFIELDS")
             args.append(len(self._fields))
             args += self._fields
-
         if self._verbatim:
             args.append("VERBATIM")
-
         if self._no_stopwords:
             args.append("NOSTOPWORDS")
-
         if self._filters:
             for flt in self._filters:
                 assert isinstance(flt, Filter)
                 args += flt.args
-
         if self._with_payloads:
             args.append("WITHPAYLOADS")
-
         if self._scorer:
             args += ["SCORER", self._scorer]
-
         if self._with_scores:
             args.append("WITHSCORES")
-
         if self._ids:
             args.append("INKEYS")
             args.append(len(self._ids))
             args += self._ids
-
         if self._slop >= 0:
             args += ["SLOP", self._slop]
-
         if self._in_order:
             args.append("INORDER")
-
         if self._return_fields:
             args.append("RETURN")
             args.append(len(self._return_fields))
             args += self._return_fields
-
         if self._sortby:
             assert isinstance(self._sortby, SortbyField)
             args.append("SORTBY")
             args += self._sortby.args
-
         if self._language:
             args += ["LANGUAGE", self._language]
 
-        args += self._summarize_fields + self._highlight_fields
-        args += ["LIMIT", self._offset, self._num]
         return args
 
     def paging(self, offset, num):
@@ -223,16 +204,12 @@ class Query(object):
         return self
 
     def verbatim(self):
-        """
-        Set the query to be verbatim, i.e. use no query expansion or stemming
-        """
+        """Set the query to be verbatim, i.e. use no query expansion or stemming."""
         self._verbatim = True
         return self
 
     def no_content(self):
-        """
-        Set the query to only return ids and not the document content
-        """
+        """Set the query to only return ids and not the document content."""
         self._no_content = True
         return self
 
@@ -245,24 +222,20 @@ class Query(object):
         return self
 
     def with_payloads(self):
-        """
-        Ask the engine to return document payloads
-        """
+        """Ask the engine to return document payloads."""
         self._with_payloads = True
         return self
 
     def with_scores(self):
-        """
-        Ask the engine to return document search scores
-        """
+        """Ask the engine to return document search scores."""
         self._with_scores = True
         return self
 
     def limit_fields(self, *fields):
         """
-        Limit the search to specific TEXT fields only
+        Limit the search to specific TEXT fields only.
 
-        - **fields**: A list of strings, case sensitive field names from the defined schema
+        - **fields**: A list of strings, case sensitive field names from the defined schema.
         """
         self._fields = fields
         return self
@@ -280,7 +253,7 @@ class Query(object):
 
     def sort_by(self, field, asc=True):
         """
-        Add a sortby field to the query
+        Add a sortby field to the query.
 
         - **field** - the name of the field to sort by
         - **asc** - when `True`, sorting will be done in asceding order

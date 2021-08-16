@@ -2,18 +2,14 @@ from enum import Enum
 
 
 class IndexType(Enum):
-    """
-    Enum of the currently supported index types.
-    """
+    """Enum of the currently supported index types."""
 
     HASH = 1
     JSON = 2
 
 
 class IndexDefinition(object):
-    """
-    IndexDefinition is used to define a index definition for automatic indexing on Hash or Json update.
-    """
+    """IndexDefinition is used to define a index definition for automatic indexing on Hash or Json update."""
 
     def __init__(
         self,
@@ -26,43 +22,57 @@ class IndexDefinition(object):
         payload_field=None,
         index_type=None,
     ):
-        args = []
+        self.args = []
+        self._appendIndexType(index_type)
+        self._appendPrefix(prefix)
+        self._appendFilter(filter)
+        self._appendLanguageField(language_field, language)
+        self._appendScore(score_field, score)
+        self._appendPayload(payload_field)
 
+    def _appendIndexType(self, index_type):
+        """Append `ON HASH` or `ON JSON` according to the enum."""
         if index_type is IndexType.HASH:
-            args.extend(["ON", "HASH"])
+            self.args.extend(["ON", "HASH"])
         elif index_type is IndexType.JSON:
-            args.extend(["ON", "JSON"])
+            self.args.extend(["ON", "JSON"])
         elif index_type is not None:
             raise RuntimeError("index_type must be one of {}".format(list(IndexType)))
 
+    def _appendPrefix(self, prefix):
+        """Append PREFIX."""
         if len(prefix) > 0:
-            args.append("PREFIX")
-            args.append(len(prefix))
+            self.args.append("PREFIX")
+            self.args.append(len(prefix))
             for p in prefix:
-                args.append(p)
+                self.args.append(p)
 
+    def _appendFilter(self, filter):
+        """Append FILTER."""
         if filter is not None:
-            args.append("FILTER")
-            args.append(filter)
+            self.args.append("FILTER")
+            self.args.append(filter)
 
+    def _appendLanguage(self, language_field, language):
+        """Append LANGUAGE_FIELD and LANGUAGE."""
         if language_field is not None:
-            args.append("LANGUAGE_FIELD")
-            args.append(language_field)
-
+            self.args.append("LANGUAGE_FIELD")
+            self.args.append(language_field)
         if language is not None:
-            args.append("LANGUAGE")
-            args.append(language)
+            self.args.append("LANGUAGE")
+            self.args.append(language)
 
+    def _appendScore(self, score_field, score):
+        """Append SCORE_FIELD and SCORE."""
         if score_field is not None:
-            args.append("SCORE_FIELD")
-            args.append(score_field)
-
+            self.args.append("SCORE_FIELD")
+            self.args.append(score_field)
         if score is not None:
-            args.append("SCORE")
-            args.append(score)
+            self.args.append("SCORE")
+            self.args.append(score)
 
+    def _appendPayload(self, payload_field):
+        """Append PAYLOAD_FIELD."""
         if payload_field is not None:
-            args.append("PAYLOAD_FIELD")
-            args.append(payload_field)
-
-        self.args = args
+            self.args.append("PAYLOAD_FIELD")
+            self.args.append(payload_field)

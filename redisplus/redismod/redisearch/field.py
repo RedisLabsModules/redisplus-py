@@ -79,12 +79,12 @@ class GeoField(Field):
 
 
 class TagField(Field):
-    SEPARATOR = "SEPARATOR"
-
     """
-    TagField is a tag-indexing field with simpler compression and tokenization. 
+    TagField is a tag-indexing field with simpler compression and tokenization.
     See http://redisearch.io/Tags/
     """
+
+    SEPARATOR = "SEPARATOR"
 
     def __init__(self, name, separator=",", **kwargs):
         Field.__init__(

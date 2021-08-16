@@ -1,6 +1,5 @@
 from .commands import CommandMixin
 from redis.commands import Commands as RedisCommands
-from redis import ConnectionPool
 from redis.client import Pipeline, Redis
 
 

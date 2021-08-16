@@ -143,9 +143,7 @@ class first_value(Reducer):
 
         fieldstrs = []
         if (
-            len(byfields) == 1
-            and isinstance(byfields[0], type)
-            and issubclass(byfields[0], SortDirection)
+            len(byfields) == 1 and isinstance(byfields[0], type) and issubclass(byfields[0], SortDirection)
         ):
             byfields = [byfields[0](field)]
 
