@@ -4,8 +4,14 @@ from redis.client import Pipeline, bool_ok
 from redis.commands import Commands as RedisCommands
 
 from .commands import CommandMixin
-from .utils import *
-from .info import *
+from .utils import parseToList, spaceHolder
+from .info import (
+    BFInfo,
+    CFInfo,
+    CMSInfo,
+    TopKInfo,
+    TDigestInfo,
+)
 
 
 class Client(CommandMixin, RedisCommands, object):  # changed from StrictRedis
