@@ -4,7 +4,7 @@ from redis.client import Redis
 
 
 class RedisPlus(object):
-    """General client to be used for redis modules"""
+    """General client to be used for redis modules."""
 
     # modules that properly instantiated
     __redis_modules__ = []
@@ -19,8 +19,9 @@ class RedisPlus(object):
         safe_load=False,
     ):
         """
-        :param modules: A list of dictionaries for modules to configure and
-            their values.
+        General client to be used for redis modules.
+
+        :param modules: A list of dictionaries for modules to configure and their values.
             eg: {'redisearch': {'index_name': 'foo'}, ...}
         :type modules: dist
         """
@@ -37,7 +38,7 @@ class RedisPlus(object):
 
         try:
             x = importlib.import_module("redisplus.redismod.%s" % module)
-        except:
+        except {ModuleNotFoundError, ImportError}:
             if safe_load is False:
                 raise AttributeError("No module {} found".format(module))
             else:
@@ -62,10 +63,10 @@ class RedisPlus(object):
 
     @property
     def client(self):
-        """Returns the redis client, used for this connection."""
+        """Return the redis client, used for this connection."""
         return self.CLIENT
 
     @property
     def modules(self):
-        """Returns the list of configured modules"""
+        """Return the list of configured modules."""
         return self.__redis_modules__
