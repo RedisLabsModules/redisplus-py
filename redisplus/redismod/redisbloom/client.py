@@ -4,14 +4,20 @@ from redis.client import Pipeline, bool_ok
 from redis.commands import Commands as RedisCommands
 
 from .commands import CommandMixin
-from .utils import *
-from .info import *
+from .utils import parseToList
+from .info import (
+    BFInfo,
+    CFInfo,
+    CMSInfo,
+    TopKInfo,
+    TDigestInfo,
+)
 
 
 class Client(CommandMixin, RedisCommands, object):  # changed from StrictRedis
     """
-    This class subclasses redis-py's `Redis` and implements
-    RedisBloom's commands.
+    This class subclasses redis-py's `Redis` and implements RedisBloom's commands.
+
     The client allows to interact with RedisBloom and use all of
     it's functionality.
     Prefix is according to the DS used.
@@ -69,9 +75,7 @@ class Client(CommandMixin, RedisCommands, object):  # changed from StrictRedis
     TDIGEST_INFO = "TDIGEST.INFO"
 
     def __init__(self, client: Redis, *args, **kwargs):
-        """
-        Creates a new RedisBloom client.
-        """
+        """Create a new RedisBloom client."""
         # Set the module commands' callbacks
         MODULE_CALLBACKS = {
             self.BF_RESERVE: bool_ok,
@@ -123,85 +127,91 @@ class Client(CommandMixin, RedisCommands, object):  # changed from StrictRedis
         for k, v in MODULE_CALLBACKS.items():
             self.client.set_response_callback(k, v)
 
-    def execute_command(self, *args, **kwargs):
-        return self.client.execute_command(*args, **kwargs)
-
     @property
     def client(self):
+        """Get the client."""
         return self.CLIENT
 
     def execute_command(self, *args, **kwargs):
+        """Execute redis command."""
         return self.client.execute_command(*args, **kwargs)
-
-    @property
-    def client(self):
-        return self.CLIENT
 
     @staticmethod
     def appendItems(params, items):
+        """Append ITEMS to params."""
         params.extend(["ITEMS"])
         params += items
 
     @staticmethod
     def appendError(params, error):
+        """Append ERROR to params."""
         if error is not None:
             params.extend(["ERROR", error])
 
     @staticmethod
     def appendCapacity(params, capacity):
+        """Append CAPACITY to params."""
         if capacity is not None:
             params.extend(["CAPACITY", capacity])
 
     @staticmethod
     def appendExpansion(params, expansion):
+        """Append EXPANSION to params."""
         if expansion is not None:
             params.extend(["EXPANSION", expansion])
 
     @staticmethod
     def appendNoScale(params, noScale):
+        """Append NONSCALING tag to params."""
         if noScale is not None:
             params.extend(["NONSCALING"])
 
     @staticmethod
     def appendWeights(params, weights):
+        """Append WEIGHTS to params."""
         if len(weights) > 0:
             params.append("WEIGHTS")
             params += weights
 
     @staticmethod
     def appendNoCreate(params, noCreate):
+        """Append NOCREATE tag to params."""
         if noCreate is not None:
             params.extend(["NOCREATE"])
 
     @staticmethod
     def appendItemsAndIncrements(params, items, increments):
+        """Append pairs of items and increments to params."""
         for i in range(len(items)):
             params.append(items[i])
             params.append(increments[i])
 
     @staticmethod
     def appendValuesAndWeights(params, items, weights):
+        """Append pairs of items and weights to params."""
         for i in range(len(items)):
             params.append(items[i])
             params.append(weights[i])
 
     @staticmethod
     def appendMaxIterations(params, max_iterations):
+        """Append MAXITERATIONS to params."""
         if max_iterations is not None:
             params.extend(["MAXITERATIONS", max_iterations])
 
     @staticmethod
     def appendBucketSize(params, bucket_size):
+        """Append BUCKETSIZE to params."""
         if bucket_size is not None:
             params.extend(["BUCKETSIZE", bucket_size])
 
     def pipeline(self, transaction=True, shard_hint=None):
         """
-        Return a new pipeline object that can queue multiple commands for
-        later execution. ``transaction`` indicates whether all commands
-        should be executed atomically. Apart from making a group of operations
-        atomic, pipelines are useful for reducing the back-and-forth overhead
-        between the client and server.
+        Return a new pipeline object that can queue multiple commands for later execution.
+
+        ``transaction`` indicates whether all commands should be executed atomically.
+        Apart from making a group of operations atomic, pipelines are useful for reducing
+        the back-and-forth overhead between the client and server.
         Overridden in order to provide the right client through the pipeline.
         """
         p = Pipeline(
@@ -214,9 +224,10 @@ class Client(CommandMixin, RedisCommands, object):  # changed from StrictRedis
 
 
 class Pipeline(Pipeline, Client):
-    "Pipeline for RedisBloom Client"
+    """Pipeline for RedisBloom Client."""
 
     def __init__(self, connection_pool, response_callbacks, transaction, shard_hint):
+        """Pipeline for RedisBloom Client."""
         self.connection_pool = connection_pool
         self.connection = None
         self.response_callbacks = response_callbacks

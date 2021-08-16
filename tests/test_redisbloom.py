@@ -36,8 +36,7 @@ def testCreate(client):
     assert (client.tdigestCreate('tDigest', 100))
 
 
-################### Test Bloom Filter ###################
-
+# region Test Bloom Filter
 @pytest.mark.integrations
 @pytest.mark.redisbloom
 def testBFAdd(client):
@@ -136,10 +135,10 @@ def testBFInfo(client):
         assert False
     except:
         assert True
+# endregion
 
 
-################### Test Cuckoo Filter ###################
-
+# region Test Cuckoo Filter
 @pytest.mark.integrations
 @pytest.mark.redisbloom
 def testCFAddInsert(client):
@@ -172,10 +171,10 @@ def testCFExistsDel(client):
     assert (0 == client.cfCount('cuckoo', 'notexist'))
     assert (client.cfDel('cuckoo', 'filter'))
     assert (0 == client.cfCount('cuckoo', 'filter'))
+# endregion
 
 
-################### Test Count-Min Sketch ###################
-
+# region Test Count-Min Sketch
 @pytest.mark.integrations
 @pytest.mark.redisbloom
 def testCMS(client):
@@ -208,10 +207,10 @@ def testCMSMerge(client):
     assert ([9, 9, 11] == client.cmsQuery('C', 'foo', 'bar', 'baz'))
     assert (client.cmsMerge('C', 2, ['A', 'B'], ['2', '3']))
     assert ([16, 15, 21] == client.cmsQuery('C', 'foo', 'bar', 'baz'))
+# endregion
 
 
-################### Test Top-K ###################
-
+# region Test Top-K
 @pytest.mark.integrations
 @pytest.mark.redisbloom
 def testTopK(client):
@@ -234,10 +233,10 @@ def testTopK(client):
     assert (50 == info.width)
     assert (3 == info.depth)
     assert (0.9 == round(float(info.decay), 1))
+# endregion
 
 
-################### Test T-Digest ###################
-
+# region Test T-Digest
 @pytest.mark.integrations
 @pytest.mark.redisbloom
 def testTDigestReset(client):
@@ -308,6 +307,8 @@ def testTDigestCdf(client):
 
     assert 0.1 == round(client.tdigestCdf('tDigest', 1.0), 1)
     assert 0.9 == round(client.tdigestCdf('tDigest', 9.0), 1)
+# endregion
+
 
 """
 @pytest.mark.integrations
