@@ -2,7 +2,7 @@ import functools
 from typing import Optional
 import json
 
-from redis.client import Pipeline as Pipeline, Redis
+from redis.client import Pipeline, Redis
 from redis.commands import Commands as RedisCommands
 
 # from . import commands as recmds
