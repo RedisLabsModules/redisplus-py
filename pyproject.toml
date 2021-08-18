@@ -50,7 +50,6 @@ invoke = "^1.6.0"
 ml2rt = "^0.2.0"
 pylint = "^2.8.2"
 scikit-image = "==0.16.2"
-hiredis = ">=0.20"
 numpy = ">=1.19.5"
 Deprecated = "^1.2.12"
 
