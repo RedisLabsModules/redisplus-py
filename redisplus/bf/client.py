@@ -74,7 +74,7 @@ class Client(CommandMixin, RedisCommands, object):  # changed from StrictRedis
     TDIGEST_MAX = "TDIGEST.MAX"
     TDIGEST_INFO = "TDIGEST.INFO"
 
-    def __init__(self, client: Redis, *args, **kwargs):
+    def __init__(self, client):
         """Create a new RedisBloom client."""
         # Set the module commands' callbacks
         MODULE_CALLBACKS = {
@@ -215,8 +215,8 @@ class Client(CommandMixin, RedisCommands, object):  # changed from StrictRedis
         Overridden in order to provide the right client through the pipeline.
         """
         p = Pipeline(
-            connection_pool=self.connection_pool,
-            response_callbacks=self.response_callbacks,
+            connection_pool=self.client.connection_pool,
+            response_callbacks=self.client.response_callbacks,
             transaction=transaction,
             shard_hint=shard_hint,
         )
@@ -225,14 +225,3 @@ class Client(CommandMixin, RedisCommands, object):  # changed from StrictRedis
 
 class Pipeline(Pipeline, Client):
     """Pipeline for RedisBloom Client."""
-
-    def __init__(self, connection_pool, response_callbacks, transaction, shard_hint):
-        """Pipeline for RedisBloom Client."""
-        self.connection_pool = connection_pool
-        self.connection = None
-        self.response_callbacks = response_callbacks
-        self.transaction = transaction
-        self.shard_hint = shard_hint
-
-        self.watching = False
-        self.reset()

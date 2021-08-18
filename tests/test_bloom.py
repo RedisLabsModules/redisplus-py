@@ -1,5 +1,6 @@
 import pytest
 from redis import Redis
+import redisplus.bf
 from redisplus.client import RedisPlus
 
 i = lambda l: [int(v) for v in l]
@@ -7,16 +8,11 @@ i = lambda l: [int(v) for v in l]
 
 @pytest.fixture
 def client():
-    rc = RedisPlus(modules={'bf': {"client": Redis()}})
-    rc.bf.flushdb()
+    rc = RedisPlus(Redis()) #modules={'bf': {"client": Redis()}})
+    assert isinstance(rc.bloom, redisplus.bf.client.Client)
+    rc.bloom.flushdb()
 
-    return rc.bf
-
-
-@pytest.mark.bloom
-def test_base(client):
-    rc = RedisPlus(modules={'bf': {"client": Redis()}})
-    rc.bf.flushdb()
+    return rc.bloom
 
 
 @pytest.mark.integrations

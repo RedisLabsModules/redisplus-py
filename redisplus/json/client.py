@@ -3,14 +3,14 @@ from typing import Optional
 import json
 
 from redis.client import Pipeline, Redis
-from redis.commands import Commands as RedisCommands
 
 # from . import commands as recmds
 from ..helpers import bulk_of_jsons, delist, nativestr
 from .commands import CommandMixin
+from ..feature import AbstractFeature
 
 
-class Client(CommandMixin, RedisCommands, object):
+class Client(CommandMixin, AbstractFeature, object):
     """
     Create a client for talking to json.
 
@@ -74,15 +74,6 @@ class Client(CommandMixin, RedisCommands, object):
 
         # # the encoding happens on the client object
 
-    def execute_command(self, *args, **kwargs):
-        """Execute redis command."""
-        return self.client.execute_command(*args, **kwargs)
-
-    @property
-    def client(self):
-        """Get the client instance."""
-        return self.CLIENT
-
     def decode(self, obj):
         """Get the decoder."""
         if obj is None:
@@ -116,12 +107,6 @@ class Client(CommandMixin, RedisCommands, object):
         p.__decoder__ = self.__decoder__
         return p
 
-    # commands = recmds
-
 
 class Pipeline(Pipeline, Client):
     """Pipeline for client."""
-
-    def pipeline(self):
-        """Create a pipeline."""
-        raise AttributeError("Pipelines cannot be created within pipelines.")

@@ -1,6 +1,7 @@
 import pytest
 import redis
 from redis import Redis
+import redisplus.json
 from redisplus import RedisPlus
 from redisplus.json.path import Path
 from .conftest import skip_ifmodversion_lt
@@ -8,18 +9,10 @@ from .conftest import skip_ifmodversion_lt
 
 @pytest.fixture
 def client():
-    rc = RedisPlus(modules={'json': {"client": Redis()}})
+    rc = RedisPlus(Redis())
+    assert isinstance(rc.json, redisplus.json.client.Client)
     rc.json.flushdb()
     return rc.json
-
-
-@pytest.mark.json
-def test_base():
-    # base load
-    rc = RedisPlus(client=Redis())
-
-    # try not to break the regular client init
-    rc = RedisPlus(modules={'json': {'client': Redis()}})
 
 
 @pytest.mark.integrations
