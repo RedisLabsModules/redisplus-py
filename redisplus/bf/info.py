@@ -1,4 +1,4 @@
-from ..utils import nativestr
+from ..helpers import nativestr
 
 
 class BFInfo(object):

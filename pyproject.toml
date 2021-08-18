@@ -46,10 +46,9 @@ docs = ["sphinx", "sphinx-rtd-theme", "readthedocs-sphinx-search", "sphinx-autom
 
 [tool.pytest.ini_options]
 markers = [
-    "redisearch: only redisearch tests",
     "json: only json tests",
-    "redistimeseries: only redistimeseries tests",
-    "redisbloom: only redisbloom tests",
+    "timeseries: only redistimeseries tests",
+    "bloom: only redisbloom tests",
     "unmarked: tests that are not limited to a specific module",
 
     "integrations: run integration tests against a redis docker",

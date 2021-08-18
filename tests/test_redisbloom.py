@@ -13,14 +13,14 @@ def client():
     return rc.bf
 
 
-@pytest.mark.bf
+@pytest.mark.bloom
 def test_base(client):
     rc = RedisPlus(modules={'bf': {"client": Redis()}})
     rc.bf.flushdb()
 
 
 @pytest.mark.integrations
-@pytest.mark.bf
+@pytest.mark.bloom
 def testCreate(client):
     '''Test CREATE/RESERVE calls'''
     assert (client.bfcreate('bloom', 0.01, 1000))
@@ -38,7 +38,7 @@ def testCreate(client):
 
 # region Test Bloom Filter
 @pytest.mark.integrations
-@pytest.mark.bf
+@pytest.mark.bloom
 def testBFAdd(client):
     assert (client.bfcreate('bloom', 0.01, 1000))
     assert (1 == client.bfadd('bloom', 'foo'))
@@ -52,7 +52,7 @@ def testBFAdd(client):
 
 
 @pytest.mark.integrations
-@pytest.mark.bf
+@pytest.mark.bloom
 def testBFInsert(client):
     assert (client.bfcreate('bloom', 0.01, 1000))
     assert ([1] == i(client.bfinsert('bloom', ['foo'])))
@@ -62,14 +62,14 @@ def testBFInsert(client):
     assert (1 == client.bfexists('bloom', 'foo'))
     assert (0 == client.bfexists('bloom', 'noexist'))
     assert ([1, 0] == i(client.bfmexists('bloom', 'foo', 'noexist')))
-    info = client.bfrnfo('bloom')
+    info = client.bfinfo('bloom')
     assert (2 == info.insertedNum)
     assert (1000 == info.capacity)
     assert (1 == info.filterNum)
 
 
 @pytest.mark.integrations
-@pytest.mark.bf
+@pytest.mark.bloom
 def testBFDumpLoad(client):
     # Store a filter
     client.bfcreate('myBloom', '0.0001', '1000')
@@ -79,7 +79,7 @@ def testBFDumpLoad(client):
     def do_verify():
         res = 0
         for x in range(1000):
-            client.bfAdd('myBloom', x)
+            client.bfadd('myBloom', x)
             rv = client.bfexists('myBloom', x)
             assert rv
             rv = client.bfexists('myBloom', 'nonexist_{}'.format(x))
@@ -106,7 +106,7 @@ def testBFDumpLoad(client):
 
     # Now, load all the commands:
     for cmd in cmds:
-        client.bfloadchunk:0,$s('myBloom', *cmd)
+        client.bfloadchunk('myBloom', *cmd)
 
     cur_info = client.execute_command('bf.debug', 'myBloom')
     assert (prev_info == cur_info)
@@ -117,7 +117,7 @@ def testBFDumpLoad(client):
 
 
 @pytest.mark.integrations
-@pytest.mark.bf
+@pytest.mark.bloom
 def testBFInfo(client):
     expansion = 4
     # Store a filter
@@ -140,7 +140,7 @@ def testBFInfo(client):
 
 # region Test Cuckoo Filter
 @pytest.mark.integrations
-@pytest.mark.bf
+@pytest.mark.bloom
 def testCFAddInsert(client):
     assert (client.cfcreate('cuckoo', 1000))
     assert (client.cfadd('cuckoo', 'filter'))
@@ -161,7 +161,7 @@ def testCFAddInsert(client):
 
 
 @pytest.mark.integrations
-@pytest.mark.bf
+@pytest.mark.bloom
 def testCFExistsDel(client):
     assert (client.cfcreate('cuckoo', 1000))
     assert (client.cfadd('cuckoo', 'filter'))
@@ -169,14 +169,14 @@ def testCFExistsDel(client):
     assert not client.cfexists('cuckoo', 'notexist')
     assert (1 == client.cfcount('cuckoo', 'filter'))
     assert (0 == client.cfcount('cuckoo', 'notexist'))
-    assert (client.cfDel('cuckoo', 'filter'))
+    assert (client.cfdel('cuckoo', 'filter'))
     assert (0 == client.cfcount('cuckoo', 'filter'))
 # endregion
 
 
 # region Test Count-Min Sketch
 @pytest.mark.integrations
-@pytest.mark.bf
+@pytest.mark.bloom
 def testCMS(client):
     assert (client.cmsinitbydim('dim', 1000, 5))
     assert (client.cmsinitbyprob('prob', 0.01, 0.01))
@@ -185,14 +185,14 @@ def testCMS(client):
     assert ([5] == client.cmsquery('dim', 'foo'))
     assert ([10, 15] == client.cmsincrby('dim', ['foo', 'bar'], [5, 15]))
     assert ([10, 15] == client.cmsquery('dim', 'foo', 'bar'))
-    info = client.cmsInfo('dim')
+    info = client.cmsinfo('dim')
     assert (1000 == info.width)
     assert (5 == info.depth)
     assert (25 == info.count)
 
 
 @pytest.mark.integrations
-@pytest.mark.bf
+@pytest.mark.bloom
 def testCMSMerge(client):
     assert (client.cmsinitbydim('A', 1000, 5))
     assert (client.cmsinitbydim('B', 1000, 5))
@@ -212,7 +212,7 @@ def testCMSMerge(client):
 
 # region Test Top-K
 @pytest.mark.integrations
-@pytest.mark.bf
+@pytest.mark.bloom
 def testTopK(client):
     # test list with empty buckets
     assert (client.topkreserve('topk', 3, 50, 4, 0.9))
@@ -227,8 +227,8 @@ def testTopK(client):
     assert (client.topkreserve('topklist', 3, 50, 3, 0.9))
     assert (client.topkadd('topklist', 'A', 'B', 'C', 'D', 'E', 'A', 'A', 'B', 'C',
                            'G', 'D', 'B', 'D', 'A', 'E', 'E'))
-    assert (['D', 'A', 'B'] == client.topkList('topklist'))
-    info = client.topkInfo('topklist')
+    assert (['D', 'A', 'B'] == client.topklist('topklist'))
+    info = client.topkinfo('topklist')
     assert (3 == info.k)
     assert (50 == info.width)
     assert (3 == info.depth)
@@ -238,7 +238,7 @@ def testTopK(client):
 
 # region Test T-Digest
 @pytest.mark.integrations
-@pytest.mark.bf
+@pytest.mark.bloom
 def testTDigestReset(client):
     assert (client.tdigestcreate('tDigest', 10))
     # reset on empty histogram
@@ -248,11 +248,11 @@ def testTDigestReset(client):
 
     assert (client.tdigestreset('tDigest'))
     # assert we have 0 unmerged nodes
-    assert (0 == client.tdigestInfo('tDigest').unmergedNodes)
+    assert (0 == client.tdigestinfo('tDigest').unmergedNodes)
 
 
 @pytest.mark.integrations
-@pytest.mark.bf
+@pytest.mark.bloom
 def testTDigestMerge(client):
     assert (client.tdigestcreate('to-tDigest', 10))
     assert (client.tdigestcreate('from-tDigest', 10))
@@ -262,13 +262,13 @@ def testTDigestMerge(client):
     # merge from-tdigest into to-tdigest
     assert (client.tdigestmerge('to-tDigest', 'from-tDigest'))
     # we should now have 110 weight on to-histogram
-    info = client.tdigestInfo('to-tDigest')
+    info = client.tdigestinfo('to-tDigest')
     total_weight_to = float(info.mergedWeight) + float(info.unmergedWeight)
     assert (110 == total_weight_to)
 
 
 @pytest.mark.integrations
-@pytest.mark.bf
+@pytest.mark.bloom
 def testTDigestMinMax(client):
     assert (client.tdigestcreate('tDigest', 100))
     # insert data-points into sketch
@@ -279,7 +279,7 @@ def testTDigestMinMax(client):
 
 
 @pytest.mark.integrations
-@pytest.mark.bf
+@pytest.mark.bloom
 def testTDigestQuantile(client):
     assert (client.tdigestcreate('tDigest', 500))
     # insert data-points into sketch
@@ -299,7 +299,7 @@ def testTDigestQuantile(client):
 
 
 @pytest.mark.integrations
-@pytest.mark.bf
+@pytest.mark.bloom
 def testTDigestCdf(client):
     assert (client.tdigestcreate('tDigest', 100))
     # insert data-points into sketch
@@ -312,7 +312,7 @@ def testTDigestCdf(client):
 
 """
 @pytest.mark.integrations
-@pytest.mark.bf
+@pytest.mark.bloom
 def test_pipeline(client):
     pipeline = client.pipeline()
 
@@ -320,7 +320,7 @@ def test_pipeline(client):
 
     assert (client.bfcreate('pipeline', 0.01, 1000))
     for i in range(100):
-        pipeline.bfAdd('pipeline', i)
+        pipeline.bfadd('pipeline', i)
     for i in range(100):
         assert not (client.bfexists('pipeline', i))
 

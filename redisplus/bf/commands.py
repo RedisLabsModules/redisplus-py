@@ -274,12 +274,12 @@ class CommandMixin:
         """Reset the sketch ``key`` to zero - empty out the sketch and re-initialize it."""
         return self.execute_command(self.TDIGEST_RESET, key)
 
-    def tdigestqdd(self, key, values, weights):
+    def tdigestadd(self, key, values, weights):
         """
         Add one or more samples (value with weight) to a sketch ``key``.
 
         Both ``values`` and ``weights`` are lists.
-        Example - tdigestAdd('A', [1500.0], [1.0])
+        Example - tdigestadd('A', [1500.0], [1.0])
         """
         params = [key]
         self.appendValuesAndWeights(params, values, weights)

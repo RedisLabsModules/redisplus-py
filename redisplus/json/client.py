@@ -6,7 +6,7 @@ from redis.client import Pipeline, Redis
 from redis.commands import Commands as RedisCommands
 
 # from . import commands as recmds
-from ..utils import bulk_of_jsons, delist, nativestr
+from ..helpers import bulk_of_jsons, delist, nativestr
 from .commands import CommandMixin
 
 

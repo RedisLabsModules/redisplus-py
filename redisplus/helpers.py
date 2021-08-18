@@ -18,3 +18,19 @@ def delist(d):
 def nativestr(x):
     """Return the decoded binary string, or a string, depending on type."""
     return x if isinstance(x, str) else x.decode("utf-8", "replace")
+
+
+def spaceHolder(response):
+    """Return the response without parsing."""
+    return response
+
+
+def parseToList(response):
+    """Parse the response to a list."""
+    res = []
+    for item in response:
+        if item is not None:
+            res.append(nativestr(item))
+        else:
+            res.append(None)
+    return res
