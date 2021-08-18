@@ -21,13 +21,7 @@ classifiers = [
 [tool.poetry.dependencies]
 python = "^3.6.2"
 
-redisearch = {version = "^2.0.0", optional = true}
-rejson = {version = "^0.5.4", optional = true}
-redisai = {version = "^1.0.2", optional = true}
-redisgraph = {version = "^2.4.0", optional = true}
-redistimeseries = {version = "^1.4.3", optional = true}
-redisbloom = {version = "^0.4.0", optional = true}
-redis = {git = "https://github.com/chayim/redis-py", rev = "ck-commandmig"}
+redis = {git = "https://github.com/andymccurdy/redis-py"}
 
 [tool.poetry.dev-dependencies]
 flake8 = "^3.9.2"
