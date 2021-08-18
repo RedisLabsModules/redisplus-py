@@ -36,7 +36,7 @@ class CommandMixin:
         self.appendDuplicatePolicy(params, self.CREATE_CMD, duplicate_policy)
         self.appendLabels(params, labels)
 
-        return self.redis.execute_command(self.CREATE_CMD, *params)
+        return self.execute_command(self.CREATE_CMD, *params)
 
     def alter(self, key, **kwargs):
         """
@@ -52,7 +52,7 @@ class CommandMixin:
         self.appendDuplicatePolicy(params, self.ALTER_CMD, duplicate_policy)
         self.appendLabels(params, labels)
 
-        return self.redis.execute_command(self.ALTER_CMD, *params)
+        return self.execute_command(self.ALTER_CMD, *params)
 
     def add(self, key, timestamp, value, **kwargs):
         """
@@ -91,7 +91,7 @@ class CommandMixin:
         self.appendDuplicatePolicy(params, self.ADD_CMD, duplicate_policy)
         self.appendLabels(params, labels)
 
-        return self.redis.execute_command(self.ADD_CMD, *params)
+        return self.execute_command(self.ADD_CMD, *params)
 
     def madd(self, ktv_tuples):
         """
@@ -105,7 +105,7 @@ class CommandMixin:
             for item in ktv:
                 params.append(item)
 
-        return self.redis.execute_command(self.MADD_CMD, *params)
+        return self.execute_command(self.MADD_CMD, *params)
 
     def incrby(self, key, value, **kwargs):
         """
@@ -138,7 +138,7 @@ class CommandMixin:
         self.appendChunkSize(params, chunk_size)
         self.appendLabels(params, labels)
 
-        return self.redis.execute_command(self.INCRBY_CMD, *params)
+        return self.execute_command(self.INCRBY_CMD, *params)
 
     def decrby(self, key, value, **kwargs):
         """
@@ -171,7 +171,7 @@ class CommandMixin:
         self.appendChunkSize(params, chunk_size)
         self.appendLabels(params, labels)
 
-        return self.redis.execute_command(self.DECRBY_CMD, *params)
+        return self.execute_command(self.DECRBY_CMD, *params)
 
     def delrange(self, key, from_time, to_time):
         """
@@ -185,7 +185,7 @@ class CommandMixin:
             from_time: Start timestamp for the range deletion.
             to_time: End timestamp for the range deletion.
         """
-        return self.redis.execute_command(self.DEL_CMD, key, from_time, to_time)
+        return self.execute_command(self.DEL_CMD, key, from_time, to_time)
 
     def createrule(self, source_key, dest_key, aggregation_type, bucket_size_msec):
         """
@@ -197,11 +197,11 @@ class CommandMixin:
         params = [source_key, dest_key]
         self.appendAggregation(params, aggregation_type, bucket_size_msec)
 
-        return self.redis.execute_command(self.CREATERULE_CMD, *params)
+        return self.execute_command(self.CREATERULE_CMD, *params)
 
     def deleterule(self, source_key, dest_key):
         """Delete a compaction rule."""
-        return self.redis.execute_command(self.DELETERULE_CMD, source_key, dest_key)
+        return self.execute_command(self.DELETERULE_CMD, source_key, dest_key)
 
     def __range_params(
         self,
@@ -267,7 +267,7 @@ class CommandMixin:
             filter_by_max_value,
             align,
         )
-        return self.redis.execute_command(self.RANGE_CMD, *params)
+        return self.execute_command(self.RANGE_CMD, *params)
 
     def revrange(
         self,
@@ -312,7 +312,7 @@ class CommandMixin:
             filter_by_max_value,
             align,
         )
-        return self.redis.execute_command(self.REVRANGE_CMD, *params)
+        return self.execute_command(self.REVRANGE_CMD, *params)
 
     def mrange(
         self,
@@ -369,7 +369,7 @@ class CommandMixin:
             align,
         )
 
-        return self.redis.execute_command(self.MRANGE_CMD, *params)
+        return self.execute_command(self.MRANGE_CMD, *params)
 
     def __mrange_params(
         self,
@@ -456,11 +456,11 @@ class CommandMixin:
             align,
         )
 
-        return self.redis.execute_command(self.MREVRANGE_CMD, *params)
+        return self.execute_command(self.MREVRANGE_CMD, *params)
 
     def get(self, key):
         """Get the last sample of ``key``."""
-        return self.redis.execute_command(self.GET_CMD, key)
+        return self.execute_command(self.GET_CMD, key)
 
     def mget(self, filters, with_labels=False):
         """Get the last samples matching the specific ``filter``."""
@@ -468,12 +468,12 @@ class CommandMixin:
         self.appendWithLabels(params, with_labels)
         params.extend(["FILTER"])
         params += filters
-        return self.redis.execute_command(self.MGET_CMD, *params)
+        return self.execute_command(self.MGET_CMD, *params)
 
     def info(self, key):
         """Get information of ``key``."""
-        return self.redis.execute_command(self.INFO_CMD, key)
+        return self.execute_command(self.INFO_CMD, key)
 
     def queryindex(self, filters):
         """Get all the keys matching the ``filter`` list."""
-        return self.redis.execute_command(self.QUERYINDEX_CMD, *filters)
+        return self.execute_command(self.QUERYINDEX_CMD, *filters)

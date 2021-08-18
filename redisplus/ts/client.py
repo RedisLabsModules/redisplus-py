@@ -1,20 +1,22 @@
 import functools
 from redis import Redis, DataError
 from redis.client import Pipeline, bool_ok
-from redis.commands import Commands as RedisCommands
+from ..feature import AbstractFeature
 
 from .utils import (
     parse_range,
     parse_get,
     parse_m_range,
     parse_m_get,
-    parseToList,
-    TSInfo,
+)
+from .info import TSInfo
+from ..helpers import (
+    parseToList
 )
 from .commands import CommandMixin
 
 
-class Client(CommandMixin, RedisCommands, object):  # changed from StrictRedis
+class Client(CommandMixin, AbstractFeature, object):
     """
     This class subclasses redis-py's `Redis` and implements RedisTimeSeries's commands (prefixed with "ts").
 
@@ -39,15 +41,16 @@ class Client(CommandMixin, RedisCommands, object):  # changed from StrictRedis
     INFO_CMD = "TS.INFO"
     QUERYINDEX_CMD = "TS.QUERYINDEX"
 
-    def __init__(self, client=None, *args, **kwargs):
+    def __init__(self, client=None):
         """Create a new RedisTimeSeries client."""
-        self.redis = client if client is not None else Redis(*args, **kwargs)
+     
 
         # Set the module commands' callbacks
         MODULE_CALLBACKS = {
             self.CREATE_CMD: bool_ok,
             self.ALTER_CMD: bool_ok,
             self.CREATERULE_CMD: bool_ok,
+            self.DEL_CMD: bool_ok,
             self.DELETERULE_CMD: bool_ok,
             self.RANGE_CMD: parse_range,
             self.REVRANGE_CMD: parse_range,
@@ -63,11 +66,7 @@ class Client(CommandMixin, RedisCommands, object):  # changed from StrictRedis
         self.client.pipeline = functools.partial(self.pipeline, self)
 
         for k in MODULE_CALLBACKS:
-            self.redis.set_response_callback(k, MODULE_CALLBACKS[k])
-
-    def execute_command(self, *args, **kwargs):
-        """Execute redis command."""
-        return self.client.execute_command(*args, **kwargs)
+            self.client.set_response_callback(k, MODULE_CALLBACKS[k])
 
     @property
     def client(self):
@@ -165,23 +164,9 @@ class Client(CommandMixin, RedisCommands, object):  # changed from StrictRedis
         if min_value is not None and max_value is not None:
             params.extend(["FILTER_BY_VALUE", min_value, max_value])
 
-    def pipeline(self, transaction=True, shard_hint=None):
-        """
-        Return a new pipeline object that can queue multiple commands for later execution.
-
-        ``transaction`` indicates whether all commands should be executed atomically.
-        Apart from making a group of operations atomic, pipelines are useful for reducing
-        the back-and-forth overhead between the client and server.
-        Overridden in order to provide the right client through the pipeline.
-        """
-        p = Pipeline(
-            connection_pool=self.redis.connection_pool,
-            response_callbacks=self.redis.response_callbacks,
-            transaction=transaction,
-            shard_hint=shard_hint,
-        )
-        p.redis = p
-        return p
+    def execute_command(self, *args, **kwargs):
+        """Execute redis command."""
+        return self.client.execute_command(*args, **kwargs)
 
 
 class Pipeline(Pipeline, Client):

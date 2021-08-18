@@ -1,8 +1,5 @@
 from typing import Dict, Optional
 from redis.client import Redis
-import redisplus.bf
-import redisplus.json
-import redisplus.ts
 
 
 class RedisPlus(object):
@@ -18,9 +15,10 @@ class RedisPlus(object):
         """
         General client to be used for redis modules.
 
-        :param modules: A list of dictionaries for modules to configure and their values.
-            eg: {'redisearch': {'index_name': 'foo'}, ...}
-        :type modules: dist
+        :param client: An optional redis.client.Redis. If defined
+                       this client will be used for all redis connections.
+                       If this is not defined, one will be created.
+        :type client: Redis
         """
         if client is None:
             client = Redis()
@@ -34,9 +32,17 @@ class RedisPlus(object):
     @property
     def json(self):
         """For running json specific commands."""
+        import redisplus.json
         return redisplus.json.Client(self.client)
 
     @property
     def bloom(self):
         """For running bloom specific commands."""
+        import redisplus.bf
         return redisplus.bf.Client(self.client)
+
+    @property
+    def timeseries(self):
+        """For running bloom specific commands."""
+        import redisplus.ts
+        return redisplus.ts.Client(self.client)
