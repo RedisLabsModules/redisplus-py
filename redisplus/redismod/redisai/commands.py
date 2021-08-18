@@ -1,4 +1,5 @@
 """RedisAi commands."""
+
 import warnings
 from deprecated import deprecated
 import numpy as np
@@ -13,6 +14,7 @@ processor = Processor()
 
 class CommandMixin:
     """RedisAi commands."""
+
     def pipeline(self, transaction: bool = True, shard_hint: bool = None) -> "Pipeline":
         """
         It follows the same pipeline implementation of native redis client but enables it
