@@ -306,7 +306,6 @@ def testTDigestCdf(client):
 # endregion
 
 
-"""
 @pytest.mark.integrations
 @pytest.mark.bloom
 def test_pipeline(client):
@@ -324,4 +323,3 @@ def test_pipeline(client):
 
     for i in range(100):
         assert (client.bfexists('pipeline', i))
-"""

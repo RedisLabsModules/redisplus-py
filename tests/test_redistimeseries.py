@@ -438,6 +438,7 @@ def testQueryIndex(client):
 @pytest.mark.pipeline
 def testPipeline(client):
     pipeline = client.pipeline()
+    print(pipeline)
     pipeline.create('with_pipeline')
     for i in range(100):
         pipeline.add('with_pipeline', i, 1.1 * i)

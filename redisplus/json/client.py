@@ -64,7 +64,7 @@ class Client(CommandMixin, AbstractFeature, object):
         # super().__init__()
         self.CLIENT = client
         self.client.encode = encoder.encode
-        self.client.pipeline = functools.partial(self.pipeline, self)
+        self.client.pipeline = functools.partial(self.pipeline, Pipeline)
 
         for key, value in self.MODULE_CALLBACKS.items():
             self.client.set_response_callback(key, value)
