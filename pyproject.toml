@@ -20,7 +20,6 @@ classifiers = [
 
 [tool.poetry.dependencies]
 python = "^3.6.2"
-
 redis = {git = "https://github.com/andymccurdy/redis-py"}
 
 [tool.poetry.dev-dependencies]
@@ -43,19 +42,12 @@ sphinx-automodapi = "^0.13"
 invoke = "^1.6.0"
 
 [tool.poetry.extras]
-#redisearch = ["redisearch"]
-#rejson = ["rejson"]
-#redistimeseries = ["redistimeseries"]
-#redisgraph = ["redisgraph"]
-#redisai = ["redisai"]
-#redisbloom = ["redisbloom"]
-#redismodules = ["redisai", "redisgraph", "redistimeseries", "redisearch", "rejson", "redisbloom"]
 docs = ["sphinx", "sphinx-rtd-theme", "readthedocs-sphinx-search", "sphinx-automodapi", "toml"]
 
 [tool.pytest.ini_options]
 markers = [
     "redisearch: only redisearch tests",
-    "redisjson: only redisjson tests",
+    "json: only json tests",
     "redistimeseries: only redistimeseries tests",
     "redisbloom: only redisbloom tests",
     "unmarked: tests that are not limited to a specific module",

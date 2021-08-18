@@ -8,19 +8,19 @@ from .conftest import skip_ifmodversion_lt
 
 @pytest.fixture
 def client():
-    rc = RedisPlus(modules={'redistimeseries': {"client": Redis()}})
-    rc.redistimeseries.flushdb()
-    return rc.redistimeseries
+    rc = RedisPlus(modules={'ts': {"client": Redis()}})
+    rc.ts.flushdb()
+    return rc.ts
 
 
-@pytest.mark.redistimeseries
+@pytest.mark.ts
 def test_base(client):
-    rc = RedisPlus(modules={'redistimeseries': {"client": Redis()}})
-    rc.redistimeseries.flushdb()
+    rc = RedisPlus(modules={'ts': {"client": Redis()}})
+    rc.ts.flushdb()
 
 
 @pytest.mark.integrations
-@pytest.mark.redistimeseries
+@pytest.mark.ts
 def testCreate(client):
     assert client.create(1)
     assert client.create(2, retention_msecs=5)
@@ -37,7 +37,7 @@ def testCreate(client):
 
 
 @pytest.mark.integrations
-@pytest.mark.redistimeseries
+@pytest.mark.ts
 @skip_ifmodversion_lt("1.4.0", "timeseries")
 def testCreateDuplicatePolicy(client):
     # Test for duplicate policy
@@ -49,7 +49,7 @@ def testCreateDuplicatePolicy(client):
 
 
 @pytest.mark.integrations
-@pytest.mark.redistimeseries
+@pytest.mark.ts
 def testAlter(client):
     assert client.create(1)
     assert 0 == client.info(1).retention_msecs
@@ -64,7 +64,7 @@ def testAlter(client):
 
 
 @pytest.mark.integrations
-@pytest.mark.redistimeseries
+@pytest.mark.ts
 @skip_ifmodversion_lt("1.4.0", "timeseries")
 def testAlterDiplicatePolicy(client):
     assert client.create(1)
@@ -76,7 +76,7 @@ def testAlterDiplicatePolicy(client):
 
 
 @pytest.mark.integrations
-@pytest.mark.redistimeseries
+@pytest.mark.ts
 def testAdd(client):
     assert 1 == client.add(1, 1, 1)
     assert 2 == client.add(2, 2, 3, retention_msecs=10)
@@ -95,7 +95,7 @@ def testAdd(client):
 
 
 @pytest.mark.integrations
-@pytest.mark.redistimeseries
+@pytest.mark.ts
 @skip_ifmodversion_lt("1.4.0", "timeseries")
 def testAddDuplicatePolicy(client):
 
@@ -126,14 +126,14 @@ def testAddDuplicatePolicy(client):
 
 
 @pytest.mark.integrations
-@pytest.mark.redistimeseries
+@pytest.mark.ts
 def testMAdd(client):
     client.create('a')
     assert [1, 2, 3] == client.madd([('a', 1, 5), ('a', 2, 10), ('a', 3, 15)])
 
 
 @pytest.mark.integrations
-@pytest.mark.redistimeseries
+@pytest.mark.ts
 def testIncrbyDecrby(client):
     for _ in range(100):
         assert client.incrby(1, 1)
@@ -163,7 +163,7 @@ def testIncrbyDecrby(client):
 
 
 @pytest.mark.integrations
-@pytest.mark.redistimeseries
+@pytest.mark.ts
 def testCreateAndDeleteRule(client):
     # test rule creation
     time = 100
@@ -185,7 +185,7 @@ def testCreateAndDeleteRule(client):
 
 
 @pytest.mark.integrations
-@pytest.mark.redistimeseries
+@pytest.mark.ts
 @skip_ifmodversion_lt("99.99.99", "timeseries")  # todo: update after the release
 def testDelRange(client):
     try:
@@ -201,7 +201,7 @@ def testDelRange(client):
 
 
 @pytest.mark.integrations
-@pytest.mark.redistimeseries
+@pytest.mark.ts
 def testRange(client):
     for i in range(100):
         client.add(1, i, i % 7)
@@ -215,7 +215,7 @@ def testRange(client):
 
 
 @pytest.mark.integrations
-@pytest.mark.redistimeseries
+@pytest.mark.ts
 @skip_ifmodversion_lt("99.99.99", "timeseries")  # todo: update after the release
 def testRangeAdvanced(client):
     for i in range(100):
@@ -231,7 +231,7 @@ def testRangeAdvanced(client):
 
 
 @pytest.mark.integrations
-@pytest.mark.redistimeseries
+@pytest.mark.ts
 @skip_ifmodversion_lt("99.99.99", "timeseries")  # todo: update after the release
 def testRevRange(client):
     for i in range(100):
@@ -252,7 +252,7 @@ def testRevRange(client):
 
 
 @pytest.mark.integrations
-@pytest.mark.redistimeseries
+@pytest.mark.ts
 def testMultiRange(client):
     client.create(1, labels={'Test': 'This', 'team': 'ny'})
     client.create(2, labels={'Test': 'This', 'Taste': 'That', 'team': 'sf'})
@@ -281,7 +281,7 @@ def testMultiRange(client):
 
 
 @pytest.mark.integrations
-@pytest.mark.redistimeseries
+@pytest.mark.ts
 @skip_ifmodversion_lt("99.99.99", "timeseries")  # todo: update after the release
 def testMultiRangeAdvanced(client):
     client.create(1, labels={'Test': 'This', 'team': 'ny'})
@@ -318,7 +318,7 @@ def testMultiRangeAdvanced(client):
 
 
 @pytest.mark.integrations
-@pytest.mark.redistimeseries
+@pytest.mark.ts
 @skip_ifmodversion_lt("99.99.99", "timeseries")  # todo: update after the release
 def testMultiReverseRange(client):
     client.create(1, labels={'Test': 'This', 'team': 'ny'})
@@ -374,7 +374,7 @@ def testMultiReverseRange(client):
 
 
 @pytest.mark.integrations
-@pytest.mark.redistimeseries
+@pytest.mark.ts
 def testGet(client):
     name = 'test'
     client.create(name)
@@ -386,7 +386,7 @@ def testGet(client):
 
 
 @pytest.mark.integrations
-@pytest.mark.redistimeseries
+@pytest.mark.ts
 def testMGet(client):
     client.create(1, labels={'Test': 'This'})
     client.create(2, labels={'Test': 'This', 'Taste': 'That'})
@@ -408,7 +408,7 @@ def testMGet(client):
 
 
 @pytest.mark.integrations
-@pytest.mark.redistimeseries
+@pytest.mark.ts
 def testInfo(client):
     client.create(1, retention_msecs=5, labels={'currentLabel': 'currentData'})
     info = client.info(1)
@@ -417,7 +417,7 @@ def testInfo(client):
 
 
 @pytest.mark.integrations
-@pytest.mark.redistimeseries
+@pytest.mark.ts
 @skip_ifmodversion_lt("1.4.0", "timeseries")
 def testInfoDuplicatePolicy(client):
     client.create(1, retention_msecs=5, labels={'currentLabel': 'currentData'})
@@ -430,7 +430,7 @@ def testInfoDuplicatePolicy(client):
 
 
 @pytest.mark.integrations
-@pytest.mark.redistimeseries
+@pytest.mark.ts
 def testQueryIndex(client):
     client.create(1, labels={'Test': 'This'})
     client.create(2, labels={'Test': 'This', 'Taste': 'That'})
@@ -440,7 +440,7 @@ def testQueryIndex(client):
 
 
 @pytest.mark.integrations
-@pytest.mark.redistimeseries
+@pytest.mark.ts
 @pytest.mark.pipeline
 def testPipeline(client):
     pipeline = client.pipeline()
@@ -456,7 +456,7 @@ def testPipeline(client):
 
 
 @pytest.mark.integrations
-@pytest.mark.redistimeseries
+@pytest.mark.ts
 def testUncompressed(client):
     client.create('compressed')
     client.create('uncompressed', uncompressed=True)

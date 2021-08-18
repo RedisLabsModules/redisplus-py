@@ -12,7 +12,7 @@ from .commands import CommandMixin
 
 class Client(CommandMixin, RedisCommands, object):
     """
-    Create a client for talking to redisjson.
+    Create a client for talking to json.
 
     :param decoder:
     :type json.JSONDecoder: An instance of json.JSONDecoder
@@ -28,7 +28,7 @@ class Client(CommandMixin, RedisCommands, object):
         encoder: Optional[json.JSONEncoder] = json.JSONEncoder(),
     ):
         """
-        Create a client for talking to redisjson.
+        Create a client for talking to json.
 
         :param decoder:
         :type json.JSONDecoder: An instance of json.JSONDecoder

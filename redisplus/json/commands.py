@@ -2,7 +2,7 @@ from .path import Path, str_path
 
 
 class CommandMixin:
-    """RedisJSON commands."""
+    """json commands."""
 
     def jsonarrappend(self, name, path=Path.rootPath(), *args):
         """Append the objects ``args`` to the array under the ``path` in key ``name``."""

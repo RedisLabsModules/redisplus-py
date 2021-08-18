@@ -37,7 +37,7 @@ class RedisPlus(object):
             raise AttributeError("{} is not a valid module." % module)
 
         try:
-            x = importlib.import_module("redisplus.redismod.%s" % module)
+            x = importlib.import_module("redisplus.%s" % module)
         except {ModuleNotFoundError, ImportError}:
             if safe_load is False:
                 raise AttributeError("No module {} found".format(module))

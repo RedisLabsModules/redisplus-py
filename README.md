@@ -33,9 +33,9 @@ import redis
 from redisplus import RedisClient
 
 r = redis.Redis()
-rc = RedisClient(modules={"redisjson": {"client": r}})
-rc.redisjson.jsonset("foo", ".", "bar")
-rc.redisjson.exists("foo")
+rc = RedisClient(modules={"json": {"client": r}})
+rc.json.jsonset("foo", ".", "bar")
+rc.json.exists("foo")
 ```
 
 ----------------------------------------------------------------------------------------------------

@@ -10,4 +10,6 @@ def version():
     return __version__
 
 
-__all__ = ["RedisPlus"]
+__all__ = [
+    "RedisPlus"
+]
