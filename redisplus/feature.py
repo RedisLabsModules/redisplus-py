@@ -62,4 +62,4 @@ class AbstractFeature(Commands, ABC):
 
         The child class must call _pipeline, and provide the Commands mixin.
         """
-        raise NotImplementedError("Pipelines must be implemented  by childred.")
+        raise NotImplementedError("Pipelines must be implemented  by children.")
