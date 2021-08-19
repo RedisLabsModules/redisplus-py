@@ -1,5 +1,5 @@
-from redisplus.redisgraph import edge
-from redisplus.redisgraph import node
+from redisplus.graph import edge
+from redisplus.graph import node
 import pytest
 
 @pytest.mark.graph
