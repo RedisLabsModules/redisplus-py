@@ -1,23 +1,8 @@
 from redisplus import RedisPlus
-import redis
+from redis import Redis
+
 
 def test_client_init():
-    modules = {'redisjson': {'client': redis.Redis()}}
+    assert isinstance(RedisPlus().client, Redis)
 
-    rc = RedisPlus(modules)
-    assert getattr(rc, "redisjson", None) is not None
-
-    rc = RedisPlus(client=redis.Redis())
-    assert getattr(rc, "redisjson", None) is None
-    assert isinstance(getattr(rc, "CLIENT", None), redis.Redis)
-
-    rc = RedisPlus(client=redis.from_url("redis://localhost:6379"))
-    assert isinstance(getattr(rc, "CLIENT", None), redis.Redis)
-
-def test_module_list():
-    modules = {'redisjson': {}}
-    rc = RedisPlus(modules, redis.Redis())
-    assert 'redisjson' in rc.modules
-
-def test_refresh():
-    cl = redis.Redis()
+    assert isinstance(RedisPlus(Redis()).client, Redis)
