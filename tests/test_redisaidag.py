@@ -11,14 +11,14 @@ def load_image():
     image_filename = os.path.join(MODEL_DIR, dog_img)
     img_height, img_width = 224, 224
     img = imread(image_filename)
-    img = resize(img, (img_height, img_width), mode='constant', anti_aliasing=True)
+    img = resize(img, (img_height, img_width), mode="constant", anti_aliasing=True)
     img = img.astype(np.uint8)
     return img
 
 
 @pytest.fixture
 def client():
-    rc = RedisPlus(modules={'redisai': {"client": Redis()}})
+    rc = RedisPlus(modules={"redisai": {"client": Redis()}})
     rc.redisai.flushdb()
     model_path = os.path.join(MODEL_DIR, torch_graph)
     ptmodel = load_model(model_path)
@@ -43,7 +43,9 @@ def test_deprecated_dugrun(client):
     with pytest.raises(RuntimeError):
         dag.modelexecute("pt_model", ["a", "b"], ["output"])
     with pytest.raises(RuntimeError):
-        dag.scriptexecute("myscript{1}", "bar", inputs=["a{1}", "b{1}"], outputs=["c{1}"])
+        dag.scriptexecute(
+            "myscript{1}", "bar", inputs=["a{1}", "b{1}"], outputs=["c{1}"]
+        )
 
     dag.modelrun("pt_model", ["a", "b"], ["output"])
     dag.tensorget("output")
@@ -82,15 +84,18 @@ def test_deprecated_modelrun_and_run(client):
 @pytest.mark.redisaidag
 def test_dagexecute_with_scriptexecute_redis_commands(client):
     client.scriptstore("myscript{1}", "cpu", script_with_redis_commands, "func")
-    dag = client.dag(persist='my_output{1}', routing='{1}')
+    dag = client.dag(persist="my_output{1}", routing="{1}")
     dag.tensorset("mytensor1{1}", [40], dtype="float")
     dag.tensorset("mytensor2{1}", [10], dtype="float")
     dag.tensorset("mytensor3{1}", [1], dtype="float")
-    dag.scriptexecute("myscript{1}", "func",
-                      keys=["key{1}"],
-                      inputs=["mytensor1{1}", "mytensor2{1}", "mytensor3{1}"],
-                      args=["3"],
-                      outputs=["my_output{1}"])
+    dag.scriptexecute(
+        "myscript{1}",
+        "func",
+        keys=["key{1}"],
+        inputs=["mytensor1{1}", "mytensor2{1}", "mytensor3{1}"],
+        args=["3"],
+        outputs=["my_output{1}"],
+    )
     dag.execute()
     values = client.tensorget("my_output{1}", as_numpy=False)
     assert np.allclose(values["values"], [54])
@@ -100,22 +105,33 @@ def test_dagexecute_with_scriptexecute_redis_commands(client):
 @pytest.mark.redisai
 @pytest.mark.redisaidag
 def test_dagexecute_modelexecute_with_scriptexecute(client):
-    script_name = 'imagenet_script:{1}'
-    model_name = 'imagenet_model:{1}'
+    script_name = "imagenet_script:{1}"
+    model_name = "imagenet_model:{1}"
 
     img = load_image()
     model_path = os.path.join(MODEL_DIR, "resnet50.pb")
     model = load_model(model_path)
-    client.scriptstore(script_name, 'cpu', data_processing_script, entry_points=['post_process', 'pre_process_3ch'])
-    client.modelstore(model_name, 'TF', 'cpu', model, inputs='images', outputs='output')
+    client.scriptstore(
+        script_name,
+        "cpu",
+        data_processing_script,
+        entry_points=["post_process", "pre_process_3ch"],
+    )
+    client.modelstore(model_name, "TF", "cpu", model, inputs="images", outputs="output")
 
-    dag = client.dag(persist='output:{1}')
-    dag.tensorset('image:{1}', tensor=img, shape=(img.shape[1], img.shape[0]), dtype='UINT8')
-    dag.scriptexecute(script_name, 'pre_process_3ch', inputs='image:{1}', outputs='temp_key1')
-    dag.modelexecute(model_name, inputs='temp_key1', outputs='temp_key2')
-    dag.scriptexecute(script_name, 'post_process', inputs='temp_key2', outputs='output:{1}')
+    dag = client.dag(persist="output:{1}")
+    dag.tensorset(
+        "image:{1}", tensor=img, shape=(img.shape[1], img.shape[0]), dtype="UINT8"
+    )
+    dag.scriptexecute(
+        script_name, "pre_process_3ch", inputs="image:{1}", outputs="temp_key1"
+    )
+    dag.modelexecute(model_name, inputs="temp_key1", outputs="temp_key2")
+    dag.scriptexecute(
+        script_name, "post_process", inputs="temp_key2", outputs="output:{1}"
+    )
     ret = dag.execute()
-    assert ['OK', 'OK', 'OK', 'OK'] == ret
+    assert ["OK", "OK", "OK", "OK"] == ret
 
 
 @pytest.mark.integrations
@@ -128,8 +144,7 @@ def test_dagexecute_with_load(client):
     dag.modelexecute("pt_model", ["a", "b"], ["output"])
     dag.tensorget("output")
     result = dag.execute()
-    expected = ["OK", "OK", np.array(
-        [[4.0, 6.0], [4.0, 6.0]], dtype=np.float32)]
+    expected = ["OK", "OK", np.array([[4.0, 6.0], [4.0, 6.0]], dtype=np.float32)]
     assert np.allclose(expected.pop(), result.pop())
     assert expected == result
     pytest.raises(ResponseError, client.tensorget, "b")
@@ -166,8 +181,7 @@ def test_dagexecute_calling_on_return(client):
         .tensorget("output")
         .execute()
     )
-    expected = ["OK", "OK", np.array(
-        [[4.0, 6.0], [4.0, 6.0]], dtype=np.float32)]
+    expected = ["OK", "OK", np.array([[4.0, 6.0], [4.0, 6.0]], dtype=np.float32)]
     assert np.allclose(expected.pop(), result.pop())
     assert expected == result
 
@@ -225,7 +239,9 @@ def test_dagexecuteRO(client):
     dag = client.dag(load=["a", "b"], readonly=True)
 
     with pytest.raises(RuntimeError):
-        dag.scriptexecute("myscript{1}", "bar", inputs=["a{1}", "b{1}"], outputs=["c{1}"])
+        dag.scriptexecute(
+            "myscript{1}", "bar", inputs=["a{1}", "b{1}"], outputs=["c{1}"]
+        )
 
     dag.modelexecute("pt_model", ["a", "b"], ["output"])
     dag.tensorget("output")

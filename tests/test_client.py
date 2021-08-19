@@ -1,8 +1,9 @@
 from redisplus import RedisPlus
 import redis
 
+
 def test_client_init():
-    modules = {'redisjson': {'client': redis.Redis()}}
+    modules = {"redisjson": {"client": redis.Redis()}}
 
     rc = RedisPlus(modules)
     assert getattr(rc, "redisjson", None) is not None
@@ -14,10 +15,12 @@ def test_client_init():
     rc = RedisPlus(client=redis.from_url("redis://localhost:6379"))
     assert isinstance(getattr(rc, "CLIENT", None), redis.Redis)
 
+
 def test_module_list():
-    modules = {'redisjson': {}}
+    modules = {"redisjson": {}}
     rc = RedisPlus(modules, redis.Redis())
-    assert 'redisjson' in rc.modules
+    assert "redisjson" in rc.modules
+
 
 def test_refresh():
     cl = redis.Redis()

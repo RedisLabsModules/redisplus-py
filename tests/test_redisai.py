@@ -81,21 +81,22 @@ def post_process(tensors: List[Tensor], keys: List[str], args: List[str]):
 
 
 def get_client(debug=False):
-    rc = RedisPlus(modules={'redisai': {"client": Redis(), "debug": debug}})
+    rc = RedisPlus(modules={"redisai": {"client": Redis(), "debug": debug}})
     return rc.redisai
 
 
 @pytest.fixture
 def client():
-    rc = RedisPlus(modules={'redisai': {"client": Redis()}})
+    rc = RedisPlus(modules={"redisai": {"client": Redis()}})
     rc.redisai.flushdb()
     return rc.redisai
 
 
 @pytest.mark.redisai
 def test_base(client):
-    rc = RedisPlus(modules={'redisai': {"client": Redis()}})
+    rc = RedisPlus(modules={"redisai": {"client": Redis()}})
     rc.redisai.flushdb()
+
 
 # class ClientTestCase(RedisAITestBase):
 @pytest.mark.integrations
@@ -103,27 +104,27 @@ def test_base(client):
 def test_set_non_numpy_tensor(client):
     client.tensorset("x", (2, 3, 4, 5), dtype="float")
     result = client.tensorget("x", as_numpy=False)
-    assert ([2, 3, 4, 5] == result["values"])
-    assert ([4] == result["shape"])
+    assert [2, 3, 4, 5] == result["values"]
+    assert [4] == result["shape"]
 
     client.tensorset("x", (2, 3, 4, 5), dtype="float64")
     result = client.tensorget("x", as_numpy=False)
-    assert ([2, 3, 4, 5] == result["values"])
-    assert ([4] == result["shape"])
-    assert ("DOUBLE" == result["dtype"])
+    assert [2, 3, 4, 5] == result["values"]
+    assert [4] == result["shape"]
+    assert "DOUBLE" == result["dtype"]
 
     client.tensorset("x", (2, 3, 4, 5), dtype="int16", shape=(2, 2))
     result = client.tensorget("x", as_numpy=False)
-    assert ([2, 3, 4, 5] == result["values"])
-    assert ([2, 2] == result["shape"])
+    assert [2, 3, 4, 5] == result["values"]
+    assert [2, 2] == result["shape"]
 
     with pytest.raises(TypeError):
         client.tensorset("x", (2, 3, 4, 5), dtype="wrongtype", shape=(2, 2))
     client.tensorset("x", (2, 3, 4, 5), dtype="int8", shape=(2, 2))
     result = client.tensorget("x", as_numpy=False)
-    assert ("INT8" == result["dtype"])
-    assert ([2, 3, 4, 5] == result["values"])
-    assert ([2, 2] == result["shape"])
+    assert "INT8" == result["dtype"]
+    assert [2, 3, 4, 5] == result["values"]
+    assert [2, 2] == result["shape"]
     assert "values" in result
 
     with pytest.raises(TypeError):
@@ -177,8 +178,8 @@ def test_numpy_tensor(client):
         client.tensorset("trying", stringarr)
 
 
-@pytest.mark.integrations 
-@pytest.mark.redisai      
+@pytest.mark.integrations
+@pytest.mark.redisai
 # AI.MODELSET is deprecated by AI.MODELSTORE.
 def test_deprecated_modelset(client):
     model_path = os.path.join(MODEL_DIR, "graph.pb")
@@ -208,20 +209,17 @@ def test_deprecated_modelset(client):
         "m", "tf", "cpu", model_pb, inputs=["a", "b"], outputs=["mul"], tag="v1.0"
     )
     model = client.modelget("m", meta_only=True)
-    assert (
-        model ==
-        {
-            "backend": "TF",
-            "batchsize": 0,
-            "device": "cpu",
-            "inputs": ["a", "b"],
-            "minbatchsize": 0,
-            "minbatchtimeout": 0,
-            "outputs": ["mul"],
-            "tag": "v1.0",
-        }
-    )
-    
+    assert model == {
+        "backend": "TF",
+        "batchsize": 0,
+        "device": "cpu",
+        "inputs": ["a", "b"],
+        "minbatchsize": 0,
+        "minbatchtimeout": 0,
+        "outputs": ["mul"],
+        "tag": "v1.0",
+    }
+
 
 @pytest.mark.integrations
 @pytest.mark.redisai
@@ -231,59 +229,54 @@ def test_modelstore_errors(client):
 
     with pytest.raises(ValueError):
         client.modelstore(
-               None,
-               "TF",
-               "CPU",
-               model_pb,
-               inputs=["a", "b"],
-               outputs=["mul"]
+            None, "TF", "CPU", model_pb, inputs=["a", "b"], outputs=["mul"]
         )
 
     with pytest.raises(ValueError):
         client.modelstore(
-               "m",
-               "tf",
-               "wrongdevice",
-               model_pb,
-               inputs=["a", "b"],
-               outputs=["mul"],
-               tag="v1.0",
+            "m",
+            "tf",
+            "wrongdevice",
+            model_pb,
+            inputs=["a", "b"],
+            outputs=["mul"],
+            tag="v1.0",
         )
 
     with pytest.raises(ValueError):
         client.modelstore(
-               "m",
-               "wrongbackend",
-               "cpu",
-               model_pb,
-               inputs=["a", "b"],
-               outputs=["mul"],
-               tag="v1.0",
+            "m",
+            "wrongbackend",
+            "cpu",
+            model_pb,
+            inputs=["a", "b"],
+            outputs=["mul"],
+            tag="v1.0",
         )
 
     with pytest.raises(ValueError):
         client.modelstore(
-               "m",
-               "tf",
-               "cpu",
-               model_pb,
-               inputs=["a", "b"],
-               outputs=["mul"],
-               tag="v1.0",
-               minbatch=2,
+            "m",
+            "tf",
+            "cpu",
+            model_pb,
+            inputs=["a", "b"],
+            outputs=["mul"],
+            tag="v1.0",
+            minbatch=2,
         )
 
     with pytest.raises(ValueError):
         client.modelstore(
-               "m",
-               "tf",
-               "cpu",
-               model_pb,
-               inputs=["a", "b"],
-               outputs=["mul"],
-               tag="v1.0",
-               batch=4,
-               minbatchtimeout=1000,
+            "m",
+            "tf",
+            "cpu",
+            model_pb,
+            inputs=["a", "b"],
+            outputs=["mul"],
+            tag="v1.0",
+            batch=4,
+            minbatchtimeout=1000,
         )
 
     with pytest.raises(ValueError) as e:
@@ -291,13 +284,13 @@ def test_modelstore_errors(client):
 
     with pytest.raises(ValueError) as e:
         client.modelstore(
-               "m",
-               "torch",
-               "cpu",
-               model_pb,
-               inputs=["a", "b"],
-               outputs=["mul"],
-               tag="v1.0",
+            "m",
+            "torch",
+            "cpu",
+            model_pb,
+            inputs=["a", "b"],
+            outputs=["mul"],
+            tag="v1.0",
         )
 
 
@@ -312,8 +305,8 @@ def test_modelget_meta(client):
     )
     model = client.modelget("m", meta_only=True)
     assert (
-        model ==
-        {
+        model
+        == {
             "backend": "TF",
             "batchsize": 0,
             "device": "cpu",
@@ -358,8 +351,7 @@ def test_nonasciichar(client):
     )
     client.tensorset("a" + nonascii, (2, 3), dtype="float")
     client.tensorset("b", (2, 3), dtype="float")
-    client.modelexecute(
-        "m" + nonascii, ["a" + nonascii, "b"], ["c" + nonascii])
+    client.modelexecute("m" + nonascii, ["a" + nonascii, "b"], ["c" + nonascii])
     tensor = client.tensorget("c" + nonascii)
     assert np.allclose(tensor, [4.0, 9.0])
 
@@ -385,11 +377,7 @@ def test_run_tf_model(client):
 
     # Required arguments ar None
     with pytest.raises(ValueError) as e:
-        client.modelexecute(
-               "m",
-               inputs=None,
-               outputs=None
-        )
+        client.modelexecute("m", inputs=None, outputs=None)
 
     # wrong model
     with pytest.raises(ResponseError) as e:
@@ -472,45 +460,59 @@ def test_scripts_execute(client):
         client.scriptget("test")
 
     # store new script
-    client.scriptstore("myscript{1}", "cpu", script, ["bar", "bar_variadic"], "version1")
+    client.scriptstore(
+        "myscript{1}", "cpu", script, ["bar", "bar_variadic"], "version1"
+    )
     client.tensorset("a{1}", [2, 3, 2, 3], shape=(2, 2), dtype="float")
     client.tensorset("b{1}", [2, 3, 2, 3], shape=(2, 2), dtype="float")
-    client.scriptexecute("myscript{1}", "bar", inputs=["a{1}", "b{1}"], outputs=["c{1}"])
+    client.scriptexecute(
+        "myscript{1}", "bar", inputs=["a{1}", "b{1}"], outputs=["c{1}"]
+    )
     values = client.tensorget("c{1}", as_numpy=False)
     assert np.allclose(values["values"], [4.0, 6.0, 4.0, 6.0])
 
     client.tensorset("b1{1}", [2, 3, 2, 3], shape=(2, 2), dtype="float")
-    client.scriptexecute("myscript{1}", 'bar_variadic',
-                         inputs=["a{1}", "b1{1}", "b{1}"],
-                         outputs=["c{1}"])
+    client.scriptexecute(
+        "myscript{1}",
+        "bar_variadic",
+        inputs=["a{1}", "b1{1}", "b{1}"],
+        outputs=["c{1}"],
+    )
 
-    values = client.tensorget("c{1}", as_numpy=False)['values']
+    values = client.tensorget("c{1}", as_numpy=False)["values"]
     assert values == [4.0, 6.0, 4.0, 6.0]
 
 
-@pytest.mark.integrations   
-@pytest.mark.redisai        
+@pytest.mark.integrations
+@pytest.mark.redisai
 def test_scripts_redis_commands(client):
-    client.scriptstore("myscript{1}", "cpu", script_with_redis_commands, ["int_set_get", "func"])
-    client.scriptexecute("myscript{1}", "int_set_get", keys=["x{1}", "{1}"], args=["3"], outputs=["y{1}"])
+    client.scriptstore(
+        "myscript{1}", "cpu", script_with_redis_commands, ["int_set_get", "func"]
+    )
+    client.scriptexecute(
+        "myscript{1}", "int_set_get", keys=["x{1}", "{1}"], args=["3"], outputs=["y{1}"]
+    )
     values = client.tensorget("y{1}", as_numpy=False)
     assert np.allclose(values["values"], [3])
 
     client.tensorset("mytensor1{1}", [40], dtype="float")
     client.tensorset("mytensor2{1}", [10], dtype="float")
     client.tensorset("mytensor3{1}", [1], dtype="float")
-    client.scriptexecute("myscript{1}", "func",
-                      keys=["key{1}"],
-                      inputs=["mytensor1{1}", "mytensor2{1}", "mytensor3{1}"],
-                      args=["3"],
-                      outputs=["my_output{1}"])
+    client.scriptexecute(
+        "myscript{1}",
+        "func",
+        keys=["key{1}"],
+        inputs=["mytensor1{1}", "mytensor2{1}", "mytensor3{1}"],
+        args=["3"],
+        outputs=["my_output{1}"],
+    )
     values = client.tensorget("my_output{1}", as_numpy=False)
     assert np.allclose(values["values"], [54])
     assert client.get("key{1}") is None
 
 
-@pytest.mark.integrations   
-@pytest.mark.redisai        
+@pytest.mark.integrations
+@pytest.mark.redisai
 def test_run_onnxml_model(client):
     mlmodel_path = os.path.join(MODEL_DIR, "boston.onnx")
     onnxml_model = load_model(mlmodel_path)
@@ -560,7 +562,7 @@ def test_run_tflite_model(client):
     client.modelstore("tfl_model", "tflite", "cpu", tflmodel)
 
     input_path = os.path.join(TENSOR_DIR, "one.raw")
-    with open(input_path, 'rb') as f:
+    with open(input_path, "rb") as f:
         img = np.frombuffer(f.read(), dtype=np.float32)
     client.tensorset("img", img)
     client.modelexecute("tfl_model", ["img"], ["output1", "output2"])
@@ -591,8 +593,7 @@ def test_deprecated_modelrun(client):
 def test_info(client):
     model_path = os.path.join(MODEL_DIR, tf_graph)
     model_pb = load_model(model_path)
-    client.modelstore("m", "tf", "cpu", model_pb,
-                      inputs=["a", "b"], outputs=["mul"])
+    client.modelstore("m", "tf", "cpu", model_pb, inputs=["a", "b"], outputs=["mul"])
     first_info = client.infoget("m")
     expected = {
         "key": "m",
@@ -632,7 +633,7 @@ def test_model_scan(client):
     # TODO: RedisAI modelscan issue
     client.modelstore("pt_model", "torch", "cpu", ptmodel)
     mlist = client.modelscan()
-    assert (mlist == [["pt_model", ""], ["m", "v1.2"]])
+    assert mlist == [["pt_model", ""], ["m", "v1.2"]]
 
 
 @pytest.mark.integrations
