@@ -638,18 +638,6 @@ def test_script_scan(client):
     assert slist == [["ket1", "v1.0"], ["ket2", ""]]
 
 
-# todo: should we support debug?
-"""
-@pytest.mark.integrations
-@pytest.mark.ai
-def test_debug(client):
-    client = get_client(debug=True)
-    with Capturing() as output:
-        client.tensorset("x", (2, 3, 4, 5), dtype="float")
-    assert (["AI.TENSORSET x FLOAT 4 VALUES 2 3 4 5"] == output)
-"""
-
-
 # todo: connection pool
 """
 @pytest.mark.integrations

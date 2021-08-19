@@ -31,6 +31,7 @@ TAGVALS_CMD = "FT.TAGVALS"
 ALIAS_ADD_CMD = "FT.ALIASADD"
 ALIAS_UPDATE_CMD = "FT.ALIASUPDATE"
 ALIAS_DEL_CMD = "FT.ALIASDEL"
+INFO_CMD = "FT.INFO"
 
 NOOFFSETS = "NOOFFSETS"
 NOFIELDS = "NOFIELDS"
@@ -292,14 +293,14 @@ class CommandMixin:
         - **ids**: the ids of the saved documents.
         """
 
-        return self.client.execute_command("FT.MGET", self.index_name, *ids)
+        return self.client.execute_command(MGET_CMD, self.index_name, *ids)
 
     def info(self):
         """
         Get info an stats about the the current index, including the number of documents, memory consumption, etc
         """
 
-        res = self.client.execute_command("FT.INFO", self.index_name)
+        res = self.client.execute_command(INFO_CMD, self.index_name)
         it = six.moves.map(to_string, res)
         return dict(six.moves.zip(it, it))
 
