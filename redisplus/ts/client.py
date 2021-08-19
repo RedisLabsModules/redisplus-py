@@ -11,7 +11,7 @@ from .utils import (
 )
 from .info import TSInfo
 from ..helpers import parseToList
-from .commands import CommandMixin
+from .commands import *
 
 
 class Client(CommandMixin, AbstractFeature, object):
@@ -21,46 +21,27 @@ class Client(CommandMixin, AbstractFeature, object):
     The client allows to interact with RedisTimeSeries and use all of it's functionality.
     """
 
-    CREATE_CMD = "TS.CREATE"
-    ALTER_CMD = "TS.ALTER"
-    ADD_CMD = "TS.ADD"
-    MADD_CMD = "TS.MADD"
-    INCRBY_CMD = "TS.INCRBY"
-    DECRBY_CMD = "TS.DECRBY"
-    DEL_CMD = "TS.DEL"
-    CREATERULE_CMD = "TS.CREATERULE"
-    DELETERULE_CMD = "TS.DELETERULE"
-    RANGE_CMD = "TS.RANGE"
-    REVRANGE_CMD = "TS.REVRANGE"
-    MRANGE_CMD = "TS.MRANGE"
-    MREVRANGE_CMD = "TS.MREVRANGE"
-    GET_CMD = "TS.GET"
-    MGET_CMD = "TS.MGET"
-    INFO_CMD = "TS.INFO"
-    QUERYINDEX_CMD = "TS.QUERYINDEX"
-
     def __init__(self, client=None, **kwargs):
         """Create a new RedisTimeSeries client."""
 
         # Set the module commands' callbacks
         MODULE_CALLBACKS = {
-            self.CREATE_CMD: bool_ok,
-            self.ALTER_CMD: bool_ok,
-            self.CREATERULE_CMD: bool_ok,
-            self.DEL_CMD: bool_ok,
-            self.DELETERULE_CMD: bool_ok,
-            self.RANGE_CMD: parse_range,
-            self.REVRANGE_CMD: parse_range,
-            self.MRANGE_CMD: parse_m_range,
-            self.MREVRANGE_CMD: parse_m_range,
-            self.GET_CMD: parse_get,
-            self.MGET_CMD: parse_m_get,
-            self.INFO_CMD: TSInfo,
-            self.QUERYINDEX_CMD: parseToList,
+            CREATE_CMD: bool_ok,
+            ALTER_CMD: bool_ok,
+            CREATERULE_CMD: bool_ok,
+            DEL_CMD: bool_ok,
+            DELETERULE_CMD: bool_ok,
+            RANGE_CMD: parse_range,
+            REVRANGE_CMD: parse_range,
+            MRANGE_CMD: parse_m_range,
+            MREVRANGE_CMD: parse_m_range,
+            GET_CMD: parse_get,
+            MGET_CMD: parse_m_get,
+            INFO_CMD: TSInfo,
+            QUERYINDEX_CMD: parseToList,
         }
 
         self.CLIENT = client
-        self.client.pipeline = functools.partial(self.pipeline, self)
 
         for k in MODULE_CALLBACKS:
             self.client.set_response_callback(k, MODULE_CALLBACKS[k])
@@ -156,23 +137,8 @@ class Client(CommandMixin, AbstractFeature, object):
         if min_value is not None and max_value is not None:
             params.extend(["FILTER_BY_VALUE", min_value, max_value])
 
-    def pipeline(self, transaction=True, shard_hint=None):
-        """
-        Return a new pipeline object that can queue multiple commands for later execution.
-
-        ``transaction`` indicates whether all commands should be executed atomically.
-        Apart from making a group of operations atomic, pipelines are useful for reducing
-        the back-and-forth overhead between the client and server.
-        Overridden in order to provide the right client through the pipeline.
-        """
-        p = Pipeline(
-            connection_pool=self.client.connection_pool,
-            response_callbacks=self.client.response_callbacks,
-            transaction=transaction,
-            shard_hint=shard_hint,
+    def pipeline(self, **kwargs):
+        p = self._pipeline(
+            CommandMixin,
         )
         return p
-
-
-class Pipeline(Pipeline, Client):
-    """Pipeline for Redis TimeSeries Client."""

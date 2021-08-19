@@ -8,7 +8,7 @@ class CommandMixin:
         """Append the objects ``args`` to the array under the ``path` in key ``name``."""
         pieces = [name, str_path(path)]
         for o in args:
-            pieces.append(self.encode(o))
+            pieces.append(self._encode(o))
         return self.execute_command("JSON.ARRAPPEND", *pieces)
 
     def jsonarrindex(self, name, path, scalar, start=0, stop=-1):
@@ -18,14 +18,14 @@ class CommandMixin:
         The search can be limited using the optional inclusive ``start`` and exclusive ``stop`` indices.
         """
         return self.execute_command(
-            "JSON.ARRINDEX", name, str_path(path), self.encode(scalar), start, stop
+            "JSON.ARRINDEX", name, str_path(path), self._encode(scalar), start, stop
         )
 
     def jsonarrinsert(self, name, path, index, *args):
         """Insert the objects ``args`` to the array at index ``index`` under the ``path` in key ``name``."""
         pieces = [name, str_path(path), index]
         for o in args:
-            pieces.append(self.encode(o))
+            pieces.append(self._encode(o))
         return self.execute_command("JSON.ARRINSERT", *pieces)
 
     def jsonforget(self, name, path=Path.rootPath()):
@@ -63,13 +63,13 @@ class CommandMixin:
     def jsonnumincrby(self, name, path, number):
         """Increment the numeric (integer or floating point) JSON value under ``path`` at key ``name`` by the provided ``number``."""
         return self.execute_command(
-            "JSON.NUMINCRBY", name, str_path(path), self.encode(number)
+            "JSON.NUMINCRBY", name, str_path(path), self._encode(number)
         )
 
     def jsonnummultby(self, name, path, number):
         """Multiply the numeric (integer or floating point) JSON value under ``path`` at key ``name`` with the provided ``number``."""
         return self.execute_command(
-            "JSON.NUMMULTBY", name, str_path(path), self.encode(number)
+            "JSON.NUMMULTBY", name, str_path(path), self._encode(number)
         )
 
     def jsonclear(self, name, path=Path.rootPath()):
@@ -123,7 +123,7 @@ class CommandMixin:
         ``nx`` if set to True, set ``value`` only if it does not exist
         ``xx`` if set to True, set ``value`` only if it exists
         """
-        pieces = [name, str_path(path), self.encode(obj)]
+        pieces = [name, str_path(path), self._encode(obj)]
 
         # Handle existential modifiers
         if nx and xx:
@@ -148,7 +148,7 @@ class CommandMixin:
     def jsonstrappend(self, name, string, path=Path.rootPath()):
         """Append to the string JSON value under ``path`` at key ``name`` the provided ``string``."""
         return self.execute_command(
-            "JSON.STRAPPEND", name, str_path(path), self.encode(string)
+            "JSON.STRAPPEND", name, str_path(path), self._encode(string)
         )
 
     def jsondebug(client, name, path=Path.rootPath()):

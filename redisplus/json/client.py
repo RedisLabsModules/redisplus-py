@@ -41,11 +41,11 @@ class Client(CommandMixin, AbstractFeature, object):
             "JSON.CLEAR": int,
             "JSON.DEL": int,
             "JSON.FORGET": int,
-            "JSON.GET": self.decode,
-            "JSON.MGET": bulk_of_jsons(self.decode),
+            "JSON.GET": self._decode,
+            "JSON.MGET": bulk_of_jsons(self._decode),
             "JSON.SET": lambda r: r and nativestr(r) == "OK",
-            "JSON.NUMINCRBY": self.decode,
-            "JSON.NUMMULTBY": self.decode,
+            "JSON.NUMINCRBY": self._decode,
+            "JSON.NUMMULTBY": self._decode,
             "JSON.TOGGLE": lambda b: b == b"true",
             "JSON.STRAPPEND": int,
             "JSON.STRLEN": int,
@@ -53,7 +53,7 @@ class Client(CommandMixin, AbstractFeature, object):
             "JSON.ARRINDEX": int,
             "JSON.ARRINSERT": int,
             "JSON.ARRLEN": int,
-            "JSON.ARRPOP": self.decode,
+            "JSON.ARRPOP": self._decode,
             "JSON.ARRTRIM": int,
             "JSON.OBJLEN": int,
             "JSON.OBJKEYS": delist,
@@ -61,10 +61,7 @@ class Client(CommandMixin, AbstractFeature, object):
             "JSON.DEBUG": int,
         }
 
-        # super().__init__()
         self.CLIENT = client
-        self.client.encode = encoder.encode
-        self.client.pipeline = functools.partial(self.pipeline, Pipeline)
 
         for key, value in self.MODULE_CALLBACKS.items():
             self.client.set_response_callback(key, value)
@@ -74,7 +71,7 @@ class Client(CommandMixin, AbstractFeature, object):
 
         # # the encoding happens on the client object
 
-    def decode(self, obj):
+    def _decode(self, obj):
         """Get the decoder."""
         if obj is None:
             return obj
@@ -84,29 +81,15 @@ class Client(CommandMixin, AbstractFeature, object):
         except TypeError:
             return self.__decoder__.decode(obj.decode())
 
-    def encode(self, obj):
+    def _encode(self, obj):
         """Get the encoder."""
         return self.__encoder__.encode(obj)
 
-    def pipeline(self, transaction=True, shard_hint=None):
-        """
-        Return a new pipeline object that can queue multiple commands for later execution.
-
-        ``transaction`` indicates whether all commands should be executed atomically.
-        Apart from making a group of operations atomic, pipelines are useful for reducing
-        the back-and-forth overhead between the client and server.
-        Overridden in order to provide the right client through the pipeline.
-        """
-        p = Pipeline(
-            connection_pool=self.client.connection_pool,
-            response_callbacks=self.client.response_callbacks,
-            transaction=transaction,
-            shard_hint=shard_hint,
+    def pipeline(self, **kwargs):
+        p = self._pipeline(
+            CommandMixin,
+            __encode__=self.__encoder__,
+            _encode=self._encode,
+            __decoder__=self.__decoder__,
         )
-        p.__encoder__ = self.__encoder__
-        p.__decoder__ = self.__decoder__
         return p
-
-
-class Pipeline(Pipeline, Client):
-    """Pipeline for client."""

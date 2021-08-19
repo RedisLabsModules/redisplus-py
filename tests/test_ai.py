@@ -92,12 +92,6 @@ def client():
     return rc.ai
 
 
-@pytest.mark.ai
-def test_base(client):
-    rc = RedisPlus()
-    rc.ai.flushdb()
-
-
 @pytest.mark.integrations
 @pytest.mark.ai
 def test_set_non_numpy_tensor(client):
