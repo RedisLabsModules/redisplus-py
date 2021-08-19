@@ -7,7 +7,7 @@ import os
 import sys
 
 from io import TextIOWrapper
-# from .conftest import skip_ifmodversion_lt
+from .conftest import skip_ifmodversion_lt
 from redis import Redis
 
 import redisplus.search
@@ -51,7 +51,7 @@ def getClient(name):
     Gets a client client attached to an index name which is ready to be
     created
     """
-    rc = RedisPlus(Redis())
+    rc = RedisPlus(Redis(), extras={"search": {"index_name": name}})
     assert isinstance(rc.search, redisplus.search.Search)
     return rc.search
 
@@ -226,7 +226,7 @@ def testAddHash(client):
 
 @pytest.mark.integrations
 @pytest.mark.search
-# @skip_ifmodversion_lt("2.2.0", "search")
+@skip_ifmodversion_lt("2.2.0", "search")
 def testPayloads(client):
     client.create_index((TextField('txt'),))
 
@@ -334,7 +334,6 @@ def testFilters(client):
 @pytest.mark.search
 def testPayloadsWithNoContent(client):
     client.create_index((TextField('txt'),))
-
     client.add_document('doc1', payload='foo baz', txt='foo bar')
     client.add_document('doc2', payload='foo baz2', txt='foo bar')
 
@@ -368,16 +367,16 @@ def testSortby(client):
 
 @pytest.mark.integrations
 @pytest.mark.search
-# @skip_ifmodversion_lt("2.0.0", "search")
+@skip_ifmodversion_lt("2.0.0", "search")
 def testDropIndex(client):
     """
     Ensure the index gets dropped by data remains by default
     """
     for x in range(20):
-        for keep_docs in [[True, {}], [False, {b'name': b'haveit'}]]:
+        for keep_docs in [[True, {}], [False, {'name': 'haveit'}]]:
             idx = "HaveIt"
             index = getClient(idx)
-            index.hset("index:haveit", mapping={b'name': b'haveit'})
+            index.hset("index:haveit", mapping={'name': 'haveit'})
             idef = IndexDefinition(prefix=['index:'])
             index.create_index((TextField('name'),), definition=idef)
             waitForIndex(index, idx)
@@ -524,7 +523,6 @@ def testPartial(client):
 @pytest.mark.search
 def testNoCreate(client):
     client.create_index((TextField('f1'), TextField('f2'), TextField('f3')))
-
     client.add_document('doc1', f1='f1_val', f2='f2_val')
     client.add_document('doc2', f1='f1_val', f2='f2_val')
     client.add_document('doc1', f3='f3_val', no_create=True)
@@ -580,7 +578,7 @@ def testSummarize(client):
 
 @pytest.mark.integrations
 @pytest.mark.search
-# @skip_ifmodversion_lt("2.0.0", "search")
+@skip_ifmodversion_lt("2.0.0", "search")
 def testAlias(client):
     index1 = getClient("testAlias")
     index2 = getClient("testAlias2")
@@ -648,20 +646,18 @@ def testAliasBasic(client):
     index2.aliasupdate('myalias')
     alias_client2 = getClient('myalias')
     res = alias_client2.search('*').docs[0]
-    # todo: not working
-    # assert ('doc2' == res.id)
+    assert ('doc2' == res.id)
 
     # delete the alias and expect an error if we try to query again
     index2.aliasdel('myalias')
     with pytest.raises(Exception):
-        alias_client2.search('*').docs[0]
+        res = alias_client2.search('*').docs[0]
 
 
 @pytest.mark.integrations
 @pytest.mark.search
 def testTags(client):
     client.create_index((TextField('txt'), TagField('tags')))
-
     tags = 'foo,foo bar,hello;world'
     tags2 = 'soba,ramen'
 
@@ -697,8 +693,8 @@ def testTextFieldSortableNostem(client):
 
     # Now get the index info to confirm its contents
     response = client.info()
-    assert b'SORTABLE' in response['attributes'][0]
-    assert b'NOSTEM' in response['attributes'][0]
+    assert 'SORTABLE' in response['attributes'][0]
+    assert 'NOSTEM' in response['attributes'][0]
 
 
 @pytest.mark.integrations
@@ -731,10 +727,10 @@ def testSpellCheck(client):
     waitForIndex(client, 'idx')
 
     res = client.spellcheck('impornant')
-    assert (b'important' == res[b'impornant'][0]['suggestion'])
+    assert ('important' == res[b'impornant'][0]['suggestion'])
 
     res = client.spellcheck('contnt')
-    assert (b'content' == res[b'contnt'][0]['suggestion'])
+    assert ('content' == res[b'contnt'][0]['suggestion'])
 
 
 @pytest.mark.integrations
@@ -751,7 +747,7 @@ def testDictOps(client):
 
     # Dump dict and inspect content
     res = client.dict_dump('custom_dict')
-    assert ([b'item1', b'item3'] == res)
+    assert (['item1', 'item3'] == res)
 
     # Remove rest of the items before reload
     client.dict_del('custom_dict', *res)
@@ -818,24 +814,22 @@ def testGet(client):
     client.add_document('doc1', f1='some valid content dd1', f2='this is sample text ff1')
     client.add_document('doc2', f1='some valid content dd2', f2='this is sample text ff2')
 
-    assert ([[b'f1', b'some valid content dd2', b'f2', b'this is sample text ff2']] == client.get('doc2'))
-    assert ([[b'f1', b'some valid content dd1', b'f2', b'this is sample text ff1'],
-             [b'f1', b'some valid content dd2', b'f2', b'this is sample text ff2']] == client.get('doc1', 'doc2'))
+    assert ([['f1', 'some valid content dd2', 'f2', 'this is sample text ff2']] == client.get('doc2'))
+    assert ([['f1', 'some valid content dd1', 'f2', 'this is sample text ff1'],
+             ['f1', 'some valid content dd2', 'f2', 'this is sample text ff2']] == client.get('doc1', 'doc2'))
 
 
 @pytest.mark.integrations
 @pytest.mark.search
-# @skip_ifmodversion_lt("2.2.0", "search")
+@skip_ifmodversion_lt("2.2.0", "search")
 def testConfig(client):
-    # todo: not working
-    # assert client.config_set('TIMEOUT', '100')
+    assert client.config_set('TIMEOUT', '100')
     with pytest.raises(redis.ResponseError):
         client.config_set('TIMEOUT', "null")
-    # todo: not working
-    # res = client.config_get('*')
-    # assert (b'100' == res[b'TIMEOUT'])
-    # res = client.config_get('TIMEOUT')
-    # assert (b'100' == res[b'TIMEOUT'])
+    res = client.config_get('*')
+    assert ('100' == res['TIMEOUT'])
+    res = client.config_get('TIMEOUT')
+    assert ('100' == res['TIMEOUT'])
 
 
 @pytest.mark.integrations
@@ -887,24 +881,24 @@ def testAggregations(client):
 
     res = res.rows[0]
     assert (len(res) == 26)
-    assert (b'redis' == res[1])
-    assert (b'3' == res[3])
-    assert (b'3' == res[5])
-    assert (b'3' == res[7])
-    assert (b'21' == res[9])
-    assert (b'3' == res[11])
-    assert (b'10' == res[13])
-    assert (b'7' == res[15])
-    assert (b'3.60555127546' == res[17])
-    assert (b'10' == res[19])
-    assert ([b'RediSearch', b'RedisAI', b'RedisJson'] == res[21])
-    assert (b'RediSearch' == res[23])
+    assert ('redis' == res[1])
+    assert ('3' == res[3])
+    assert ('3' == res[5])
+    assert ('3' == res[7])
+    assert ('21' == res[9])
+    assert ('3' == res[11])
+    assert ('10' == res[13])
+    assert ('7' == res[15])
+    assert ('3.60555127546' == res[17])
+    assert ('10' == res[19])
+    assert (['RediSearch', 'RedisAI', 'RedisJson'] == res[21])
+    assert ('RediSearch' == res[23])
     assert (2 == len(res[25]))
 
 
 @pytest.mark.integrations
 @pytest.mark.search
-# @skip_ifmodversion_lt("2.0.0", "search")
+@skip_ifmodversion_lt("2.0.0", "search")
 def testIndexDefinition(client):
     """
     Create definition and test its args
@@ -926,7 +920,7 @@ def testIndexDefinition(client):
 
 @pytest.mark.integrations
 @pytest.mark.search
-# @skip_ifmodversion_lt("2.0.0", "search")
+@skip_ifmodversion_lt("2.0.0", "search")
 def testCreateClientDefinition(client):
     """
     Create definition with no index type provided,
@@ -945,7 +939,7 @@ def testCreateClientDefinition(client):
 
 @pytest.mark.integrations
 @pytest.mark.search
-# @skip_ifmodversion_lt("2.0.0", "search")
+@skip_ifmodversion_lt("2.0.0", "search")
 def testCreateClientDefinitionHash(client):
     """
     Create definition with IndexType.HASH as index type (ON HASH),
@@ -964,18 +958,17 @@ def testCreateClientDefinitionHash(client):
 
 @pytest.mark.integrations
 @pytest.mark.search
-# @skip_ifmodversion_lt("2.2.0", "search")
+@skip_ifmodversion_lt("2.2.0", "search")
 def testCreateClientDefinitionJson(client):
     """
     Create definition with IndexType.JSON as index type (ON JSON),
     and use json client to test it.
     """
-    rc = RedisPlus(Redis())
     definition = IndexDefinition(prefix=['king:'], index_type=IndexType.JSON)
     client.create_index((TextField('$.name'),), definition=definition)
 
+    rc = RedisPlus(Redis())
     rj = rc.json
-    # rj = rejson.Client(host='localhost', port=conn.port, decode_responses=True)
     rj.jsonset('king:1', Path.rootPath(), {'name': 'henry'})
     rj.jsonset('king:2', Path.rootPath(), {'name': 'james'})
 
@@ -988,7 +981,7 @@ def testCreateClientDefinitionJson(client):
 
 @pytest.mark.integrations
 @pytest.mark.search
-# @skip_ifmodversion_lt("2.2.0", "search")
+@skip_ifmodversion_lt("2.2.0", "search")
 def testFieldsAsName(client):
     # create index
     SCHEMA = (
@@ -1014,7 +1007,7 @@ def testFieldsAsName(client):
 
 @pytest.mark.integrations
 @pytest.mark.search
-# @skip_ifmodversion_lt("2.2.0", "search")
+@skip_ifmodversion_lt("2.2.0", "search")
 def testSearchReturnFields(client):
     # insert json data
     rc = RedisPlus(Redis())
