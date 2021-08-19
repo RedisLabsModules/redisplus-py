@@ -21,6 +21,8 @@ classifiers = [
 [tool.poetry.dependencies]
 python = "^3.6.2"
 redis = {git = "https://github.com/andymccurdy/redis-py"}
+numpy = ">=1.19.5"  # ai
+deprecated = "^1.2.12"
 
 [tool.poetry.dev-dependencies]
 flake8 = "^3.9.2"
@@ -29,7 +31,7 @@ vulture = "^2.3"
 tox = "^3.24.0"
 tox-poetry = "^0.4.0"
 pytest = "^6.2.0"
-# flake8-docstrings = "^1.6.0"
+flake8-docstrings = "^1.6.0"
 mock = "^4.0.3"
 black = "^21.7b0"
 tox-docker = "^3.0.0"
@@ -40,6 +42,8 @@ readthedocs-sphinx-search = "^0.1.0"
 toml = "^0.10.2"
 sphinx-automodapi = "^0.13"
 invoke = "^1.6.0"
+ml2rt = "^0.2.0"
+scikit-image = "^0.16.0"
 
 [tool.poetry.extras]
 docs = ["sphinx", "sphinx-rtd-theme", "readthedocs-sphinx-search", "sphinx-automodapi", "toml"]
@@ -49,10 +53,13 @@ markers = [
     "json: only json tests",
     "timeseries: only redistimeseries tests",
     "bloom: only redisbloom tests",
-    "graph: only redisgraph ests",
+    "timeseries: only redistimeseries tests",
+    "graph: only redisgraph tests",
+    "ai: only redisai tests",
+    "aidag: only redisai tests with dag",
     "unmarked: tests that are not limited to a specific module",
 
-    "integrations: run integration tests against a redis docker",
+    "integrations: run all tests that require a running redis",
     "pipeline: run only tests with a pipeline"
 ]
 
