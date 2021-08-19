@@ -45,7 +45,6 @@ class TimeSeries(CommandMixin, AbstractFeature, object):
         for k in MODULE_CALLBACKS:
             self.client.set_response_callback(k, MODULE_CALLBACKS[k])
 
-
     def pipeline(self, **kwargs):
         p = self._pipeline(
             CommandMixin,
