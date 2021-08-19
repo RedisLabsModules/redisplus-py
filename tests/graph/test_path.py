@@ -3,6 +3,7 @@ from redisplus.graph import node
 from redisplus.graph import path
 import pytest
 
+
 @pytest.mark.graph
 def test_init():
     with pytest.raises(TypeError):
@@ -12,12 +13,14 @@ def test_init():
 
     assert isinstance(path.Path([], []), path.Path)
 
+
 @pytest.mark.graph
 def test_new_empty_path():
     new_empty_path = path.Path.new_empty_path()
     assert isinstance(new_empty_path, path.Path)
     assert new_empty_path._nodes == []
     assert new_empty_path._edges == []
+
 
 @pytest.mark.graph
 def test_wrong_flows():
@@ -39,6 +42,7 @@ def test_wrong_flows():
     p.add_edge(edge_1)
     with pytest.raises(AssertionError):
         p.add_edge(edge_2)
+
 
 @pytest.mark.graph
 def test_nodes_and_edges():
@@ -66,23 +70,23 @@ def test_nodes_and_edges():
     assert node_2 == p.last_node()
     assert 2 == p.nodes_count()
 
+
 @pytest.mark.graph
 def test_compare():
     node_1 = node.Node(node_id=1)
     node_2 = node.Node(node_id=2)
     edge_1 = edge.Edge(node_1, None, node_2)
 
-    assert path.Path.new_empty_path() == \
-                        path.Path.new_empty_path()
-    assert path.Path(nodes=[node_1, node_2], edges=[edge_1]) == \
-                        path.Path(nodes=[node_1, node_2], edges=[edge_1])
-    assert path.Path(nodes=[node_1], edges=[]) != \
-                        path.Path(nodes=[], edges=[])
-    assert path.Path(nodes=[node_1], edges=[]) != \
-                        path.Path(nodes=[], edges=[])
-    assert path.Path(nodes=[node_1], edges=[]) != \
-                        path.Path(nodes=[node_2], edges=[])
-    assert path.Path(nodes=[node_1], edges=[edge_1]) != \
-                        path.Path(nodes=[node_1], edges=[])
-    assert path.Path(nodes=[node_1], edges=[edge_1]) != \
-                        path.Path(nodes=[node_2], edges=[edge_1])
+    assert path.Path.new_empty_path() == path.Path.new_empty_path()
+    assert path.Path(nodes=[node_1, node_2], edges=[edge_1]) == path.Path(
+        nodes=[node_1, node_2], edges=[edge_1]
+    )
+    assert path.Path(nodes=[node_1], edges=[]) != path.Path(nodes=[], edges=[])
+    assert path.Path(nodes=[node_1], edges=[]) != path.Path(nodes=[], edges=[])
+    assert path.Path(nodes=[node_1], edges=[]) != path.Path(nodes=[node_2], edges=[])
+    assert path.Path(nodes=[node_1], edges=[edge_1]) != path.Path(
+        nodes=[node_1], edges=[]
+    )
+    assert path.Path(nodes=[node_1], edges=[edge_1]) != path.Path(
+        nodes=[node_2], edges=[edge_1]
+    )

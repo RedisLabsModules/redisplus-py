@@ -10,6 +10,7 @@ from .commands import CommandMixin
 from .exceptions import VersionMismatchException
 from .query_result import QueryResult
 
+
 class Graph(CommandMixin, AbstractFeature, object):
     """
     Graph, collection of nodes and edges.

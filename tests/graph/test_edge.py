@@ -2,6 +2,7 @@ from redisplus.graph import edge
 from redisplus.graph import node
 import pytest
 
+
 @pytest.mark.graph
 def test_init():
 
@@ -13,48 +14,55 @@ def test_init():
         edge.Edge(None, None, node.Node())
 
     assert isinstance(
-        edge.Edge(node.Node(node_id=1), None, node.Node(node_id=2)),
-        edge.Edge
+        edge.Edge(node.Node(node_id=1), None, node.Node(node_id=2)), edge.Edge
     )
+
 
 @pytest.mark.graph
 def test_toString():
-    props_result = edge.Edge(node.Node(), None, node.Node(),
-                                properties={"a": "a", "b": 10}).toString()
+    props_result = edge.Edge(
+        node.Node(), None, node.Node(), properties={"a": "a", "b": 10}
+    ).toString()
     assert props_result == '{a:"a",b:10}'
 
-    no_props_result = edge.Edge(node.Node(), None, node.Node(),
-                                properties={}).toString()
-    assert no_props_result == ''
+    no_props_result = edge.Edge(
+        node.Node(), None, node.Node(), properties={}
+    ).toString()
+    assert no_props_result == ""
+
 
 @pytest.mark.graph
 def test_stringify():
-    john = node.Node(alias='a', label='person',
-                        properties={'name': 'John Doe',
-                                    'age': 33,
-                                    'someArray': [1, 2, 3]})
-    japan = node.Node(alias='b', label='country',
-                        properties={'name': 'Japan'})
+    john = node.Node(
+        alias="a",
+        label="person",
+        properties={"name": "John Doe", "age": 33, "someArray": [1, 2, 3]},
+    )
+    japan = node.Node(alias="b", label="country", properties={"name": "Japan"})
     edge_with_relation = edge.Edge(
-        john, 'visited', japan, properties={'purpose': 'pleasure'})
-    assert \
-        '(a:person{age:33,name:"John Doe",someArray:[1, 2, 3]})' \
-        '-[:visited{purpose:"pleasure"}]->' \
+        john, "visited", japan, properties={"purpose": "pleasure"}
+    )
+    assert (
+        '(a:person{age:33,name:"John Doe",someArray:[1, 2, 3]})'
+        '-[:visited{purpose:"pleasure"}]->'
         '(b:country{name:"Japan"})' == str(edge_with_relation)
+    )
 
-    edge_no_relation_no_props = edge.Edge(japan, '', john)
-    assert \
-        '(b:country{name:"Japan"})' \
-        '-[]->' \
-        '(a:person{age:33,name:"John Doe",someArray:[1, 2, 3]})' == \
-        str(edge_no_relation_no_props)
+    edge_no_relation_no_props = edge.Edge(japan, "", john)
+    assert (
+        '(b:country{name:"Japan"})'
+        "-[]->"
+        '(a:person{age:33,name:"John Doe",someArray:[1, 2, 3]})'
+        == str(edge_no_relation_no_props)
+    )
 
-    edge_only_props = edge.Edge(john, '', japan,
-                                properties={'a': 'b', 'c': 3})
-    assert \
-        '(a:person{age:33,name:"John Doe",someArray:[1, 2, 3]})' \
-        '-[{a:"b",c:3}]->' \
+    edge_only_props = edge.Edge(john, "", japan, properties={"a": "b", "c": 3})
+    assert (
+        '(a:person{age:33,name:"John Doe",someArray:[1, 2, 3]})'
+        '-[{a:"b",c:3}]->'
         '(b:country{name:"Japan"})' == str(edge_only_props)
+    )
+
 
 @pytest.mark.graph
 def test_comparision():
