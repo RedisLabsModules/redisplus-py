@@ -1,41 +1,14 @@
-from .commands import CommandMixin
-from redis.commands import Commands as RedisCommands
 from redis.client import Pipeline, Redis
 
+from .commands import CommandMixin
+from ..feature import AbstractFeature
 
-class Client(CommandMixin, RedisCommands, object):
+
+class Search(CommandMixin, AbstractFeature, object):
     """
-    A client for the RediSearch module.
+    Create a client for talking to search.
     It abstracts the API of the module and lets you just use the engine.
     """
-
-    NUMERIC = "NUMERIC"
-
-    CREATE_CMD = "FT.CREATE"
-    ALTER_CMD = "FT.ALTER"
-    SEARCH_CMD = "FT.SEARCH"
-    ADD_CMD = "FT.ADD"
-    ADDHASH_CMD = "FT.ADDHASH"
-    DROP_CMD = "FT.DROP"
-    EXPLAIN_CMD = "FT.EXPLAIN"
-    DEL_CMD = "FT.DEL"
-    AGGREGATE_CMD = "FT.AGGREGATE"
-    CURSOR_CMD = "FT.CURSOR"
-    SPELLCHECK_CMD = "FT.SPELLCHECK"
-    DICT_ADD_CMD = "FT.DICTADD"
-    DICT_DEL_CMD = "FT.DICTDEL"
-    DICT_DUMP_CMD = "FT.DICTDUMP"
-    GET_CMD = "FT.GET"
-    MGET_CMD = "FT.MGET"
-    CONFIG_CMD = "FT.CONFIG"
-    TAGVALS_CMD = "FT.TAGVALS"
-    ALIAS_ADD_CMD = "FT.ALIASADD"
-    ALIAS_UPDATE_CMD = "FT.ALIASUPDATE"
-    ALIAS_DEL_CMD = "FT.ALIASDEL"
-
-    NOOFFSETS = "NOOFFSETS"
-    NOFIELDS = "NOFIELDS"
-    STOPWORDS = "STOPWORDS"
 
     class BatchIndexer(object):
         """
@@ -121,13 +94,6 @@ class Client(CommandMixin, RedisCommands, object):
         self.CLIENT = client
         self.index_name = index_name
 
-    def execute_command(self, *args, **kwargs):
-        return self.client.execute_command(*args, **kwargs)
-
-    @property
-    def client(self):
-        return self.CLIENT
-
     def pipeline(self, transaction=True, shard_hint=None):
         """
         Return a new pipeline object that can queue multiple commands for
@@ -147,7 +113,7 @@ class Client(CommandMixin, RedisCommands, object):
         return p
 
 
-class Pipeline(Pipeline, Client):
+class Pipeline(Pipeline):
     """Pipeline for client"""
 
     def pipeline(self):

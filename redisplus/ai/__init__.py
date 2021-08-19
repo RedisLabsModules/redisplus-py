@@ -30,8 +30,6 @@ class AI(CommandMixin, RedisCommands, object):
 
     def __init__(self, client=None, debug=False, enable_postprocess=True):
         self.CLIENT = client
-        # if debug:
-        #     self.execute_command = enable_debug(super().execute_command)
         self.enable_postprocess = enable_postprocess
 
     def execute_command(self, *args, **kwargs):
@@ -40,14 +38,6 @@ class AI(CommandMixin, RedisCommands, object):
     @property
     def client(self):
         return self.CLIENT
-
-
-# def enable_debug(f):
-#     @wraps(f)
-#     def wrapper(*args):
-#        print(*args)
-#        return f(*args)
-#     return wrapper
 
 
 class Pipeline(redis.client.Pipeline):

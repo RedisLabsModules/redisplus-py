@@ -8,6 +8,33 @@ from .query import Query
 from ._util import to_string
 from .aggregation import AggregateRequest, AggregateResult, Cursor
 
+NUMERIC = "NUMERIC"
+
+CREATE_CMD = "FT.CREATE"
+ALTER_CMD = "FT.ALTER"
+SEARCH_CMD = "FT.SEARCH"
+ADD_CMD = "FT.ADD"
+ADDHASH_CMD = "FT.ADDHASH"
+DROP_CMD = "FT.DROP"
+EXPLAIN_CMD = "FT.EXPLAIN"
+DEL_CMD = "FT.DEL"
+AGGREGATE_CMD = "FT.AGGREGATE"
+CURSOR_CMD = "FT.CURSOR"
+SPELLCHECK_CMD = "FT.SPELLCHECK"
+DICT_ADD_CMD = "FT.DICTADD"
+DICT_DEL_CMD = "FT.DICTDEL"
+DICT_DUMP_CMD = "FT.DICTDUMP"
+GET_CMD = "FT.GET"
+MGET_CMD = "FT.MGET"
+CONFIG_CMD = "FT.CONFIG"
+TAGVALS_CMD = "FT.TAGVALS"
+ALIAS_ADD_CMD = "FT.ALIASADD"
+ALIAS_UPDATE_CMD = "FT.ALIASUPDATE"
+ALIAS_DEL_CMD = "FT.ALIASDEL"
+
+NOOFFSETS = "NOOFFSETS"
+NOFIELDS = "NOFIELDS"
+STOPWORDS = "STOPWORDS"
 
 class CommandMixin:
     def batch_indexer(self, chunk_size=100):
@@ -35,22 +62,22 @@ class CommandMixin:
         - **stopwords**: If not None, we create the index with this custom stopword list. The list can be empty
         """
 
-        args = [self.CREATE_CMD, self.index_name]
+        args = [CREATE_CMD, self.index_name]
         if definition is not None:
             args += definition.args
         if no_term_offsets:
-            args.append(self.NOOFFSETS)
+            args.append(NOOFFSETS)
         if no_field_flags:
-            args.append(self.NOFIELDS)
+            args.append(NOFIELDS)
         if stopwords is not None and isinstance(stopwords, (list, tuple, set)):
-            args += [self.STOPWORDS, len(stopwords)]
+            args += [STOPWORDS, len(stopwords)]
             if len(stopwords) > 0:
                 args += list(stopwords)
 
         args.append("SCHEMA")
         args += list(itertools.chain(*(f.redis_args() for f in fields)))
 
-        return self.client.execute_command(*args)
+        return self.execute_command(*args)
 
     def alter_schema_add(self, fields):
         """
@@ -61,10 +88,10 @@ class CommandMixin:
         - **fields**: a list of Field objects to add for the index
         """
 
-        args = [self.ALTER_CMD, self.index_name, "SCHEMA", "ADD"]
+        args = [ALTER_CMD, self.index_name, "SCHEMA", "ADD"]
         args += list(itertools.chain(*(f.redis_args() for f in fields)))
 
-        return self.client.execute_command(*args)
+        return self.execute_command(*args)
 
     def drop_index(self, delete_documents=True):
         """
@@ -75,7 +102,7 @@ class CommandMixin:
         - **delete_documents**: If `True`, all documents will be deleted.
         """
         keep_str = "" if delete_documents else "KEEPDOCS"
-        return self.client.execute_command(self.DROP_CMD, self.index_name, keep_str)
+        return self.execute_command(DROP_CMD, self.index_name, keep_str)
 
     def dropindex(self, delete_documents=False):
         """
@@ -88,7 +115,7 @@ class CommandMixin:
         - **delete_documents**: If `True`, all documents will be deleted.
         """
         keep_str = "" if delete_documents else "KEEPDOCS"
-        return self.client.execute_command(self.DROP_CMD, self.index_name, keep_str)
+        return self.execute_command(DROP_CMD, self.index_name, keep_str)
 
     def _add_document(
         self,
@@ -112,7 +139,7 @@ class CommandMixin:
         if partial or no_create:
             replace = True
 
-        args = [self.ADD_CMD, self.index_name, doc_id, score]
+        args = [ADD_CMD, self.index_name, doc_id, score]
         if nosave:
             args.append("NOSAVE")
         if payload is not None:
@@ -144,7 +171,7 @@ class CommandMixin:
         if conn is None:
             conn = self.client
 
-        args = [self.ADDHASH_CMD, self.index_name, doc_id, score]
+        args = [ADDHASH_CMD, self.index_name, doc_id, score]
 
         if replace:
             args.append("REPLACE")
@@ -232,7 +259,7 @@ class CommandMixin:
 
         - **delete_actual_document**: if set to True, RediSearch also delete the actual document if it is in the index
         """
-        args = [self.DEL_CMD, self.index_name, doc_id]
+        args = [DEL_CMD, self.index_name, doc_id]
         if conn is None:
             conn = self.client
         if delete_actual_document:
@@ -299,7 +326,7 @@ class CommandMixin:
         """
         args, query = self._mk_query_args(query)
         st = time.time()
-        res = self.client.execute_command(self.SEARCH_CMD, *args)
+        res = self.execute_command(SEARCH_CMD, *args)
 
         return Result(
             res,
@@ -311,7 +338,7 @@ class CommandMixin:
 
     def explain(self, query):
         args, query_text = self._mk_query_args(query)
-        return self.client.execute_command(self.EXPLAIN_CMD, *args)
+        return self.execute_command(EXPLAIN_CMD, *args)
 
     def aggregate(self, query):
         """
@@ -326,14 +353,14 @@ class CommandMixin:
         """
         if isinstance(query, AggregateRequest):
             has_cursor = bool(query._cursor)
-            cmd = [self.AGGREGATE_CMD, self.index_name] + query.build_args()
+            cmd = [AGGREGATE_CMD, self.index_name] + query.build_args()
         elif isinstance(query, Cursor):
             has_cursor = True
-            cmd = [self.CURSOR_CMD, "READ", self.index_name] + query.build_args()
+            cmd = [CURSOR_CMD, "READ", self.index_name] + query.build_args()
         else:
             raise ValueError("Bad query", query)
 
-        raw = self.client.execute_command(*cmd)
+        raw = self.execute_command(*cmd)
         if has_cursor:
             if isinstance(query, Cursor):
                 query.cid = raw[1]
@@ -365,7 +392,7 @@ class CommandMixin:
         **include**: specifies an inclusion custom dictionary.
         **exclude**: specifies an exclusion custom dictionary.
         """
-        cmd = [self.SPELLCHECK_CMD, self.index_name, query]
+        cmd = [SPELLCHECK_CMD, self.index_name, query]
         if distance:
             cmd.extend(["DISTANCE", distance])
 
@@ -375,7 +402,7 @@ class CommandMixin:
         if exclude:
             cmd.extend(["TERMS", "EXCLUDE", exclude])
 
-        raw = self.client.execute_command(*cmd)
+        raw = self.execute_command(*cmd)
 
         corrections = {}
         if raw == 0:
@@ -421,9 +448,9 @@ class CommandMixin:
         - **name**: Dictionary name.
         - **terms**: List of items for adding to the dictionary.
         """
-        cmd = [self.DICT_ADD_CMD, name]
+        cmd = [DICT_ADD_CMD, name]
         cmd.extend(terms)
-        raw = self.client.execute_command(*cmd)
+        raw = self.execute_command(*cmd)
         return raw
 
     def dict_del(self, name, *terms):
@@ -434,9 +461,9 @@ class CommandMixin:
         - **name**: Dictionary name.
         - **terms**: List of items for removing from the dictionary.
         """
-        cmd = [self.DICT_DEL_CMD, name]
+        cmd = [DICT_DEL_CMD, name]
         cmd.extend(terms)
-        raw = self.client.execute_command(*cmd)
+        raw = self.execute_command(*cmd)
         return raw
 
     def dict_dump(self, name):
@@ -446,8 +473,8 @@ class CommandMixin:
 
         - **name**: Dictionary name.
         """
-        cmd = [self.DICT_DUMP_CMD, name]
-        raw = self.client.execute_command(*cmd)
+        cmd = [DICT_DUMP_CMD, name]
+        raw = self.execute_command(*cmd)
         return raw
 
     def config_set(self, option, value):
@@ -458,8 +485,8 @@ class CommandMixin:
         - **option**: the name of the configuration option.
         - **value**: a value for the configuration option.
         """
-        cmd = [self.CONFIG_CMD, "SET", option, value]
-        raw = self.client.execute_command(*cmd)
+        cmd = [CONFIG_CMD, "SET", option, value]
+        raw = self.execute_command(*cmd)
         return raw == "OK"
 
     def config_get(self, option):
@@ -469,9 +496,9 @@ class CommandMixin:
 
         - **option**: the name of the configuration option.
         """
-        cmd = [self.CONFIG_CMD, "GET", option]
+        cmd = [CONFIG_CMD, "GET", option]
         res = {}
-        raw = self.client.execute_command(*cmd)
+        raw = self.execute_command(*cmd)
         if raw:
             for kvs in raw:
                 res[kvs[0]] = kvs[1]
@@ -486,7 +513,7 @@ class CommandMixin:
         - **tagfield**: Tag field name
         """
 
-        cmd = self.client.execute_command(self.TAGVALS_CMD, self.index_name, tagfield)
+        cmd = self.execute_command(TAGVALS_CMD, self.index_name, tagfield)
         return cmd
 
     def aliasadd(self, alias):
@@ -498,7 +525,7 @@ class CommandMixin:
         - **alias**: Name of the alias to create
         """
 
-        cmd = self.client.execute_command(self.ALIAS_ADD_CMD, alias, self.index_name)
+        cmd = self.execute_command(ALIAS_ADD_CMD, alias, self.index_name)
         return cmd
 
     def aliasupdate(self, alias):
@@ -510,7 +537,7 @@ class CommandMixin:
         - **alias**: Name of the alias to create
         """
 
-        cmd = self.client.execute_command(self.ALIAS_UPDATE_CMD, alias, self.index_name)
+        cmd = self.execute_command(ALIAS_UPDATE_CMD, alias, self.index_name)
         return cmd
 
     def aliasdel(self, alias):
@@ -522,5 +549,5 @@ class CommandMixin:
         - **alias**: Name of the alias to delete
         """
 
-        cmd = self.client.execute_command(self.ALIAS_DEL_CMD, alias)
+        cmd = self.execute_command(ALIAS_DEL_CMD, alias)
         return cmd

@@ -63,3 +63,11 @@ class RedisPlus(object):
         import redisplus.ai
 
         return redisplus.ai.AI(self.client, **kwargs)
+
+    @property
+    def search(self, name='idx'):
+        """For running bloom specific commands."""
+        kwargs = self.__extras__.get("search", {})
+        import redisplus.search
+
+        return redisplus.search.Search(self.client, name, **kwargs)
