@@ -41,6 +41,11 @@ readthedocs-sphinx-search = "^0.1.0"
 toml = "^0.10.2"
 sphinx-automodapi = "^0.13"
 invoke = "^1.6.0"
+ml2rt = "^0.2.0"
+pylint = "^2.8.2"
+scikit-image = "==0.16.2"
+numpy = ">=1.19.5"
+Deprecated = "^1.2.12"
 
 [tool.poetry.extras]
 #redisearch = ["redisearch"]
@@ -58,6 +63,8 @@ markers = [
     "redisjson: only redisjson tests",
     "redistimeseries: only redistimeseries tests",
     "redisbloom: only redisbloom tests",
+    "redisai: only redisai tests",
+    "redisaidag: only redisai tests with dag",
     "unmarked: tests that are not limited to a specific module",
 
     "integrations: run integration tests against a redis docker",
