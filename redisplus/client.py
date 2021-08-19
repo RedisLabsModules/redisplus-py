@@ -37,6 +37,7 @@ class RedisPlus(object):
         """For running json specific commands."""
         kwargs = self.__extras__.get("json", {})
         import redisplus.json
+
         return redisplus.json.Client(self.client, **kwargs)
 
     @property
@@ -44,6 +45,7 @@ class RedisPlus(object):
         """For running bloom specific commands."""
         kwargs = self.__extras__.get("bf", {})
         import redisplus.bf
+
         return redisplus.bf.Client(self.client, **kwargs)
 
     @property
@@ -51,6 +53,7 @@ class RedisPlus(object):
         """For running bloom specific commands."""
         kwargs = self.__extras__.get("ts", {})
         import redisplus.ts
+
         return redisplus.ts.Client(self.client, **kwargs)
 
     @property
@@ -58,4 +61,5 @@ class RedisPlus(object):
         """For running bloom specific commands."""
         kwargs = self.__extras__.get("ai", {})
         import redisplus.ai
+
         return redisplus.ai.Client(self.client, **kwargs)

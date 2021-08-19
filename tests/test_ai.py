@@ -81,7 +81,7 @@ def post_process(tensors: List[Tensor], keys: List[str], args: List[str]):
 
 
 def get_client(debug=False):
-    rc = RedisPlus(extras={'ai': {"debug": debug}})
+    rc = RedisPlus(extras={"ai": {"debug": debug}})
     return rc.ai
 
 
