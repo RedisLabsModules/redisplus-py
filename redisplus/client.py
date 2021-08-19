@@ -38,7 +38,7 @@ class RedisPlus(object):
         kwargs = self.__extras__.get("json", {})
         import redisplus.json
 
-        return redisplus.json.Client(self.client, **kwargs)
+        return redisplus.json.JSON(self.client, **kwargs)
 
     @property
     def bloom(self):
@@ -46,7 +46,7 @@ class RedisPlus(object):
         kwargs = self.__extras__.get("bf", {})
         import redisplus.bf
 
-        return redisplus.bf.Client(self.client, **kwargs)
+        return redisplus.bf.Bloom(self.client, **kwargs)
 
     @property
     def timeseries(self):
@@ -54,7 +54,7 @@ class RedisPlus(object):
         kwargs = self.__extras__.get("ts", {})
         import redisplus.ts
 
-        return redisplus.ts.Client(self.client, **kwargs)
+        return redisplus.ts.TimeSeries(self.client, **kwargs)
 
     @property
     def ai(self):
@@ -62,4 +62,4 @@ class RedisPlus(object):
         kwargs = self.__extras__.get("ai", {})
         import redisplus.ai
 
-        return redisplus.ai.Client(self.client, **kwargs)
+        return redisplus.ai.AI(self.client, **kwargs)

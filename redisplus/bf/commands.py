@@ -43,6 +43,8 @@ TDIGEST_QUANTILE = "TDIGEST.QUANTILE"
 TDIGEST_MIN = "TDIGEST.MIN"
 TDIGEST_MAX = "TDIGEST.MAX"
 TDIGEST_INFO = "TDIGEST.INFO"
+
+
 class CommandMixin:
     """RedisBloom commands."""
 

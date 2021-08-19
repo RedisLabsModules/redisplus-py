@@ -16,6 +16,7 @@ MGET_CMD = "TS.MGET"
 INFO_CMD = "TS.INFO"
 QUERYINDEX_CMD = "TS.QUERYINDEX"
 
+
 class CommandMixin:
     """RedisTimeSeries Commands."""
 

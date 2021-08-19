@@ -9,7 +9,7 @@ i = lambda l: [int(v) for v in l]
 @pytest.fixture
 def client():
     rc = RedisPlus(Redis())  # modules={'bf': {"client": Redis()}})
-    assert isinstance(rc.bloom, redisplus.bf.client.Client)
+    assert isinstance(rc.bloom, redisplus.bf.Bloom)
     rc.bloom.flushdb()
 
     return rc.bloom

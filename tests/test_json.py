@@ -10,7 +10,7 @@ from .conftest import skip_ifmodversion_lt
 @pytest.fixture
 def client():
     rc = RedisPlus(Redis())
-    assert isinstance(rc.json, redisplus.json.client.Client)
+    assert isinstance(rc.json, redisplus.json.JSON)
     rc.json.flushdb()
     return rc.json
 

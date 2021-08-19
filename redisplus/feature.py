@@ -27,24 +27,27 @@ class AbstractFeature(Commands, ABC):
 
         cls - This is the command class, to mix into the pipeline.
         """
-
         # set some sane kwargs from common defaults for the pipeline
-        kwargs['transaction'] = kwargs.get('transaction', True)
-        kwargs['shard_hint'] = kwargs.get('shard_hint', None)
-        kwargs['connection_pool'] = \
-            kwargs.get('connection_pool', self.client.connection_pool)
-        kwargs['response_callbacks'] = \
-            kwargs.get('response_callbacks', self.client.response_callbacks)
+        kwargs["transaction"] = kwargs.get("transaction", True)
+        kwargs["shard_hint"] = kwargs.get("shard_hint", None)
+        kwargs["connection_pool"] = kwargs.get(
+            "connection_pool", self.client.connection_pool
+        )
+        kwargs["response_callbacks"] = kwargs.get(
+            "response_callbacks", self.client.response_callbacks
+        )
 
         internals = {}
         sanitized = {}
         for k, v in kwargs.items():
-            if k.find('_') == 0:
+            if k.find("_") == 0:
                 internals[k] = kwargs[k]
             else:
                 sanitized[k] = kwargs[k]
 
-        class Piper(Pipeline, cls): pass
+        class Piper(Pipeline, cls):
+            pass
+
         p = Piper(**sanitized)
         for k, v in internals.items():
             setattr(p, k, v)
