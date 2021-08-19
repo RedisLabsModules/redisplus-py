@@ -41,7 +41,7 @@ class Client(CommandMixin, AbstractFeature, object):
     INFO_CMD = "TS.INFO"
     QUERYINDEX_CMD = "TS.QUERYINDEX"
 
-    def __init__(self, client=None):
+    def __init__(self, client=None, **kwargs):
         """Create a new RedisTimeSeries client."""
      
 

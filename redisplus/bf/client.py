@@ -74,7 +74,7 @@ class Client(CommandMixin, RedisCommands, object):  # changed from StrictRedis
     TDIGEST_MAX = "TDIGEST.MAX"
     TDIGEST_INFO = "TDIGEST.INFO"
 
-    def __init__(self, client):
+    def __init__(self, client, **kwargs):
         """Create a new RedisBloom client."""
         # Set the module commands' callbacks
         MODULE_CALLBACKS = {
