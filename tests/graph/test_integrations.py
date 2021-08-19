@@ -8,7 +8,7 @@ import pytest
 
 @pytest.fixture
 def client():
-    rc = RedisPlus(Redis(), extras={"graph": {'name": "social'}})
+    rc = RedisPlus(Redis(), extras={"graph": {"name": "social"}})
     assert isinstance(rc.graph, redisplus.graph.Graph)
     rc.graph.flushdb()
 
