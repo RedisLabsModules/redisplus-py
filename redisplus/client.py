@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Dict, Optional
 from redis.client import Redis
 
 
@@ -11,6 +11,7 @@ class RedisPlus(object):
     def __init__(
         self,
         client: Optional[Redis] = None,
+        extras: Optional[Dict] = {},
     ):
         """
         General client to be used for redis modules.
@@ -23,6 +24,7 @@ class RedisPlus(object):
         if client is None:
             client = Redis()
         self.__client__ = client
+        self.__extras__ = extras
 
     @property
     def client(self):
@@ -32,17 +34,31 @@ class RedisPlus(object):
     @property
     def json(self):
         """For running json specific commands."""
+        kwargs = self.__extras__.get("json", {})
         import redisplus.json
-        return redisplus.json.Client(self.client)
+
+        return redisplus.json.Client(self.client, **kwargs)
 
     @property
     def bloom(self):
         """For running bloom specific commands."""
+        kwargs = self.__extras__.get("bloom", {})
         import redisplus.bf
-        return redisplus.bf.Client(self.client)
+
+        return redisplus.bf.Client(self.client, **kwargs)
 
     @property
     def timeseries(self):
         """For running bloom specific commands."""
+        kwargs = self.__extras__.get("timeseries", {})
         import redisplus.ts
-        return redisplus.ts.Client(self.client)
+
+        return redisplus.ts.Client(self.client, **kwargs)
+
+    @property
+    def graph(self):
+        """For running bloom specific commands."""
+        kwargs = self.__extras__.get("graph", {})
+        import redisplus.graph
+
+        return redisplus.graph.Client(self.client, **kwargs)

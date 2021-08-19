@@ -49,6 +49,7 @@ markers = [
     "json: only json tests",
     "timeseries: only redistimeseries tests",
     "bloom: only redisbloom tests",
+    "graph: only redisgraph ests",
     "unmarked: tests that are not limited to a specific module",
 
     "integrations: run integration tests against a redis docker",

@@ -10,9 +10,7 @@ from .utils import (
     parse_m_get,
 )
 from .info import TSInfo
-from ..helpers import (
-    parseToList
-)
+from ..helpers import parseToList
 from .commands import CommandMixin
 
 
@@ -43,7 +41,6 @@ class Client(CommandMixin, AbstractFeature, object):
 
     def __init__(self, client=None):
         """Create a new RedisTimeSeries client."""
-     
 
         # Set the module commands' callbacks
         MODULE_CALLBACKS = {

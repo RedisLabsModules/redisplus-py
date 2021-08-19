@@ -339,9 +339,11 @@ def testMultiReverseRange(client):
     # test withlabels
     res = client.mrevrange(0, 200, filters=['Test=This'], with_labels=True)
     assert {'Test': 'This', 'team': 'ny'} == res[0]['1'][0]
+    print(res)
 
     # test with selected labels
     res = client.mrevrange(0, 200, filters=['Test=This'], select_labels=['team'])
+    print(res)
     assert {'team': 'ny'} == res[0]['1'][0]
     assert {'team': 'sf'} == res[1]['2'][0]
 
@@ -438,7 +440,6 @@ def testQueryIndex(client):
 @pytest.mark.pipeline
 def testPipeline(client):
     pipeline = client.pipeline()
-    print(pipeline)
     pipeline.create('with_pipeline')
     for i in range(100):
         pipeline.add('with_pipeline', i, 1.1 * i)

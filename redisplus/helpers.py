@@ -1,3 +1,7 @@
+import random
+import string
+
+
 def bulk_of_jsons(d):
     """Replace serialized JSON values with objects in a bulk array response (list)."""
 
@@ -34,3 +38,31 @@ def parseToList(response):
         else:
             res.append(None)
     return res
+
+
+def random_string(length=10):
+    """
+    Returns a random N character long string.
+    """
+    return "".join(
+        random.choice(string.ascii_lowercase) for x in range(length)
+    )  # nosec
+
+
+def quote_string(v):
+    """
+    RedisGraph strings must be quoted,
+    quote_string wraps given v with quotes incase
+    v is a string.
+    """
+
+    if isinstance(v, bytes):
+        v = v.decode()
+    elif not isinstance(v, str):
+        return v
+    if len(v) == 0:
+        return '""'
+
+    v = v.replace('"', '\\"')
+
+    return '"{}"'.format(v)
