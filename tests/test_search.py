@@ -190,40 +190,6 @@ def testClient(client):
     client.delete_document('doc-5ghs2')
 
 
-"""
-seems like this command was removed from redisearch
-https://github.com/RediSearch/RediSearch/pull/1372
-
-@pytest.mark.integrations
-@pytest.mark.search
-def testAddHash(client):
-
-    # with conn as r:
-    #     if check_version(r, 20000):
-    #         return
-    #     # Creating a client with a given index name
-    # client = Client(Redis(), 'idx')
-
-    # client.flushdb()
-    # Creating the index definition and schema
-    client.create_index((TextField('title', weight=5.0), TextField('body')))
-
-    client.hset(
-        'doc1',
-        mapping={
-            'title': 'RediSearch',
-            'body': 'Redisearch implements a search engine on top of redis'
-        })
-
-    client.add_document_hash('doc1')
-
-    # Searching with complext parameters:
-    q = Query("search engine").verbatim().no_content().paging(0, 5)
-    res = client.search(q)
-    assert ('doc1' == res.docs[0].id)
-"""
-
-
 @pytest.mark.integrations
 @pytest.mark.search
 @skip_ifmodversion_lt("2.2.0", "search")
