@@ -51,4 +51,4 @@ def test_comparision(fixture):
     assert node.Node(alias="a", label="l") != node.Node(alias="a", label="l1")
 
     assert node.Node(properties={"a": 10}) == node.Node(properties={"a": 10})
-    assert node.Node() == node.Node(properties={"a": 10})
+    assert node.Node() != node.Node(properties={"a": 10})

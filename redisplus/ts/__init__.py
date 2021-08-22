@@ -28,7 +28,7 @@ class TimeSeries(CommandMixin, AbstractFeature, object):
             CREATE_CMD: bool_ok,
             ALTER_CMD: bool_ok,
             CREATERULE_CMD: bool_ok,
-            DEL_CMD: bool_ok,
+            DEL_CMD: int,
             DELETERULE_CMD: bool_ok,
             RANGE_CMD: parse_range,
             REVRANGE_CMD: parse_range,

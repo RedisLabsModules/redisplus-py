@@ -51,7 +51,7 @@ def test_nodes_and_edges():
     edge_1 = edge.Edge(node_1, None, node_2)
 
     p = path.Path.new_empty_path()
-    assert p.nodes(), []
+    assert p.nodes() == []
     p.add_node(node_1)
     assert [] == p.edges()
     assert 0 == p.edge_count()
