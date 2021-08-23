@@ -118,13 +118,8 @@ class CommandMixin:
         pieces.append(str_path(path))
         return self.execute_command("JSON.MGET", *pieces)
 
-    def jsonsethelper(self, name, path, obj, nx=False, xx=False):
-        """
-        Set the JSON value at key ``name`` under the ``path`` to ``obj``.
+    def _executejsonset(self, name, path, obj, nx, xx):
 
-        ``nx`` if set to True, set ``value`` only if it does not exist
-        ``xx`` if set to True, set ``value`` only if it exists
-        """
         pieces = [name, str_path(path), self._encode(obj)]
 
         # Handle existential modifiers
@@ -148,7 +143,7 @@ class CommandMixin:
         """
 
         try:
-            return self.jsonsethelper(name, path, obj, nx, xx)
+            return self._executejsonset(name, path, obj, nx, xx)
         except TypeError:
             obj_new = {}
             for k, v in obj.items():
@@ -156,7 +151,7 @@ class CommandMixin:
                     obj_new[k.decode('utf-8')] = v
                 except AttributeError:
                     obj_new[k] = v
-            return self.jsonsethelper(name, path, obj_new, nx, xx)
+            return self._executejsonset(name, path, obj_new, nx, xx)
 
     def jsonstrlen(self, name, path=Path.rootPath()):
         """Return the length of the string JSON value under ``path`` at key ``name``."""
