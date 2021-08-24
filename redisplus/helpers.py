@@ -44,6 +44,6 @@ def decodeDicKeys(obj):
     newobj = copy.copy(obj)
     for k in obj.keys():
         if isinstance(k, bytes):
-            newobj[k.decode('utf-8')] = newobj[k]
+            newobj[k.decode("utf-8")] = newobj[k]
             newobj.pop(k)
     return newobj
