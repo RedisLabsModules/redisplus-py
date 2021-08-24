@@ -92,7 +92,7 @@ class Search(CommandMixin, AbstractFeature, object):
 
         If conn is not None, we employ an already existing redis connection
         """
-        self.CLIENT = client
+        self.client = client
         self.index_name = index_name
 
     def pipeline(self, transaction=True, shard_hint=None):

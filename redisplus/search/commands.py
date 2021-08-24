@@ -39,6 +39,8 @@ STOPWORDS = "STOPWORDS"
 
 
 class CommandMixin:
+    """Search commands."""
+
     def batch_indexer(self, chunk_size=100):
         """
         Create a new batch indexer from the client with a given chunk size
