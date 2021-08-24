@@ -24,34 +24,35 @@ class Client(Commands, object):
         """
         if client is None:
             client = Redis()
-        self.__client__ = client
+        self.client = client
 
         self.__extras__ = extras
 
     @property
-    def client(self):
-        """Return the redis client, used for this connection."""
-        return self.__client__
+    def __client__(self):
+        """Return the internal representation of the redis client
+        used for this connection. This is not public."""
+        return self.client
 
     @property
     def json(self):
-        """For running json specific commands."""
+        """For running json commands."""
         kwargs = self.__extras__.get("json", {})
         import redisplus.json
 
         return redisplus.json.JSON(self.client, **kwargs)
 
     @property
-    def bloom(self):
-        """For running bloom specific commands."""
+    def bf(self):
+        """For running bloom commands."""
         kwargs = self.__extras__.get("bf", {})
         import redisplus.bf
 
         return redisplus.bf.Bloom(self.client, **kwargs)
 
     @property
-    def timeseries(self):
-        """For running bloom specific commands."""
+    def tf(self):
+        """For running timeseries commands."""
         kwargs = self.__extras__.get("ts", {})
         import redisplus.ts
 
@@ -67,8 +68,8 @@ class Client(Commands, object):
 
     def execute_command(self, *args, **kwargs):
         """Pull in and excecute the redis commands"""
-        return self.client.execute_command(*args, **kwargs)
+        return self.__client__.execute_command(*args, **kwargs)
 
     def pipeline(self, *args, **kwargs):
         """Pipelines"""
-        return self.client.pipeline(*args, **kwargs)
+        return self.__client__.pipeline(*args, **kwargs)

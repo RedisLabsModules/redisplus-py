@@ -75,19 +75,10 @@ class Bloom(CommandMixin, AbstractFeature, object):
             TDIGEST_INFO: TDigestInfo,
         }
 
-        self.CLIENT = client
+        self.client = client
 
         for k, v in MODULE_CALLBACKS.items():
             self.client.set_response_callback(k, v)
-
-    @property
-    def client(self):
-        """Get the client."""
-        return self.CLIENT
-
-    def execute_command(self, *args, **kwargs):
-        """Execute redis command."""
-        return self.client.execute_command(*args, **kwargs)
 
     @staticmethod
     def appendItems(params, items):

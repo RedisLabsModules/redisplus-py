@@ -14,9 +14,9 @@ class AbstractFeature(ABC):
         return self.client.execute_command(*args, **kwargs)
 
     @property
-    def client(self):
-        """Get the client instance."""
-        return self.CLIENT
+    def __client__(self):
+        """Get the client instance set by the redis module class."""
+        return self.client
 
     def _pipeline(self, cls, **kwargs):
         """Build and return a pipeline object.

@@ -60,7 +60,7 @@ class JSON(CommandMixin, AbstractFeature, object):
             "JSON.DEBUG": int,
         }
 
-        self.CLIENT = client
+        self.client = client
 
         for key, value in self.MODULE_CALLBACKS.items():
             self.client.set_response_callback(key, value)

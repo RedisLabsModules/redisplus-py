@@ -40,7 +40,7 @@ class TimeSeries(CommandMixin, AbstractFeature, object):
             QUERYINDEX_CMD: parseToList,
         }
 
-        self.CLIENT = client
+        self.client = client
 
         for k in MODULE_CALLBACKS:
             self.client.set_response_callback(k, MODULE_CALLBACKS[k])
