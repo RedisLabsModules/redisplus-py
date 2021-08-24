@@ -11,7 +11,7 @@ from .conftest import skip_ifmodversion_lt
 from redis import Redis
 
 import redisplus.search
-from redisplus.client import RedisPlus
+from redisplus.client import Client
 from redisplus.json.path import Path
 from redisplus.search import Search
 from redisplus.search.field import *
@@ -51,7 +51,7 @@ def getClient(name):
     Gets a client client attached to an index name which is ready to be
     created
     """
-    rc = RedisPlus(Redis(), extras={"search": {"index_name": name}})
+    rc = Client(Redis(), extras={"search": {"index_name": name}})
     assert isinstance(rc.search, redisplus.search.Search)
     return rc.search
 
@@ -94,9 +94,9 @@ def createIndex(client, num_docs=100, definition=None):
 
 @pytest.fixture
 def client():
-    rc = RedisPlus(Redis())
+    rc = Client(Redis())
     assert isinstance(rc.search, redisplus.search.Search)
-    rc.search.flushdb()
+    rc.flushdb()
     return rc.search
 
 
@@ -1002,7 +1002,7 @@ def testCreateClientDefinitionJson(client):
     definition = IndexDefinition(prefix=["king:"], index_type=IndexType.JSON)
     client.create_index((TextField("$.name"),), definition=definition)
 
-    rc = RedisPlus(Redis())
+    rc = Client(Redis())
     rj = rc.json
     rj.jsonset("king:1", Path.rootPath(), {"name": "henry"})
     rj.jsonset("king:2", Path.rootPath(), {"name": "james"})
@@ -1028,7 +1028,7 @@ def testFieldsAsName(client):
     json_client.create_index(SCHEMA, definition=definition)
 
     # insert json data
-    rc = RedisPlus(Redis())
+    rc = Client(Redis())
     rj = rc.json
     res = rj.jsonset("doc:1", Path.rootPath(), {"name": "Jon", "age": 25})
     assert res
@@ -1045,7 +1045,7 @@ def testFieldsAsName(client):
 @skip_ifmodversion_lt("2.2.0", "search")
 def testSearchReturnFields(client):
     # insert json data
-    rc = RedisPlus(Redis())
+    rc = Client(Redis())
     rj = rc.json
     res = rj.jsonset(
         "doc:1",

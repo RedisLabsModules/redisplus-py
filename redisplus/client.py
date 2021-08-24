@@ -73,7 +73,7 @@ class Client(Commands, object):
 
         return redisplus.search.Search(self.client, **kwargs)
 
-      def execute_command(self, *args, **kwargs):
+    def execute_command(self, *args, **kwargs):
         """Pull in and excecute the redis commands"""
         return self.client.execute_command(*args, **kwargs)
 
