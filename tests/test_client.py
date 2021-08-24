@@ -7,13 +7,16 @@ def test_client_init():
     assert isinstance(Client().client, Redis)
     assert isinstance(Client(Redis()).client, Redis)
 
+
 def test_client_command_mixin():
     c = Client()
     assert c.flushdb()
 
+
 def test_client_executor():
     c = Client()
     assert c.execute_command("FLUSHDB")
+
 
 # TODO test pipeline basics
 def test_client_pipeline():
