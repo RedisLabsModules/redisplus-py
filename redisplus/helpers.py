@@ -41,9 +41,9 @@ def parseToList(response):
 
 def decodeDicKeys(obj):
     """Decode the keys of the given dictionary with utf-8."""
-    obj_new = copy.copy(obj)
+    newobj = copy.copy(obj)
     for k in obj.keys():
         if isinstance(k, bytes):
-            obj_new[k.decode('utf-8')] = obj_new[k]
-            obj_new.pop(k)
-    return obj_new
+            newobj[k.decode('utf-8')] = newobj[k]
+            newobj.pop(k)
+    return newobj
