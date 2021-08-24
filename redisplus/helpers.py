@@ -37,7 +37,7 @@ def parseToList(response):
 
 
 def decodeDicKeys(obj):
-    """Decode the keys of the given dictionary with utf-8.."""
+    """Decode the keys of the given dictionary with utf-8."""
     obj_new = {}
     for k, v in obj.items():
         try:
