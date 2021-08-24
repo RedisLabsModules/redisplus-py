@@ -119,8 +119,17 @@ class CommandMixin:
         pieces.append(str_path(path))
         return self.execute_command("JSON.MGET", *pieces)
 
-    def _executejsonset(self, name, path, obj, nx, xx):
-        """Internal helper to execute JSON.SET command."""
+    def jsonset(self, name, path, obj, nx=False, xx=False, decode_keys=False):
+        """
+        Set the JSON value at key ``name`` under the ``path`` to ``obj``.
+
+        ``nx`` if set to True, set ``value`` only if it does not exist.
+        ``xx`` if set to True, set ``value`` only if it exists.
+        ``decode_keys`` If set to True, the keys of ``obj`` will be decoded with utf-8.
+        """
+        if decode_keys:
+            obj = helpers.decodeDicKeys(obj)
+
         pieces = [name, str_path(path), self._encode(obj)]
 
         # Handle existential modifiers
@@ -134,21 +143,6 @@ class CommandMixin:
         elif xx:
             pieces.append("XX")
         return self.execute_command("JSON.SET", *pieces)
-
-    def jsonset(self, name, path, obj, nx=False, xx=False, decode_keys=False):
-        """
-        Set the JSON value at key ``name`` under the ``path`` to ``obj``.
-
-        ``nx`` if set to True, set ``value`` only if it does not exist.
-        ``xx`` if set to True, set ``value`` only if it exists.
-        ``decode_keys`` If set to True, the keys of ``obj`` will be decoded with utf-8.
-        """
-        if decode_keys:
-            try:
-                return self._executejsonset(name, path, obj, nx, xx)
-            except TypeError:
-                obj = helpers.decodeDicKeys(obj)
-        return self._executejsonset(name, path, obj, nx, xx)
 
     def jsonstrlen(self, name, path=Path.rootPath()):
         """Return the length of the string JSON value under ``path`` at key ``name``."""
