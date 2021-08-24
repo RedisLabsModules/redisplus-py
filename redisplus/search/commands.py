@@ -37,6 +37,7 @@ NOOFFSETS = "NOOFFSETS"
 NOFIELDS = "NOFIELDS"
 STOPWORDS = "STOPWORDS"
 
+
 class CommandMixin:
     def batch_indexer(self, chunk_size=100):
         """

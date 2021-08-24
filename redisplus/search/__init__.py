@@ -85,7 +85,7 @@ class Search(CommandMixin, AbstractFeature, object):
             self.pipeline.execute()
             self.current_chunk = 0
 
-    def __init__(self, client: Redis, index_name: str = 'idx'):
+    def __init__(self, client: Redis, index_name: str = "idx"):
         """
         Create a new Client for the given index_name.
         The default name is `idx`
