@@ -18,13 +18,18 @@ class AbstractFeature(ABC):
         """Get the client instance set by the redis module class."""
         return self.client
 
-    def _pipeline(self, cls, **kwargs):
+    def _pipeline(self, **kwargs):
         """Build and return a pipeline object.
         By implementing a pipeline, the individual
         features receive a working pipeline, with customizable
         characteristics, if necessary.
 
-        cls - This is the command class, to mix into the pipeline.
+        cls - If passed in as kwargs this is the command class,
+                to mix into the pipeline. Otherwise self.commandmixins is used.
+
+        _ - Any kwargs prefixed with an underscore (_) will be used after
+        initialization of the redis-py pipeline object, and setattr on
+        the generated pipeline.
         """
         # set some sane kwargs from common defaults for the pipeline
         kwargs["transaction"] = kwargs.get("transaction", True)
@@ -35,6 +40,9 @@ class AbstractFeature(ABC):
         kwargs["response_callbacks"] = kwargs.get(
             "response_callbacks", self.client.response_callbacks
         )
+        cls = kwargs.get("cls", self.commandmixin)
+        if "cls" in kwargs.keys():
+            kwargs.pop("cls")
 
         internals = {}
         sanitized = {}
@@ -44,6 +52,8 @@ class AbstractFeature(ABC):
             else:
                 sanitized[k] = kwargs[k]
 
+        # construct an internal class (Piper) that is effectively as redis
+        # pipeline, and ensure we mix in, the commands for the associated module
         class Piper(Pipeline, cls):
             pass
 
@@ -53,12 +63,12 @@ class AbstractFeature(ABC):
         return p
 
     def pipeline(self, **kwargs):
-        """
-        Implement in child classes, to enable a pipeline, with optional feature
-        specific arguments, as needed.  Any arguments passed in prefixed with an
-        underscore (_) will be setattr-ed on the pipeline object after creation,
-        returning an instance of Pipeline with those objects included.
+        """Returns the pipline instance we create.
+        This allows individual module clients to support pipelines directly,
+        by setting self.commandmixin to the CommandMixin used, thereby adding
+        support to the pipeline.
 
-        The child class must call _pipeline, and provide the Commands mixin.
+        If no commandmixin is set on the base class, self._pipeline, which is
+        called, will look for kwargs['cls'].
         """
-        raise NotImplementedError("Pipelines must be implemented  by children.")
+        return self._pipeline(**kwargs)
