@@ -1,4 +1,4 @@
-from .client import RedisPlus
+from .client import Client
 import pkg_resources
 
 
@@ -10,4 +10,4 @@ def version():
     return __version__
 
 
-__all__ = ["RedisPlus"]
+__all__ = ["Client"]
