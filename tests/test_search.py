@@ -154,8 +154,12 @@ def testClient(client):
     assert total > vtotal
 
     # test in fields
-    txt_total = client.search.search(Query("henry").no_content().limit_fields("txt")).total
-    play_total = client.search.search(Query("henry").no_content().limit_fields("play")).total
+    txt_total = client.search.search(
+        Query("henry").no_content().limit_fields("txt")
+    ).total
+    play_total = client.search.search(
+        Query("henry").no_content().limit_fields("play")
+    ).total
     both_total = client.search.search(
         Query("henry").no_content().limit_fields("play", "txt")
     ).total
@@ -454,8 +458,12 @@ def testNoIndex(client):
         )
     )
 
-    client.search.add_document("doc1", field="aaa", text="1", numeric="1", geo="1,1", tag="1")
-    client.search.add_document("doc2", field="aab", text="2", numeric="2", geo="2,2", tag="2")
+    client.search.add_document(
+        "doc1", field="aaa", text="1", numeric="1", geo="1,1", tag="1"
+    )
+    client.search.add_document(
+        "doc2", field="aab", text="2", numeric="2", geo="2,2", tag="2"
+    )
     waitForIndex(client, "idx")
 
     res = client.search.search(Query("@text:aa*"))
@@ -698,7 +706,9 @@ def testAlterSchemaAdd(client):
     client.search.alter_schema_add((TextField("body"),))
 
     # Indexing a document
-    client.search.add_document("doc1", title="MyTitle", body="Some content only in the body")
+    client.search.add_document(
+        "doc1", title="MyTitle", body="Some content only in the body"
+    )
 
     # Searching with parameter only in the body (the added field)
     q = Query("only in the body")
@@ -713,7 +723,9 @@ def testAlterSchemaAdd(client):
 def testSpellCheck(client):
     client.search.create_index((TextField("f1"), TextField("f2")))
 
-    client.search.add_document("doc1", f1="some valid content", f2="this is sample text")
+    client.search.add_document(
+        "doc1", f1="some valid content", f2="this is sample text"
+    )
     client.search.add_document("doc2", f1="very important", f2="lorem ipsum")
     waitForIndex(client, "idx")
 
@@ -1025,7 +1037,9 @@ def testFieldsAsName(client):
     res = client.json.jsonset("doc:1", Path.rootPath(), {"name": "Jon", "age": 25})
     assert res
 
-    total = client.search.search(Query("Jon").return_fields("name", "just_a_number")).docs
+    total = client.search.search(
+        Query("Jon").return_fields("name", "just_a_number")
+    ).docs
     assert 1 == len(total)
     assert "doc:1" == total[0].id
     assert "Jon" == total[0].name
