@@ -148,7 +148,7 @@ class CommandMixin:
             obj_new = {}
             for k, v in obj.items():
                 try:
-                    obj_new[k.decode('utf-8')] = v
+                    obj_new[k.decode("utf-8")] = v
                 except AttributeError:
                     obj_new[k] = v
             return self._executejsonset(name, path, obj_new, nx, xx)
