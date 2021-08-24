@@ -23,7 +23,7 @@ def client():
     model_path = os.path.join(MODEL_DIR, torch_graph)
     ptmodel = load_model(model_path)
     rc.ai.modelstore("pt_model", "torch", "cpu", ptmodel, tag="v7.0")
-    return rc.ai
+    return rc
 
 
 @pytest.mark.integrations
@@ -33,7 +33,7 @@ def test_deprecated_dugrun(client):
     # test the warning of using dagrun
     with warnings.catch_warnings(record=True) as w:
         warnings.simplefilter("default")
-        dag = client.dag()
+        dag = client.ai.dag()
     assert issubclass(w[-1].category, DeprecationWarning)
 
     # test that dagrun and model run hadn't been broken
@@ -65,14 +65,14 @@ def test_deprecated_dugrun(client):
 @pytest.mark.aidag
 def test_deprecated_modelrun_and_run(client):
     # use modelrun&run method but perform modelexecute&dagexecute behind the scene
-    client.tensorset("a", [2, 3, 2, 3], shape=(2, 2), dtype="float")
-    client.tensorset("b", [2, 3, 2, 3], shape=(2, 2), dtype="float")
-    dag = client.dag(load=["a", "b"], persist="output")
+    client.ai.tensorset("a", [2, 3, 2, 3], shape=(2, 2), dtype="float")
+    client.ai.tensorset("b", [2, 3, 2, 3], shape=(2, 2), dtype="float")
+    dag = client.ai.dag(load=["a", "b"], persist="output")
     dag.modelrun("pt_model", ["a", "b"], ["output"])
     dag.tensorget("output")
     result = dag.run()
     expected = ["OK", np.array([[4.0, 6.0], [4.0, 6.0]], dtype=np.float32)]
-    result_outside_dag = client.tensorget("output")
+    result_outside_dag = client.ai.tensorget("output")
     assert np.allclose(expected.pop(), result.pop())
     result = dag.run()
     assert np.allclose(result_outside_dag, result.pop())
@@ -83,8 +83,8 @@ def test_deprecated_modelrun_and_run(client):
 @pytest.mark.ai
 @pytest.mark.aidag
 def test_dagexecute_with_scriptexecute_redis_commands(client):
-    client.scriptstore("myscript{1}", "cpu", script_with_redis_commands, "func")
-    dag = client.dag(persist="my_output{1}", routing="{1}")
+    client.ai.scriptstore("myscript{1}", "cpu", script_with_redis_commands, "func")
+    dag = client.ai.dag(persist="my_output{1}", routing="{1}")
     dag.tensorset("mytensor1{1}", [40], dtype="float")
     dag.tensorset("mytensor2{1}", [10], dtype="float")
     dag.tensorset("mytensor3{1}", [1], dtype="float")
@@ -97,7 +97,7 @@ def test_dagexecute_with_scriptexecute_redis_commands(client):
         outputs=["my_output{1}"],
     )
     dag.execute()
-    values = client.tensorget("my_output{1}", as_numpy=False)
+    values = client.ai.tensorget("my_output{1}", as_numpy=False)
     assert np.allclose(values["values"], [54])
 
 
@@ -111,15 +111,17 @@ def test_dagexecute_modelexecute_with_scriptexecute(client):
     img = load_image()
     model_path = os.path.join(MODEL_DIR, "resnet50.pb")
     model = load_model(model_path)
-    client.scriptstore(
+    client.ai.scriptstore(
         script_name,
         "cpu",
         data_processing_script,
         entry_points=["post_process", "pre_process_3ch"],
     )
-    client.modelstore(model_name, "TF", "cpu", model, inputs="images", outputs="output")
+    client.ai.modelstore(
+        model_name, "TF", "cpu", model, inputs="images", outputs="output"
+    )
 
-    dag = client.dag(persist="output:{1}")
+    dag = client.ai.dag(persist="output:{1}")
     dag.tensorset(
         "image:{1}", tensor=img, shape=(img.shape[1], img.shape[0]), dtype="UINT8"
     )
@@ -138,8 +140,8 @@ def test_dagexecute_modelexecute_with_scriptexecute(client):
 @pytest.mark.ai
 @pytest.mark.aidag
 def test_dagexecute_with_load(client):
-    client.tensorset("a", [2, 3, 2, 3], shape=(2, 2), dtype="float")
-    dag = client.dag(load="a")
+    client.ai.tensorset("a", [2, 3, 2, 3], shape=(2, 2), dtype="float")
+    dag = client.ai.dag(load="a")
     dag.tensorset("b", [2, 3, 2, 3], shape=(2, 2), dtype="float")
     dag.modelexecute("pt_model", ["a", "b"], ["output"])
     dag.tensorget("output")
@@ -147,7 +149,7 @@ def test_dagexecute_with_load(client):
     expected = ["OK", "OK", np.array([[4.0, 6.0], [4.0, 6.0]], dtype=np.float32)]
     assert np.allclose(expected.pop(), result.pop())
     assert expected == result
-    pytest.raises(ResponseError, client.tensorget, "b")
+    pytest.raises(ResponseError, client.ai.tensorget, "b")
 
 
 @pytest.mark.integrations
@@ -155,15 +157,15 @@ def test_dagexecute_with_load(client):
 @pytest.mark.aidag
 def test_dagexecute_with_persist(client):
     with pytest.raises(ResponseError):
-        dag = client.dag(persist="wrongkey")
+        dag = client.ai.dag(persist="wrongkey")
         dag.tensorset("a", [2, 3, 2, 3], shape=(2, 2), dtype="float").execute()
 
-    dag = client.dag(persist=["b"])
+    dag = client.ai.dag(persist=["b"])
     dag.tensorset("a", [2, 3, 2, 3], shape=(2, 2), dtype="float")
     dag.tensorset("b", [2, 3, 2, 3], shape=(2, 2), dtype="float")
     dag.tensorget("b")
     result = dag.execute()
-    b = client.tensorget("b")
+    b = client.ai.tensorget("b")
     assert np.allclose(b, result[-1])
     assert b.dtype == np.float32
     assert len(result) == 3
@@ -173,9 +175,9 @@ def test_dagexecute_with_persist(client):
 @pytest.mark.ai
 @pytest.mark.aidag
 def test_dagexecute_calling_on_return(client):
-    client.tensorset("a", [2, 3, 2, 3], shape=(2, 2), dtype="float")
+    client.ai.tensorset("a", [2, 3, 2, 3], shape=(2, 2), dtype="float")
     result = (
-        client.dag(load="a")
+        client.ai.dag(load="a")
         .tensorset("b", [2, 3, 2, 3], shape=(2, 2), dtype="float")
         .modelexecute("pt_model", ["a", "b"], ["output"])
         .tensorget("output")
@@ -190,11 +192,11 @@ def test_dagexecute_calling_on_return(client):
 @pytest.mark.ai
 @pytest.mark.aidag
 def test_dagexecute_without_load_and_persist(client):
-    dag = client.dag(load="wrongkey")
+    dag = client.ai.dag(load="wrongkey")
     with pytest.raises(ResponseError):
         dag.tensorget("wrongkey").execute()
 
-    dag = client.dag(persist="output")
+    dag = client.ai.dag(persist="output")
     dag.tensorset("a", [2, 3, 2, 3], shape=(2, 2), dtype="float")
     dag.tensorset("b", [2, 3, 2, 3], shape=(2, 2), dtype="float")
     dag.modelexecute("pt_model", ["a", "b"], ["output"])
@@ -214,14 +216,14 @@ def test_dagexecute_without_load_and_persist(client):
 @pytest.mark.ai
 @pytest.mark.aidag
 def test_dagexecute_with_load_and_persist(client):
-    client.tensorset("a", [2, 3, 2, 3], shape=(2, 2), dtype="float")
-    client.tensorset("b", [2, 3, 2, 3], shape=(2, 2), dtype="float")
-    dag = client.dag(load=["a", "b"], persist="output")
+    client.ai.tensorset("a", [2, 3, 2, 3], shape=(2, 2), dtype="float")
+    client.ai.tensorset("b", [2, 3, 2, 3], shape=(2, 2), dtype="float")
+    dag = client.ai.dag(load=["a", "b"], persist="output")
     dag.modelexecute("pt_model", ["a", "b"], ["output"])
     dag.tensorget("output")
     result = dag.execute()
     expected = ["OK", np.array([[4.0, 6.0], [4.0, 6.0]], dtype=np.float32)]
-    result_outside_dag = client.tensorget("output")
+    result_outside_dag = client.ai.tensorget("output")
     assert np.allclose(expected.pop(), result.pop())
     result = dag.execute()
     assert np.allclose(result_outside_dag, result.pop())
@@ -232,11 +234,11 @@ def test_dagexecute_with_load_and_persist(client):
 @pytest.mark.ai
 @pytest.mark.aidag
 def test_dagexecuteRO(client):
-    client.tensorset("a", [2, 3, 2, 3], shape=(2, 2), dtype="float")
-    client.tensorset("b", [2, 3, 2, 3], shape=(2, 2), dtype="float")
+    client.ai.tensorset("a", [2, 3, 2, 3], shape=(2, 2), dtype="float")
+    client.ai.tensorset("b", [2, 3, 2, 3], shape=(2, 2), dtype="float")
     with pytest.raises(RuntimeError):
-        client.dag(load=["a", "b"], persist="output", readonly=True)
-    dag = client.dag(load=["a", "b"], readonly=True)
+        client.ai.dag(load=["a", "b"], persist="output", readonly=True)
+    dag = client.ai.dag(load=["a", "b"], readonly=True)
 
     with pytest.raises(RuntimeError):
         dag.scriptexecute(

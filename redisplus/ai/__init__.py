@@ -29,15 +29,8 @@ class AI(CommandMixin, RedisCommands, object):
     REDISAI_COMMANDS_RESPONSE_CALLBACKS = {}
 
     def __init__(self, client=None, debug=False, enable_postprocess=True):
-        self.CLIENT = client
+        self.client = client
         self.enable_postprocess = enable_postprocess
-
-    def execute_command(self, *args, **kwargs):
-        return self.client.execute_command(*args, **kwargs)
-
-    @property
-    def client(self):
-        return self.CLIENT
 
 
 class Pipeline(redis.client.Pipeline):
