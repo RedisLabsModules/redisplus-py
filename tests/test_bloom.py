@@ -127,7 +127,9 @@ def testBFInfo(client):
 
     try:
         # noScale mean no expansion
-        client.bf.bfcreate("myBloom", "0.0001", "1000", expansion=expansion, noScale=True)
+        client.bf.bfcreate(
+            "myBloom", "0.0001", "1000", expansion=expansion, noScale=True
+        )
         assert False
     except:
         assert True

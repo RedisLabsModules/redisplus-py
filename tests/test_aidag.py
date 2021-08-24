@@ -117,7 +117,9 @@ def test_dagexecute_modelexecute_with_scriptexecute(client):
         data_processing_script,
         entry_points=["post_process", "pre_process_3ch"],
     )
-    client.ai.modelstore(model_name, "TF", "cpu", model, inputs="images", outputs="output")
+    client.ai.modelstore(
+        model_name, "TF", "cpu", model, inputs="images", outputs="output"
+    )
 
     dag = client.ai.dag(persist="output:{1}")
     dag.tensorset(

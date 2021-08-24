@@ -102,7 +102,9 @@ def testAddDuplicatePolicy(client):
 
     # Test for duplicate policy LAST
     assert 1 == client.tf.add("time-serie-add-ooo-last", 1, 5.0)
-    assert 1 == client.tf.add("time-serie-add-ooo-last", 1, 10.0, duplicate_policy="last")
+    assert 1 == client.tf.add(
+        "time-serie-add-ooo-last", 1, 10.0, duplicate_policy="last"
+    )
     assert 10.0 == client.tf.get("time-serie-add-ooo-last")[1]
 
     # Test for duplicate policy FIRST

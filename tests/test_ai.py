@@ -409,7 +409,9 @@ def test_deprecated_scriptset_and_scriptrun(client):
     assert [4, 6] == tensor["values"]
 
     # test bar_variadic(a, args : List[Tensor])
-    client.ai.scriptrun("scr", "bar_variadic", inputs=["a", "$", "b", "b"], outputs=["c"])
+    client.ai.scriptrun(
+        "scr", "bar_variadic", inputs=["a", "$", "b", "b"], outputs=["c"]
+    )
     tensor = client.ai.tensorget("c", as_numpy=False)
     assert [4, 6] == tensor["values"]
 

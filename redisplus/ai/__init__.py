@@ -35,6 +35,7 @@ class AI(CommandMixin, AbstractFeature, object):
         #     self.execute_command = enable_debug(super().execute_command)
         self.enable_postprocess = enable_postprocess
 
+
 # def enable_debug(f):
 #     @wraps(f)
 #     def wrapper(*args):
