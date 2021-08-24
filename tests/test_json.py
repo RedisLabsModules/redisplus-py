@@ -2,16 +2,16 @@ import pytest
 import redis
 from redis import Redis
 import redisplus.json
-from redisplus import RedisPlus
+from redisplus import Client
 from redisplus.json.path import Path
 from .conftest import skip_ifmodversion_lt
 
 
 @pytest.fixture
 def client():
-    rc = RedisPlus(Redis())
+    rc = Client(Redis())
     assert isinstance(rc.json, redisplus.json.JSON)
-    rc.json.flushdb()
+    rc.flushdb()
     return rc.json
 
 
@@ -32,7 +32,7 @@ def test_json_setgetdeleteforget(client):
     assert client.jsonget("baz") is None
     assert client.jsondel("foo") == 1
     assert client.jsonforget("foo") == 0  # second delete
-    assert client.exists("foo") == 0
+    assert client.client.exists("foo") == 0
 
 
 @pytest.mark.integrations
@@ -49,7 +49,7 @@ def test_json_get_jset(client):
     assert "bar" == client.jsonget("foo")
     assert None == client.jsonget("baz")
     assert 1 == client.jsondel("foo")
-    assert client.exists("foo") == 0
+    assert client.client.exists("foo") == 0
 
 
 @pytest.mark.integrations
@@ -58,7 +58,7 @@ def test_nonascii_setgetdelete(client):
     assert client.jsonset("notascii", Path.rootPath(), "hyvää-élève") is True
     assert "hyvää-élève" == client.jsonget("notascii", no_escape=True)
     assert 1 == client.jsondel("notascii")
-    assert client.exists("notascii") == 0
+    assert client.client.exists("notascii") == 0
 
 
 @pytest.mark.integrations

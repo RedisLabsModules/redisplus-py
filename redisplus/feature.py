@@ -1,9 +1,8 @@
 from abc import ABC
-from redis.commands import Commands
 from redis.client import Pipeline
 
 
-class AbstractFeature(Commands, ABC):
+class AbstractFeature(ABC):
     """AbstractBase for all client features.
 
     This class ensures that we can contstruct modules that access
