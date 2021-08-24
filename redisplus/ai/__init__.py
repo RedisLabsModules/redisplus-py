@@ -2,11 +2,12 @@ from functools import wraps, partial
 
 from redis.commands import Commands as RedisCommands
 import redis
+from ..feature import AbstractFeature
 
 from .commands import *
 
 
-class AI(CommandMixin, RedisCommands, object):
+class AI(CommandMixin, AbstractFeature, object):
     """
     Redis client build specifically for the RedisAI module. It takes all the necessary
     parameters to establish the connection and an optional ``debug`` parameter on
