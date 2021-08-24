@@ -18,8 +18,8 @@ def load_image():
 
 @pytest.fixture
 def client():
-    rc = RedisPlus()
-    rc.ai.flushdb()
+    rc = Client()
+    rc.flushdb()
     model_path = os.path.join(MODEL_DIR, torch_graph)
     ptmodel = load_model(model_path)
     rc.ai.modelstore("pt_model", "torch", "cpu", ptmodel, tag="v7.0")

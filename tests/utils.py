@@ -1,7 +1,7 @@
 import mock
 
 
-def mockRedisPlus(stack):
+def mockClient(stack):
     """Mock a client connection for non-client interactions."""
     stack.enter_context(mock.patch("redis.connection.Connection.connect"))
     stack.enter_context(mock.patch("redis.connection.ConnectionPool.get_connection"))
@@ -12,4 +12,4 @@ def mockRedisPlus(stack):
 
 def stockclosure(f):
     with contextlib.ExitStack() as stack:
-        stack = mockRedisPlus(stack)
+        stack = mockClient(stack)

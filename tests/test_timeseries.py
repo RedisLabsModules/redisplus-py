@@ -2,14 +2,14 @@ import pytest
 import time
 from time import sleep
 from redis import Redis
-from redisplus.client import RedisPlus
+from redisplus.client import Client
 from .conftest import skip_ifmodversion_lt
 
 
 @pytest.fixture
 def client():
-    rc = RedisPlus()
-    rc.timeseries.flushdb()
+    rc = Client()
+    rc.flushdb()
     return rc.timeseries
 
 
