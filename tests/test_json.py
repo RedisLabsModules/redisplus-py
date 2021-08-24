@@ -19,9 +19,9 @@ def client():
 @pytest.mark.json
 def test_json_setbinarykey(client):
     d = {"hello": "world", b"some": "value"}
-    assert client.jsonset("somekey1", Path.rootPath(), d)
-    d = {"hello": "world", "some": "value"}
-    assert client.jsonset("somekey2", Path.rootPath(), d)
+    with pytest.raises(TypeError):
+        client.jsonset("somekey", Path.rootPath(), d)
+    assert client.jsonset("somekey", Path.rootPath(), d, decode_keys=True)
 
 
 @pytest.mark.integrations

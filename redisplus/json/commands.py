@@ -1,6 +1,7 @@
 import redis
 
 from .path import Path, str_path
+from .. import helpers
 
 
 class CommandMixin:
@@ -119,7 +120,7 @@ class CommandMixin:
         return self.execute_command("JSON.MGET", *pieces)
 
     def _executejsonset(self, name, path, obj, nx, xx):
-
+        """Internal helper to execute JSON.SET command."""
         pieces = [name, str_path(path), self._encode(obj)]
 
         # Handle existential modifiers
@@ -134,24 +135,20 @@ class CommandMixin:
             pieces.append("XX")
         return self.execute_command("JSON.SET", *pieces)
 
-    def jsonset(self, name, path, obj, nx=False, xx=False):
+    def jsonset(self, name, path, obj, nx=False, xx=False, decode_keys=False):
         """
         Set the JSON value at key ``name`` under the ``path`` to ``obj``.
 
-        ``nx`` if set to True, set ``value`` only if it does not exist
-        ``xx`` if set to True, set ``value`` only if it exists
+        ``nx`` if set to True, set ``value`` only if it does not exist.
+        ``xx`` if set to True, set ``value`` only if it exists.
+        ``decode_keys`` If set to True, the keys of ``obj`` will be decoded with utf-8.
         """
-
-        try:
-            return self._executejsonset(name, path, obj, nx, xx)
-        except TypeError:
-            obj_new = {}
-            for k, v in obj.items():
-                try:
-                    obj_new[k.decode("utf-8")] = v
-                except AttributeError:
-                    obj_new[k] = v
-            return self._executejsonset(name, path, obj_new, nx, xx)
+        if decode_keys:
+            try:
+                return self._executejsonset(name, path, obj, nx, xx)
+            except TypeError:
+                obj = helpers.decodeDicKeys(obj)
+        return self._executejsonset(name, path, obj, nx, xx)
 
     def jsonstrlen(self, name, path=Path.rootPath()):
         """Return the length of the string JSON value under ``path`` at key ``name``."""

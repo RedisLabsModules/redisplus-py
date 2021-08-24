@@ -34,3 +34,14 @@ def parseToList(response):
         else:
             res.append(None)
     return res
+
+
+def decodeDicKeys(obj):
+    """Decode the keys of the given dictionary with utf-8.."""
+    obj_new = {}
+    for k, v in obj.items():
+        try:
+            obj_new[k.decode("utf-8")] = v
+        except AttributeError:
+            obj_new[k] = v
+    return obj_new
