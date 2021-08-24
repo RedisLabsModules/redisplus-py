@@ -2,11 +2,12 @@ from functools import wraps, partial
 
 from redis.commands import Commands as RedisCommands
 import redis
+from ..feature import AbstractFeature
 
 from .commands import *
 
 
-class AI(CommandMixin, RedisCommands, object):
+class AI(CommandMixin, AbstractFeature, object):
     """
     Redis client build specifically for the RedisAI module. It takes all the necessary
     parameters to establish the connection and an optional ``debug`` parameter on
@@ -29,17 +30,10 @@ class AI(CommandMixin, RedisCommands, object):
     REDISAI_COMMANDS_RESPONSE_CALLBACKS = {}
 
     def __init__(self, client=None, debug=False, enable_postprocess=True):
-        self.CLIENT = client
+        self.client = client
         # if debug:
         #     self.execute_command = enable_debug(super().execute_command)
         self.enable_postprocess = enable_postprocess
-
-    def execute_command(self, *args, **kwargs):
-        return self.client.execute_command(*args, **kwargs)
-
-    @property
-    def client(self):
-        return self.CLIENT
 
 
 # def enable_debug(f):
