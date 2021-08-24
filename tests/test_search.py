@@ -4,7 +4,6 @@ import bz2
 import csv
 import time
 import os
-import sys
 
 from io import TextIOWrapper
 from .conftest import skip_ifmodversion_lt
@@ -361,12 +360,12 @@ def testDropIndex(client):
         for keep_docs in [[True, {}], [False, {"name": "haveit"}]]:
             idx = "HaveIt"
             index = getClient(idx)
-            index.hset("index:haveit", mapping={"name": "haveit"})
+            index.client.hset("index:haveit", mapping={"name": "haveit"})
             idef = IndexDefinition(prefix=["index:"])
             index.create_index((TextField("name"),), definition=idef)
             waitForIndex(index, idx)
             index.dropindex(delete_documents=keep_docs[0])
-            i = index.hgetall("index:haveit")
+            i = index.client.hgetall("index:haveit")
             assert i == keep_docs[1]
 
 
@@ -575,8 +574,8 @@ def testAlias(client):
     index1 = getClient("testAlias")
     index2 = getClient("testAlias2")
 
-    index1.hset("index1:lonestar", mapping={"name": "lonestar"})
-    index2.hset("index2:yogurt", mapping={"name": "yogurt"})
+    index1.client.hset("index1:lonestar", mapping={"name": "lonestar"})
+    index2.client.hset("index2:yogurt", mapping={"name": "yogurt"})
 
     time.sleep(2)
 
@@ -615,7 +614,7 @@ def testAlias(client):
 def testAliasBasic(client):
     # Creating a client with one index
     index1 = getClient("testAlias")
-    index1.flushdb()
+    index1.client.flushdb()
 
     index1.create_index((TextField("txt"),))
     index1.add_document("doc1", txt="text goes here")
@@ -758,7 +757,7 @@ def testPhoneticMatcher(client):
     assert "Jon" == res.docs[0].name
 
     # Drop and create index with phonetic matcher
-    client.flushdb()
+    client.client.flushdb()
 
     client.create_index((TextField("name", phonetic_matcher="dm:en"),))
 
@@ -967,7 +966,7 @@ def testCreateClientDefinition(client):
     info = client.info()
     assert 494 == int(info["num_docs"])
 
-    client.hset("hset:1", "f1", "v1")
+    client.client.hset("hset:1", "f1", "v1")
     info = client.info()
     assert 495 == int(info["num_docs"])
 
@@ -986,7 +985,7 @@ def testCreateClientDefinitionHash(client):
     info = client.info()
     assert 494 == int(info["num_docs"])
 
-    client.hset("hset:1", "f1", "v1")
+    client.client.hset("hset:1", "f1", "v1")
     info = client.info()
     assert 495 == int(info["num_docs"])
 
