@@ -21,9 +21,9 @@ from redisplus.search.auto_complete import *
 import redisplus.search.aggregation as aggregations
 import redisplus.search.reducers as reducers
 
-WILL_PLAY_TEXT = os.path.abspath(os.path.dirname(__file__)) + "/will_play_text.csv.bz2"
+WILL_PLAY_TEXT = os.path.abspath(os.path.dirname(__file__)) + "/testdata/will_play_text.csv.bz2"
 
-TITLES_CSV = os.path.abspath(os.path.dirname(__file__)) + "/titles.csv"
+TITLES_CSV = os.path.abspath(os.path.dirname(__file__)) + "/testdata/titles.csv"
 
 
 def waitForIndex(env, idx, timeout=None):
