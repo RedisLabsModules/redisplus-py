@@ -11,7 +11,6 @@ from redis.exceptions import ResponseError
 from redisplus.client import Client
 
 
-# DEBUG = False
 tf_graph = "graph.pb"
 torch_graph = "pt-minimal.pt"
 dog_img = "dog.jpg"
