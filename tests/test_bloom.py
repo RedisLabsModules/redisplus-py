@@ -1,16 +1,16 @@
 import pytest
 from redis import Redis
 import redisplus.bf
-from redisplus.client import RedisPlus
+from redisplus.client import Client
 
 i = lambda l: [int(v) for v in l]
 
 
 @pytest.fixture
 def client():
-    rc = RedisPlus(Redis())  # modules={'bf': {"client": Redis()}})
+    rc = Client(Redis())  # modules={'bf': {"client": Redis()}})
     assert isinstance(rc.bloom, redisplus.bf.Bloom)
-    rc.bloom.flushdb()
+    rc.flushdb()
 
     return rc.bloom
 

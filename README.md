@@ -19,23 +19,23 @@ Documents can be found at [readthedocs](http://placeholder) but below are some e
 **Connect using a pre-build redis client, for all modules**
 ```
 import redis
-from redisplus import RedisClient
+from redisplus import Client
 
 r = redis.Redis()
-rc = RedisClient(r)
-rc.client.status()
+rc = Client(r)
+rc.status()
 ```
 
 **Access json features, setting a json key**
 
 ```
 import redis
-from redisplus import RedisClient
+from redisplus import Client
 
 r = redis.Redis()
-rc = RedisClient(modules={"json": {"client": r}})
+rc = Client()
 rc.json.jsonset("foo", ".", "bar")
-rc.json.exists("foo")
+rc.exists("foo")
 ```
 
 ----------------------------------------------------------------------------------------------------

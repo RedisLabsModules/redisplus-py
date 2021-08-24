@@ -1,8 +1,9 @@
 from typing import Dict, Optional
 from redis.client import Redis
+from redis.commands import Commands
 
 
-class RedisPlus(object):
+class Client(Commands, object):
     """General client to be used for redis modules."""
 
     # list of active commands
@@ -71,3 +72,11 @@ class RedisPlus(object):
         import redisplus.search
 
         return redisplus.search.Search(self.client, **kwargs)
+
+      def execute_command(self, *args, **kwargs):
+        """Pull in and excecute the redis commands"""
+        return self.client.execute_command(*args, **kwargs)
+
+    def pipeline(self, *args, **kwargs):
+        """Pipelines"""
+        return self.client.pipeline(*args, **kwargs)

@@ -8,7 +8,7 @@ from ml2rt import load_model
 
 from redis import Redis
 from redis.exceptions import ResponseError
-from redisplus.client import RedisPlus
+from redisplus.client import Client
 
 
 # DEBUG = False
@@ -81,14 +81,14 @@ def post_process(tensors: List[Tensor], keys: List[str], args: List[str]):
 
 
 def get_client(debug=False):
-    rc = RedisPlus(extras={"ai": {"debug": debug}})
+    rc = Client(extras={"ai": {"debug": debug}})
     return rc.ai
 
 
 @pytest.fixture
 def client():
-    rc = RedisPlus()
-    rc.ai.flushdb()
+    rc = Client()
+    rc.flushdb()
     return rc.ai
 
 
