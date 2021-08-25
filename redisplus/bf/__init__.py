@@ -1,6 +1,4 @@
-import functools
-from redis import Redis
-from redis.client import Pipeline, bool_ok
+from redis.client import bool_ok
 from ..feature import AbstractFeature
 
 from .commands import *
@@ -75,19 +73,11 @@ class Bloom(CommandMixin, AbstractFeature, object):
             TDIGEST_INFO: TDigestInfo,
         }
 
-        self.CLIENT = client
+        self.client = client
+        self.commandmixin = CommandMixin
 
         for k, v in MODULE_CALLBACKS.items():
             self.client.set_response_callback(k, v)
-
-    @property
-    def client(self):
-        """Get the client."""
-        return self.CLIENT
-
-    def execute_command(self, *args, **kwargs):
-        """Execute redis command."""
-        return self.client.execute_command(*args, **kwargs)
 
     @staticmethod
     def appendItems(params, items):
@@ -157,9 +147,3 @@ class Bloom(CommandMixin, AbstractFeature, object):
         """Append BUCKETSIZE to params."""
         if bucket_size is not None:
             params.extend(["BUCKETSIZE", bucket_size])
-
-    def pipeline(self, **kwargs):
-        p = self._pipeline(
-            CommandMixin,
-        )
-        return p

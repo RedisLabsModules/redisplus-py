@@ -21,7 +21,7 @@ class Graph(CommandMixin, AbstractFeature, object):
         Create a new graph.
         """
         self.NAME = name  # Graph key
-        self.CLIENT = client
+        self.client = client
 
         self.nodes = {}
         self.edges = []

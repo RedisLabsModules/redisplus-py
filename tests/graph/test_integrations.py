@@ -1,6 +1,6 @@
 from redisplus.graph import Node, Edge, Graph, Path
 import redisplus
-from redisplus.client import RedisPlus
+from redisplus.client import Client
 from redis.exceptions import ResponseError
 from redis.client import Redis
 import pytest
@@ -8,9 +8,9 @@ import pytest
 
 @pytest.fixture
 def client():
-    rc = RedisPlus(Redis(), extras={"graph": {"name": "social"}})
+    rc = Client(Redis(decode_responses=True), extras={"graph": {"name": "social"}})
     assert isinstance(rc.graph, redisplus.graph.Graph)
-    rc.graph.flushdb()
+    rc.flushdb()
 
     return rc.graph
 

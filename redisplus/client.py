@@ -1,8 +1,9 @@
 from typing import Dict, Optional
 from redis.client import Redis
+from redis.commands import Commands
 
 
-class RedisPlus(object):
+class Client(Commands, object):
     """General client to be used for redis modules."""
 
     # list of active commands
@@ -23,35 +24,35 @@ class RedisPlus(object):
         """
         if client is None:
             client = Redis()
-        self.__client__ = client
-        self.__extras__ = extras
+        self.client = client
 
         self.__extras__ = extras
 
     @property
-    def client(self):
-        """Return the redis client, used for this connection."""
-        return self.__client__
+    def __client__(self):
+        """Return the internal representation of the redis client
+        used for this connection. This is not public."""
+        return self.client
 
     @property
     def json(self):
-        """For running json specific commands."""
+        """For running json commands."""
         kwargs = self.__extras__.get("json", {})
         import redisplus.json
 
         return redisplus.json.JSON(self.client, **kwargs)
 
     @property
-    def bloom(self):
-        """For running bloom specific commands."""
+    def bf(self):
+        """For running bloom commands."""
         kwargs = self.__extras__.get("bf", {})
         import redisplus.bf
 
         return redisplus.bf.Bloom(self.client, **kwargs)
 
     @property
-    def timeseries(self):
-        """For running bloom specific commands."""
+    def tf(self):
+        """For running timeseries commands."""
         kwargs = self.__extras__.get("ts", {})
         import redisplus.ts
 
@@ -59,16 +60,32 @@ class RedisPlus(object):
 
     @property
     def ai(self):
-        """For running bloom specific commands."""
+        """For running ai commands."""
         kwargs = self.__extras__.get("ai", {})
         import redisplus.ai
 
         return redisplus.ai.AI(self.client, **kwargs)
 
     @property
+    def ft(self):
+        """For running search commands."""
+        kwargs = self.__extras__.get("search", {})
+        import redisplus.search
+
+        return redisplus.search.Search(self.client, **kwargs)
+
+    @property
     def graph(self):
-        """For running json specific commands."""
-        kwargs = self.__extras__.get("json", {})
+        """For running graph commands."""
+        kwargs = self.__extras__.get("graph", {})
         import redisplus.graph
 
         return redisplus.graph.Graph(self.client, **kwargs)
+
+    def execute_command(self, *args, **kwargs):
+        """Pull in and execute the redis commands"""
+        return self.__client__.execute_command(*args, **kwargs)
+
+    def pipeline(self, *args, **kwargs):
+        """Pipelines"""
+        return self.__client__.pipeline(*args, **kwargs)

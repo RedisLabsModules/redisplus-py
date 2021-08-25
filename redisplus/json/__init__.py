@@ -3,7 +3,6 @@ import json
 
 from redis.client import Redis
 
-# from . import commands as recmds
 from ..helpers import bulk_of_jsons, delist, nativestr
 from .commands import CommandMixin
 from ..feature import AbstractFeature
@@ -60,7 +59,8 @@ class JSON(CommandMixin, AbstractFeature, object):
             "JSON.DEBUG": int,
         }
 
-        self.CLIENT = client
+        self.client = client
+        self.commandmixin = CommandMixin
 
         for key, value in self.MODULE_CALLBACKS.items():
             self.client.set_response_callback(key, value)
@@ -86,7 +86,6 @@ class JSON(CommandMixin, AbstractFeature, object):
 
     def pipeline(self, **kwargs):
         p = self._pipeline(
-            CommandMixin,
             __encode__=self.__encoder__,
             _encode=self._encode,
             __decoder__=self.__decoder__,

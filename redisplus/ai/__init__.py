@@ -1,12 +1,12 @@
 from functools import wraps, partial
 
-from redis.commands import Commands as RedisCommands
 import redis
+from ..feature import AbstractFeature
 
 from .commands import *
 
 
-class AI(CommandMixin, RedisCommands, object):
+class AI(CommandMixin, AbstractFeature, object):
     """
     Redis client build specifically for the RedisAI module. It takes all the necessary
     parameters to establish the connection and an optional ``debug`` parameter on
@@ -16,7 +16,7 @@ class AI(CommandMixin, RedisCommands, object):
     ----------
 
     debug : bool
-        If debug mode is ON, then each command that is sent to the server is
+        If debug mode is True, then each command that is sent to the server is
         printed to the terminal
     enable_postprocess : bool
         Flag to enable post processing. If enabled, all the bytestring-ed returns
@@ -29,25 +29,19 @@ class AI(CommandMixin, RedisCommands, object):
     REDISAI_COMMANDS_RESPONSE_CALLBACKS = {}
 
     def __init__(self, client=None, debug=False, enable_postprocess=True):
-        self.CLIENT = client
-        # if debug:
-        #     self.execute_command = enable_debug(super().execute_command)
+        self.client = client
+        if debug:
+            self.execute_command = enable_debug(super().execute_command)
         self.enable_postprocess = enable_postprocess
 
-    def execute_command(self, *args, **kwargs):
-        return self.client.execute_command(*args, **kwargs)
 
-    @property
-    def client(self):
-        return self.CLIENT
+def enable_debug(f):
+    @wraps(f)
+    def wrapper(*args):
+        print(*args)
+        return f(*args)
 
-
-# def enable_debug(f):
-#     @wraps(f)
-#     def wrapper(*args):
-#        print(*args)
-#        return f(*args)
-#     return wrapper
+    return wrapper
 
 
 class Pipeline(redis.client.Pipeline):

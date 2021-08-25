@@ -1,4 +1,7 @@
+import redis
+
 from .path import Path, str_path
+from .. import helpers
 
 
 class CommandMixin:
@@ -116,13 +119,17 @@ class CommandMixin:
         pieces.append(str_path(path))
         return self.execute_command("JSON.MGET", *pieces)
 
-    def jsonset(self, name, path, obj, nx=False, xx=False):
+    def jsonset(self, name, path, obj, nx=False, xx=False, decode_keys=False):
         """
         Set the JSON value at key ``name`` under the ``path`` to ``obj``.
 
-        ``nx`` if set to True, set ``value`` only if it does not exist
-        ``xx`` if set to True, set ``value`` only if it exists
+        ``nx`` if set to True, set ``value`` only if it does not exist.
+        ``xx`` if set to True, set ``value`` only if it exists.
+        ``decode_keys`` If set to True, the keys of ``obj`` will be decoded with utf-8.
         """
+        if decode_keys:
+            obj = helpers.decodeDictKeys(obj)
+
         pieces = [name, str_path(path), self._encode(obj)]
 
         # Handle existential modifiers

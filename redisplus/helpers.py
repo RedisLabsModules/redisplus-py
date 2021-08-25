@@ -1,3 +1,4 @@
+import copy
 import random
 import string
 
@@ -14,14 +15,14 @@ def bulk_of_jsons(d):
     return _f
 
 
-def delist(d):
-    """Given a list of binaries, return the stringified version."""
-    return [_.decode() for _ in d]
-
-
 def nativestr(x):
     """Return the decoded binary string, or a string, depending on type."""
-    return x if isinstance(x, str) else x.decode("utf-8", "replace")
+    return x.decode("utf-8", "replace") if isinstance(x, bytes) else x
+
+
+def delist(x):
+    """Given a list of binaries, return the stringified version."""
+    return [nativestr(obj) for obj in x]
 
 
 def spaceHolder(response):
@@ -66,3 +67,13 @@ def quote_string(v):
     v = v.replace('"', '\\"')
 
     return '"{}"'.format(v)
+
+
+def decodeDictKeys(obj):
+    """Decode the keys of the given dictionary with utf-8."""
+    newobj = copy.copy(obj)
+    for k in obj.keys():
+        if isinstance(k, bytes):
+            newobj[k.decode("utf-8")] = newobj[k]
+            newobj.pop(k)
+    return newobj

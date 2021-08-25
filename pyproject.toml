@@ -57,6 +57,7 @@ markers = [
     "graph: only redisgraph tests",
     "ai: only redisai tests",
     "aidag: only redisai tests with dag",
+    "search: only redisearch tests",
     "unmarked: tests that are not limited to a specific module",
 
     "integrations: run all tests that require a running redis",
