@@ -67,7 +67,7 @@ class Client(Commands, object):
         return redisplus.ai.AI(self.client, **kwargs)
 
     @property
-    def search(self):
+    def ft(self):
         """For running search commands."""
         kwargs = self.__extras__.get("search", {})
         import redisplus.search
