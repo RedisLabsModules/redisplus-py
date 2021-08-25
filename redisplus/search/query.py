@@ -163,7 +163,8 @@ class Query(object):
             args.append("NOSTOPWORDS")
         if self._filters:
             for flt in self._filters:
-                assert isinstance(flt, Filter)
+                if not isinstance(flt, Filter):
+                    raise AttributeError("Did not receive a Filter object.")
                 args += flt.args
         if self._with_payloads:
             args.append("WITHPAYLOADS")
@@ -184,7 +185,8 @@ class Query(object):
             args.append(len(self._return_fields))
             args += self._return_fields
         if self._sortby:
-            assert isinstance(self._sortby, SortbyField)
+            if not isinstance(self._sortby, SortbyField):
+                raise AttributeError("Did not receive a SortByField.")
             args.append("SORTBY")
             args += self._sortby.args
         if self._language:

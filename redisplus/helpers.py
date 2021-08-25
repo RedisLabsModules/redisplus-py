@@ -22,6 +22,7 @@ def delist(x):
     """Given a list of binaries, return the stringified version."""
     return [nativestr(obj) for obj in x]
 
+
 def spaceHolder(response):
     """Return the response without parsing."""
     return response
