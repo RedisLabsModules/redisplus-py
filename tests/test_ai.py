@@ -11,7 +11,6 @@ from redis.exceptions import ResponseError
 from redisplus.client import Client
 
 
-# DEBUG = False
 tf_graph = "graph.pb"
 torch_graph = "pt-minimal.pt"
 dog_img = "dog.jpg"
@@ -179,28 +178,31 @@ def test_deprecated_modelset(client):
     model_pb = load_model(model_path)
 
     with pytest.raises(ValueError):
-        client.ai.modelset(
-            "m",
-            "tf",
-            "wrongdevice",
-            model_pb,
-            inputs=["a", "b"],
-            outputs=["mul"],
-            tag="v1.0",
-        )
+        with pytest.deprecated_call():
+            client.ai.modelset(
+                "m",
+                "tf",
+                "wrongdevice",
+                model_pb,
+                inputs=["a", "b"],
+                outputs=["mul"],
+                tag="v1.0",
+            )
     with pytest.raises(ValueError):
+        with pytest.deprecated_call():
+            client.ai.modelset(
+                "m",
+                "wrongbackend",
+                "cpu",
+                model_pb,
+                inputs=["a", "b"],
+                outputs=["mul"],
+                tag="v1.0",
+            )
+    with pytest.deprecated_call():
         client.ai.modelset(
-            "m",
-            "wrongbackend",
-            "cpu",
-            model_pb,
-            inputs=["a", "b"],
-            outputs=["mul"],
-            tag="v1.0",
+            "m", "tf", "cpu", model_pb, inputs=["a", "b"], outputs=["mul"], tag="v1.0"
         )
-    client.ai.modelset(
-        "m", "tf", "cpu", model_pb, inputs=["a", "b"], outputs=["mul"], tag="v1.0"
-    )
     model = client.ai.modelget("m", meta_only=True)
     assert model == {
         "backend": "TF",
@@ -297,9 +299,7 @@ def test_modelget_meta(client):
         "m", "tf", "cpu", model_pb, inputs=["a", "b"], outputs=["mul"], tag="v1.0"
     )
     model = client.ai.modelget("m", meta_only=True)
-    assert (
-        model
-        == {
+    assert model == {
             "backend": "TF",
             "batchsize": 0,
             "device": "cpu",
@@ -308,8 +308,7 @@ def test_modelget_meta(client):
             "minbatchtimeout": 0,
             "outputs": ["mul"],
             "tag": "v1.0",
-        },
-    )
+        }
 
 
 @pytest.mark.integrations
@@ -398,20 +397,24 @@ def test_run_tf_model(client):
 # and AI.SCRIPTSET is deprecated by AI.SCRIPTSTORE
 def test_deprecated_scriptset_and_scriptrun(client):
     with pytest.raises(ResponseError):
-        client.ai.scriptset("scr", "cpu", "return 1")
-    client.ai.scriptset("scr", "cpu", script_old)
+        with pytest.deprecated_call():
+            client.ai.scriptset("scr", "cpu", "return 1")
+    with pytest.deprecated_call():
+        client.ai.scriptset("scr", "cpu", script_old)
     client.ai.tensorset("a", (2, 3), dtype="float")
     client.ai.tensorset("b", (2, 3), dtype="float")
 
     # test bar(a, b)
-    client.ai.scriptrun("scr", "bar", inputs=["a", "b"], outputs=["c"])
+    with pytest.deprecated_call():
+        client.ai.scriptrun("scr", "bar", inputs=["a", "b"], outputs=["c"])
     tensor = client.ai.tensorget("c", as_numpy=False)
     assert [4, 6] == tensor["values"]
 
     # test bar_variadic(a, args : List[Tensor])
-    client.ai.scriptrun(
-        "scr", "bar_variadic", inputs=["a", "$", "b", "b"], outputs=["c"]
-    )
+    with pytest.deprecated_call():
+        client.ai.scriptrun(
+            "scr", "bar_variadic", inputs=["a", "$", "b", "b"], outputs=["c"]
+        )
     tensor = client.ai.tensorget("c", as_numpy=False)
     assert [4, 6] == tensor["values"]
 
@@ -578,7 +581,8 @@ def test_deprecated_modelrun(client):
 
     client.ai.tensorset("a", (2, 3), dtype="float")
     client.ai.tensorset("b", (2, 3), dtype="float")
-    client.ai.modelrun("m", ["a", "b"], ["c"])
+    with pytest.deprecated_call():
+        client.ai.modelrun("m", ["a", "b"], ["c"])
     tensor = client.ai.tensorget("c")
     assert np.allclose([4, 9], tensor)
 
@@ -627,16 +631,19 @@ def test_model_scan(client):
     client = get_client()
     # TODO: RedisAI modelscan issue
     client.ai.modelstore("pt_model", "torch", "cpu", ptmodel)
-    mlist = client.ai.modelscan()
+    with pytest.warns(UserWarning):
+        mlist = client.ai.modelscan()
     assert mlist == [["pt_model", ""], ["m", "v1.2"]]
 
 
 @pytest.mark.integrations
 @pytest.mark.ai
 def test_script_scan(client):
-    client.ai.scriptset("ket1", "cpu", script, tag="v1.0")
-    client.ai.scriptset("ket2", "cpu", script)
-    slist = client.ai.scriptscan()
+    with pytest.deprecated_call():
+        client.ai.scriptset("ket1", "cpu", script, tag="v1.0")
+        client.ai.scriptset("ket2", "cpu", script)
+    with pytest.warns(UserWarning):
+        slist = client.ai.scriptscan()
     assert slist == [["ket1", "v1.0"], ["ket2", ""]]
 
 
@@ -676,8 +683,8 @@ def test_pipeline_non_transaction(client):
             assert res == exp
 
 
-@pytest.mark.integrations  
-@pytest.mark.ai       
+@pytest.mark.integrations
+@pytest.mark.ai
 def test_pipeline_transaction(client):
     arr = np.array([[2.0, 3.0], [2.0, 3.0]], dtype=np.float32)
     pipe = client.ai.pipeline(transaction=True)
