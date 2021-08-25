@@ -74,6 +74,14 @@ class Client(Commands, object):
 
         return redisplus.search.Search(self.client, **kwargs)
 
+    @property
+    def graph(self):
+        """For running graph commands."""
+        kwargs = self.__extras__.get("graph", {})
+        import redisplus.graph
+
+        return redisplus.graph.Graph(self.client, **kwargs)
+
     def execute_command(self, *args, **kwargs):
         """Pull in and execute the redis commands"""
         return self.__client__.execute_command(*args, **kwargs)

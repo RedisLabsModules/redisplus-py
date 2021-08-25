@@ -11,7 +11,7 @@ class AbstractFeature(ABC):
 
     def execute_command(self, *args, **kwargs):
         """Execute redis command."""
-        return self.client.execute_command(*args, **kwargs)
+        return self.__client__.execute_command(*args, **kwargs)
 
     @property
     def __client__(self):

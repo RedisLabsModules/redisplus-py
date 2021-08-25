@@ -128,7 +128,7 @@ class CommandMixin:
         ``decode_keys`` If set to True, the keys of ``obj`` will be decoded with utf-8.
         """
         if decode_keys:
-            obj = helpers.decodeDicKeys(obj)
+            obj = helpers.decodeDictKeys(obj)
 
         pieces = [name, str_path(path), self._encode(obj)]
 

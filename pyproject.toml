@@ -54,6 +54,7 @@ markers = [
     "timeseries: only redistimeseries tests",
     "bloom: only redisbloom tests",
     "timeseries: only redistimeseries tests",
+    "graph: only redisgraph tests",
     "ai: only redisai tests",
     "aidag: only redisai tests with dag",
     "search: only redisearch tests",
