@@ -1068,6 +1068,7 @@ def testSearchReturnFields(client):
     client.ft.create_index(SCHEMA, definition=definition)
 
     total = client.ft.search(Query("*").return_field("$.t", as_field="txt")).docs
+    waitForIndex(client, "idx")
     assert 1 == len(total)
     assert "doc:1" == total[0].id
     assert "riceratops" == total[0].txt
