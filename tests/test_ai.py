@@ -646,7 +646,7 @@ def test_debug(client):
     client = get_client(debug=True)
     with Capturing() as output:
         client.ai.tensorset("x", (2, 3, 4, 5), dtype="float")
-    assert (["AI.TENSORSET x FLOAT 4 VALUES 2 3 4 5"] == output)
+    assert ["AI.TENSORSET x FLOAT 4 VALUES 2 3 4 5"] == output
 
 
 # todo: connection pool
