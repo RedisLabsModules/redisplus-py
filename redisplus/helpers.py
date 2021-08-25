@@ -45,9 +45,9 @@ def random_string(length=10):
     """
     Returns a random N character long string.
     """
-    return "".join(
+    return "".join(  # nosec
         random.choice(string.ascii_lowercase) for x in range(length)
-    )  # nosec
+    )
 
 
 def quote_string(v):
