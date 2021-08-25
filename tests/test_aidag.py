@@ -47,9 +47,10 @@ def test_deprecated_dugrun(client):
             "myscript{1}", "bar", inputs=["a{1}", "b{1}"], outputs=["c{1}"]
         )
 
-    dag.modelrun("pt_model", ["a", "b"], ["output"])
+    with pytest.deprecated_call():
+        dag.modelrun("pt_model", ["a", "b"], ["output"])
     dag.tensorget("output")
-    result = dag.run()
+    result = dag.execute()
     expected = [
         "OK",
         "OK",
@@ -68,13 +69,14 @@ def test_deprecated_modelrun_and_run(client):
     client.ai.tensorset("a", [2, 3, 2, 3], shape=(2, 2), dtype="float")
     client.ai.tensorset("b", [2, 3, 2, 3], shape=(2, 2), dtype="float")
     dag = client.ai.dag(load=["a", "b"], persist="output")
-    dag.modelrun("pt_model", ["a", "b"], ["output"])
+    with pytest.deprecated_call():
+        dag.modelrun("pt_model", ["a", "b"], ["output"])
     dag.tensorget("output")
-    result = dag.run()
+    result = dag.execute()
     expected = ["OK", np.array([[4.0, 6.0], [4.0, 6.0]], dtype=np.float32)]
     result_outside_dag = client.ai.tensorget("output")
     assert np.allclose(expected.pop(), result.pop())
-    result = dag.run()
+    result = dag.execute()
     assert np.allclose(result_outside_dag, result.pop())
     assert expected == result
 
