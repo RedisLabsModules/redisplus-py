@@ -23,9 +23,9 @@ jobs:
             .tox
             ~/.cache
             poetry.lock
-          key: ${{ runner.os }}-${{ matrix.python }}-${{ hashFiles('**/pyproject.toml', '**/tox.ini') }}
+          key: lint-${{ matrix.python }}-${{ hashFiles('**/pyproject.toml', '**/tox.ini') }}
           restore-keys: |
-            ${runner.os}}-${{ matrix.python }}-
+            lint-${{ matrix.python }}-${{ hashFiles('**/pyproject.toml', '**/tox.ini') }}
 
       - name: lint
         run: tox -e linters
@@ -54,9 +54,9 @@ jobs:
             .tox
             ~/.cache
             poetry.lock
-          key: ${{ runner.os }}-${{ matrix.python }}-${{ hashFiles('**/pyproject.toml', '**/tox.ini') }}
+          key: ${{ matrix.python }}-${{ hashFiles('**/pyproject.toml', '**/tox.ini') }}
           restore-keys: |
-            ${runner.os}}-${{ matrix.python }}-
+            ${{ matrix.python }}-${{ hashFiles('**/pyproject.toml', '**/tox.ini') }}
 
       - name: run integration tests
         run: tox -e integrations
