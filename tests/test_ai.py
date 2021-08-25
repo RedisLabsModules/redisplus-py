@@ -300,15 +300,15 @@ def test_modelget_meta(client):
     )
     model = client.ai.modelget("m", meta_only=True)
     assert model == {
-            "backend": "TF",
-            "batchsize": 0,
-            "device": "cpu",
-            "inputs": ["a", "b"],
-            "minbatchsize": 0,
-            "minbatchtimeout": 0,
-            "outputs": ["mul"],
-            "tag": "v1.0",
-        }
+        "backend": "TF",
+        "batchsize": 0,
+        "device": "cpu",
+        "inputs": ["a", "b"],
+        "minbatchsize": 0,
+        "minbatchtimeout": 0,
+        "outputs": ["mul"],
+        "tag": "v1.0",
+    }
 
 
 @pytest.mark.integrations
