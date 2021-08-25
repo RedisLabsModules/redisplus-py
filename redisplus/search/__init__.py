@@ -94,6 +94,7 @@ class Search(CommandMixin, AbstractFeature, object):
         """
         self.client = client
         self.index_name = index_name
+        self.commandmixin = CommandMixin
 
     def pipeline(self, transaction=True, shard_hint=None):
         """
@@ -119,3 +120,4 @@ class Pipeline(Pipeline):
 
     def pipeline(self):
         raise AttributeError("Pipelines cannot be created within pipelines.")
+        self.commandmixin = CommandMixin
