@@ -1,4 +1,3 @@
-from redis import Redis, DataError
 from redis.client import bool_ok
 from ..feature import AbstractFeature
 

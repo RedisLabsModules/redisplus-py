@@ -1,6 +1,4 @@
-import functools
-from redis import Redis
-from redis.client import Pipeline, bool_ok
+from redis.client import bool_ok
 from ..feature import AbstractFeature
 
 from .commands import *
