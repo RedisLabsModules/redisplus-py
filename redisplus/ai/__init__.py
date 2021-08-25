@@ -31,17 +31,7 @@ class AI(CommandMixin, AbstractFeature, object):
 
     def __init__(self, client=None, debug=False, enable_postprocess=True):
         self.client = client
-        # if debug:
-        #     self.execute_command = enable_debug(super().execute_command)
         self.enable_postprocess = enable_postprocess
-
-
-# def enable_debug(f):
-#     @wraps(f)
-#     def wrapper(*args):
-#        print(*args)
-#        return f(*args)
-#     return wrapper
 
 
 class Pipeline(redis.client.Pipeline):

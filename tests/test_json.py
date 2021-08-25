@@ -20,8 +20,8 @@ def client():
 def test_json_setbinarykey(client):
     d = {"hello": "world", b"some": "value"}
     with pytest.raises(TypeError):
-        client.jsonset("somekey", Path.rootPath(), d)
-    assert client.jsonset("somekey", Path.rootPath(), d, decode_keys=True)
+        client.json.jsonset("somekey", Path.rootPath(), d)
+    assert client.json.jsonset("somekey", Path.rootPath(), d, decode_keys=True)
 
 
 @pytest.mark.integrations
