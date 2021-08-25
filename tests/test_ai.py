@@ -82,7 +82,7 @@ def post_process(tensors: List[Tensor], keys: List[str], args: List[str]):
 
 def get_client(debug=False):
     rc = Client(extras={"ai": {"debug": debug}})
-    return rc.ai
+    return rc
 
 
 @pytest.fixture
@@ -626,8 +626,8 @@ def test_model_scan(client):
     ptmodel = load_model(model_path)
     client = get_client()
     # TODO: RedisAI modelscan issue
-    client.modelstore("pt_model", "torch", "cpu", ptmodel)
-    mlist = client.modelscan()
+    client.ai.modelstore("pt_model", "torch", "cpu", ptmodel)
+    mlist = client.ai.modelscan()
     assert mlist == [["pt_model", ""], ["m", "v1.2"]]
 
 
@@ -640,8 +640,6 @@ def test_script_scan(client):
     assert slist == [["ket1", "v1.0"], ["ket2", ""]]
 
 
-# todo: should we support debug?
-"""
 @pytest.mark.integrations
 @pytest.mark.ai
 def test_debug(client):
@@ -649,7 +647,6 @@ def test_debug(client):
     with Capturing() as output:
         client.ai.tensorset("x", (2, 3, 4, 5), dtype="float")
     assert (["AI.TENSORSET x FLOAT 4 VALUES 2 3 4 5"] == output)
-"""
 
 
 # todo: connection pool
