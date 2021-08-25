@@ -3,7 +3,6 @@ import json
 
 from redis.client import Redis
 
-# from . import commands as recmds
 from ..helpers import bulk_of_jsons, delist, nativestr
 from .commands import CommandMixin
 from ..feature import AbstractFeature

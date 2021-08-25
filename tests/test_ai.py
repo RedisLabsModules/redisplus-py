@@ -11,7 +11,6 @@ from redis.exceptions import ResponseError
 from redisplus.client import Client
 
 
-# DEBUG = False
 tf_graph = "graph.pb"
 torch_graph = "pt-minimal.pt"
 dog_img = "dog.jpg"
@@ -82,7 +81,7 @@ def post_process(tensors: List[Tensor], keys: List[str], args: List[str]):
 
 def get_client(debug=False):
     rc = Client(extras={"ai": {"debug": debug}})
-    return rc.ai
+    return rc
 
 
 @pytest.fixture
@@ -301,15 +300,15 @@ def test_modelget_meta(client):
     )
     model = client.ai.modelget("m", meta_only=True)
     assert model == {
-            "backend": "TF",
-            "batchsize": 0,
-            "device": "cpu",
-            "inputs": ["a", "b"],
-            "minbatchsize": 0,
-            "minbatchtimeout": 0,
-            "outputs": ["mul"],
-            "tag": "v1.0",
-        }
+        "backend": "TF",
+        "batchsize": 0,
+        "device": "cpu",
+        "inputs": ["a", "b"],
+        "minbatchsize": 0,
+        "minbatchtimeout": 0,
+        "outputs": ["mul"],
+        "tag": "v1.0",
+    }
 
 
 @pytest.mark.integrations
@@ -631,9 +630,9 @@ def test_model_scan(client):
     ptmodel = load_model(model_path)
     client = get_client()
     # TODO: RedisAI modelscan issue
-    client.modelstore("pt_model", "torch", "cpu", ptmodel)
+    client.ai.modelstore("pt_model", "torch", "cpu", ptmodel)
     with pytest.warns(UserWarning):
-        mlist = client.modelscan()
+        mlist = client.ai.modelscan()
     assert mlist == [["pt_model", ""], ["m", "v1.2"]]
 
 
@@ -648,16 +647,13 @@ def test_script_scan(client):
     assert slist == [["ket1", "v1.0"], ["ket2", ""]]
 
 
-# todo: should we support debug?
-"""
 @pytest.mark.integrations
 @pytest.mark.ai
 def test_debug(client):
     client = get_client(debug=True)
     with Capturing() as output:
         client.ai.tensorset("x", (2, 3, 4, 5), dtype="float")
-    assert (["AI.TENSORSET x FLOAT 4 VALUES 2 3 4 5"] == output)
-"""
+    assert ["AI.TENSORSET x FLOAT 4 VALUES 2 3 4 5"] == output
 
 
 # todo: connection pool
