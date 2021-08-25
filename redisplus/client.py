@@ -60,14 +60,22 @@ class Client(Commands, object):
 
     @property
     def ai(self):
-        """For running bloom specific commands."""
+        """For running ai commands."""
         kwargs = self.__extras__.get("ai", {})
         import redisplus.ai
 
         return redisplus.ai.AI(self.client, **kwargs)
 
+    @property
+    def search(self):
+        """For running search commands."""
+        kwargs = self.__extras__.get("search", {})
+        import redisplus.search
+
+        return redisplus.search.Search(self.client, **kwargs)
+
     def execute_command(self, *args, **kwargs):
-        """Pull in and excecute the redis commands"""
+        """Pull in and execute the redis commands"""
         return self.__client__.execute_command(*args, **kwargs)
 
     def pipeline(self, *args, **kwargs):
