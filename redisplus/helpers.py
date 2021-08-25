@@ -1,3 +1,6 @@
+import copy
+
+
 def bulk_of_jsons(d):
     """Replace serialized JSON values with objects in a bulk array response (list)."""
 
@@ -34,3 +37,13 @@ def parseToList(response):
         else:
             res.append(None)
     return res
+
+
+def decodeDicKeys(obj):
+    """Decode the keys of the given dictionary with utf-8."""
+    newobj = copy.copy(obj)
+    for k in obj.keys():
+        if isinstance(k, bytes):
+            newobj[k.decode("utf-8")] = newobj[k]
+            newobj.pop(k)
+    return newobj

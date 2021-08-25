@@ -17,6 +17,15 @@ def client():
 
 @pytest.mark.integrations
 @pytest.mark.json
+def test_json_setbinarykey(client):
+    d = {"hello": "world", b"some": "value"}
+    with pytest.raises(TypeError):
+        client.jsonset("somekey", Path.rootPath(), d)
+    assert client.jsonset("somekey", Path.rootPath(), d, decode_keys=True)
+
+
+@pytest.mark.integrations
+@pytest.mark.json
 def test_json_setgetdeleteforget(client):
     assert client.json.jsonset("foo", Path.rootPath(), "bar")
     assert client.json.jsonget("foo") == "bar"
