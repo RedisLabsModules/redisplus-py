@@ -1,7 +1,5 @@
 from invoke import task
 import shutil
-import http.server
-import os
 import tox
 
 
@@ -32,5 +30,5 @@ def docserver(c, port=8000):
         print("Starting webserver on port {}.".format(port))
         try:
             c.run("python3 -m http.server {}".format(port))
-        except KeyboardInterrupt():
+        except KeyboardInterrupt:
             pass

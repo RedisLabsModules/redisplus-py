@@ -1,4 +1,5 @@
 [![Pipelines](https://github.com/redislabsmodules/redisplus-py/actions/workflows/tox-build.yml/badge.svg?branch=master)
+[![LGTM](https://img.shields.io/lgtm/alerts/g/RedisLabsModules/redisplus-py.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/RedisLabsModules/redisplus-py/alerts/)
 
 # redisplus
 

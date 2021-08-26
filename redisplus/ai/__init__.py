@@ -3,10 +3,10 @@ from functools import wraps, partial
 import redis
 from ..feature import AbstractFeature
 
-from .commands import *
+from .commands import *  # lgtm [py/polluting-import]
 
 
-class AI(CommandMixin, AbstractFeature, object):
+class AI(CommandMixin, AbstractFeature, object):  # lgtm [py/conflicting-attributes]
     """
     Redis client build specifically for the RedisAI module. It takes all the necessary
     parameters to establish the connection and an optional ``debug`` parameter on

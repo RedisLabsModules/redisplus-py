@@ -1,5 +1,3 @@
-import redis
-
 from .path import Path, str_path
 from .. import helpers
 
@@ -158,6 +156,6 @@ class CommandMixin:
             "JSON.STRAPPEND", name, str_path(path), self._encode(string)
         )
 
-    def jsondebug(client, name, path=Path.rootPath()):
+    def jsondebug(self, name, path=Path.rootPath()):
         """Return the memory usage in bytes of a value under ``path`` from key ``name``."""
-        return client.execute_command("JSON.DEBUG", "MEMORY", name, str_path(path))
+        return self.execute_command("JSON.DEBUG", "MEMORY", name, str_path(path))

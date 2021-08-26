@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "redisplus"
-version = "0.0.1"
+version = "0.1.1"
 description = "An all purpose client for redis modules."
 keywords = ["redis"]
 authors = ["RedisLabs OSS <oss@redislabs.com>"]
