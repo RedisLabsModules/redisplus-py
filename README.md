@@ -1,3 +1,5 @@
+[![Pipelines](https://github.com/redislabsmodules/redisplus-py/actions/workflows/tox-build.yml/badge.svg?branch=master)
+
 # redisplus
 
 The python interface to redis modules redismodules.io. This is a unified client using [redis-py](https://github.com/andymccurdy/redis-py) to send commands to redis, and access the modules.
