@@ -634,8 +634,8 @@ def testAliasBasic(client):
     # add the actual alias and check
     index1.ft.aliasadd("myalias")
     alias_client = getClient("myalias")
-    res = alias_client.ft.search("*").docs[0]
-    assert "doc1" == res.id
+    res = sorted(alias_client.ft.search("*").docs, key=lambda x: x.id)
+    assert "doc1" == res[0].id
 
     # We should throw an exception when trying to add an alias that already exists
     with pytest.raises(Exception):
@@ -644,13 +644,13 @@ def testAliasBasic(client):
     # update the alias and ensure we get doc2
     index2.ft.aliasupdate("myalias")
     alias_client2 = getClient("myalias")
-    res = alias_client2.ft.search("*").docs[0]
-    assert "doc1" == res.id
+    res = sorted(alias_client2.ft.search("*").docs, key=lambda x: x.id)
+    assert "doc1" == res[0].id
 
     # delete the alias and expect an error if we try to query again
     index2.ft.aliasdel("myalias")
     with pytest.raises(Exception):
-        res = alias_client2.ft.search("*").docs[0]
+        _ = alias_client2.ft.search("*").docs[0]
 
 
 @pytest.mark.integrations
