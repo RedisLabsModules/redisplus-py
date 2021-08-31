@@ -2,8 +2,11 @@ import pytest
 from redis import Redis
 import redisplus.bf
 from redisplus.client import Client
+from redis.exceptions import RedisError
 
-i = lambda l: [int(v) for v in l]
+
+def intlist(obj):
+    return [int(v) for v in obj]
 
 
 @pytest.fixture
@@ -39,25 +42,25 @@ def testBFAdd(client):
     assert client.bf.bfcreate("bloom", 0.01, 1000)
     assert 1 == client.bf.bfadd("bloom", "foo")
     assert 0 == client.bf.bfadd("bloom", "foo")
-    assert [0] == i(client.bf.bfmadd("bloom", "foo"))
+    assert [0] == intlist(client.bf.bfmadd("bloom", "foo"))
     assert [0, 1] == client.bf.bfmadd("bloom", "foo", "bar")
     assert [0, 0, 1] == client.bf.bfmadd("bloom", "foo", "bar", "baz")
     assert 1 == client.bf.bfexists("bloom", "foo")
     assert 0 == client.bf.bfexists("bloom", "noexist")
-    assert [1, 0] == i(client.bf.bfmexists("bloom", "foo", "noexist"))
+    assert [1, 0] == intlist(client.bf.bfmexists("bloom", "foo", "noexist"))
 
 
 @pytest.mark.integrations
 @pytest.mark.bloom
 def testBFInsert(client):
     assert client.bf.bfcreate("bloom", 0.01, 1000)
-    assert [1] == i(client.bf.bfinsert("bloom", ["foo"]))
-    assert [0, 1] == i(client.bf.bfinsert("bloom", ["foo", "bar"]))
-    assert [1] == i(client.bf.bfinsert("captest", ["foo"], capacity=1000))
-    assert [1] == i(client.bf.bfinsert("errtest", ["foo"], error=0.01))
+    assert [1] == intlist(client.bf.bfinsert("bloom", ["foo"]))
+    assert [0, 1] == intlist(client.bf.bfinsert("bloom", ["foo", "bar"]))
+    assert [1] == intlist(client.bf.bfinsert("captest", ["foo"], capacity=1000))
+    assert [1] == intlist(client.bf.bfinsert("errtest", ["foo"], error=0.01))
     assert 1 == client.bf.bfexists("bloom", "foo")
     assert 0 == client.bf.bfexists("bloom", "noexist")
-    assert [1, 0] == i(client.bf.bfmexists("bloom", "foo", "noexist"))
+    assert [1, 0] == intlist(client.bf.bfmexists("bloom", "foo", "noexist"))
     info = client.bf.bfinfo("bloom")
     assert 2 == info.insertedNum
     assert 1000 == info.capacity
@@ -131,7 +134,7 @@ def testBFInfo(client):
             "myBloom", "0.0001", "1000", expansion=expansion, noScale=True
         )
         assert False
-    except:
+    except RedisError:
         assert True
 
 

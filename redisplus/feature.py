@@ -54,7 +54,7 @@ class AbstractFeature(ABC):
 
         # construct an internal class (Piper) that is effectively as redis
         # pipeline, and ensure we mix in, the commands for the associated module
-        class Piper(Pipeline, cls):
+        class Piper(cls, Pipeline):
             pass
 
         p = Piper(**sanitized)

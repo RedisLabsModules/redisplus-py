@@ -18,7 +18,6 @@ def test_client_executor():
     assert c.execute_command("FLUSHDB")
 
 
-# TODO test pipeline basics
 def test_client_pipeline():
     c = Client()
     assert isinstance(c.pipeline(), Pipeline)
@@ -26,3 +25,8 @@ def test_client_pipeline():
     with c.pipeline() as p:
         p.set("foo", "bar")
         bool_ok == p.execute()
+
+
+# TODO
+def test_integrated_pipeline():
+    pass

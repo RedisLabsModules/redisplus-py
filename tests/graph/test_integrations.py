@@ -287,13 +287,13 @@ def test_cached_execution(client):
 
 @pytest.mark.integrations
 @pytest.mark.graph
-def test_execution_plan(client):
+def test_explain(client):
     create_query = """CREATE (:Rider {name:'Valentino Rossi'})-[:rides]->(:Team {name:'Yamaha'}),
     (:Rider {name:'Dani Pedrosa'})-[:rides]->(:Team {name:'Honda'}),
     (:Rider {name:'Andrea Dovizioso'})-[:rides]->(:Team {name:'Ducati'})"""
     client.query(create_query)
 
-    result = client.execution_plan(
+    result = client.explain(
         "MATCH (r:Rider)-[:rides]->(t:Team) WHERE t.name = $name RETURN r.name, t.name, $params",
         {"name": "Yehuda"},
     )

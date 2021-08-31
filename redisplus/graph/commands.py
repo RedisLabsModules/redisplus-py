@@ -15,7 +15,7 @@ class CommandMixin:
         self.nodes = {}
         self.edges = []
 
-    def execution_plan(self, query, params=None):
+    def explain(self, query, params=None):
         """
         Get the execution plan for given query,
         GRAPH.EXPLAIN returns an array of operations.

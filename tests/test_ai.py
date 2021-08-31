@@ -6,7 +6,6 @@ import numpy as np
 from io import StringIO
 from ml2rt import load_model
 
-from redis import Redis
 from redis.exceptions import ResponseError
 from redisplus.client import Client
 
@@ -274,10 +273,10 @@ def test_modelstore_errors(client):
             minbatchtimeout=1000,
         )
 
-    with pytest.raises(ValueError) as e:
+    with pytest.raises(ValueError):
         client.ai.modelstore("m", "tf", "cpu", model_pb, tag="v1.0")
 
-    with pytest.raises(ValueError) as e:
+    with pytest.raises(ValueError):
         client.ai.modelstore(
             "m",
             "torch",
@@ -368,11 +367,11 @@ def test_run_tf_model(client):
     )
 
     # Required arguments ar None
-    with pytest.raises(ValueError) as e:
+    with pytest.raises(ValueError):
         client.ai.modelexecute("m", inputs=None, outputs=None)
 
     # wrong model
-    with pytest.raises(ResponseError) as e:
+    with pytest.raises(ResponseError):
         client.ai.modelstore(
             "m", "tf", "cpu", wrong_model_pb, inputs=["a", "b"], outputs=["mul"]
         )
@@ -427,7 +426,7 @@ def test_scriptstore(client):
         client.ai.scriptstore("test", "cpu", script, entry_points=None)
     with pytest.raises(ValueError):
         client.ai.scriptstore("test", "cpu", script=None, entry_points="bar")
-    with pytest.raises(ResponseError) as e:
+    with pytest.raises(ResponseError):
         client.ai.scriptstore("test", "cpu", "return 1", "f")
 
 
