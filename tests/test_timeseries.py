@@ -1,7 +1,6 @@
 import pytest
 import time
 from time import sleep
-from redis import Redis
 from redisplus.client import Client
 from .conftest import skip_ifmodversion_lt
 
@@ -189,13 +188,13 @@ def testCreateAndDeleteRule(client):
 @skip_ifmodversion_lt("99.99.99", "timeseries")  # todo: update after the release
 def testDelRange(client):
     try:
-        client.tf.delrange("test", 0, 100)
+        client.tf.delete("test", 0, 100)
     except Exception as e:
-        assert e.__str__() is not ""
+        assert e.__str__() != ""
 
     for i in range(100):
         client.tf.add(1, i, i % 7)
-    assert 22 == client.tf.delrange(1, 0, 21)
+    assert 22 == client.tf.delete(1, 0, 21)
     assert [] == client.tf.range(1, 0, 21)
     assert [(22, 1.0)] == client.tf.range(1, 22, 22)
 

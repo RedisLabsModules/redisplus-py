@@ -1,20 +1,20 @@
-CREATE_CMD = "TS.CREATE"
-ALTER_CMD = "TS.ALTER"
 ADD_CMD = "TS.ADD"
-MADD_CMD = "TS.MADD"
-INCRBY_CMD = "TS.INCRBY"
-DECRBY_CMD = "TS.DECRBY"
-DEL_CMD = "TS.DEL"
+ALTER_CMD = "TS.ALTER"
 CREATERULE_CMD = "TS.CREATERULE"
+CREATE_CMD = "TS.CREATE"
+DECRBY_CMD = "TS.DECRBY"
 DELETERULE_CMD = "TS.DELETERULE"
-RANGE_CMD = "TS.RANGE"
-REVRANGE_CMD = "TS.REVRANGE"
+DEL_CMD = "TS.DEL"
+GET_CMD = "TS.GET"
+INCRBY_CMD = "TS.INCRBY"
+INFO_CMD = "TS.INFO"
+MADD_CMD = "TS.MADD"
+MGET_CMD = "TS.MGET"
 MRANGE_CMD = "TS.MRANGE"
 MREVRANGE_CMD = "TS.MREVRANGE"
-GET_CMD = "TS.GET"
-MGET_CMD = "TS.MGET"
-INFO_CMD = "TS.INFO"
 QUERYINDEX_CMD = "TS.QUERYINDEX"
+RANGE_CMD = "TS.RANGE"
+REVRANGE_CMD = "TS.REVRANGE"
 
 
 class CommandMixin:
@@ -192,7 +192,7 @@ class CommandMixin:
 
         return self.execute_command(DECRBY_CMD, *params)
 
-    def delrange(self, key, from_time, to_time):
+    def delete(self, key, from_time, to_time):
         """
         Delete data points for a given timeseries and interval range in the form of start and end delete timestamps.
 

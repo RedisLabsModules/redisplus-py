@@ -10,6 +10,7 @@ from .conftest import skip_ifmodversion_lt
 from redis import Redis
 
 import redisplus.search
+from redis.exceptions import RedisError
 from redisplus.client import Client
 from redisplus.json.path import Path
 from redisplus.search import Search
@@ -34,7 +35,7 @@ def waitForIndex(env, idx, timeout=None):
         res = env.execute_command("ft.info", idx)
         try:
             res.index("indexing")
-        except:
+        except RedisError:
             break
 
         if int(res[res.index("indexing") + 1]) == 0:
@@ -74,7 +75,7 @@ def createIndex(client, num_docs=100, definition=None):
     for n, line in enumerate(r):
         # ['62816', 'Merchant of Venice', '9', '3.2.74', 'PORTIA', "I'll begin it,--Ding, dong, bell."]
 
-        play, chapter, character, text = line[1], line[2], line[4], line[5]
+        play, chapter, character, text = line[1], line[2], line[4], line[5]  # noqa
 
         key = "{}:{}".format(play, chapter).lower()
         d = chapters.setdefault(key, {})
@@ -1009,8 +1010,8 @@ def testCreateClientDefinitionJson(client):
     definition = IndexDefinition(prefix=["king:"], index_type=IndexType.JSON)
     client.ft.create_index((TextField("$.name"),), definition=definition)
 
-    client.json.jsonset("king:1", Path.rootPath(), {"name": "henry"})
-    client.json.jsonset("king:2", Path.rootPath(), {"name": "james"})
+    client.json.set("king:1", Path.rootPath(), {"name": "henry"})
+    client.json.set("king:2", Path.rootPath(), {"name": "james"})
 
     res = client.ft.search("henry")
     assert res.docs[0].id == "king:1"
@@ -1032,7 +1033,7 @@ def testFieldsAsName(client):
     client.ft.create_index(SCHEMA, definition=definition)
 
     # insert json data
-    res = client.json.jsonset("doc:1", Path.rootPath(), {"name": "Jon", "age": 25})
+    res = client.json.set("doc:1", Path.rootPath(), {"name": "Jon", "age": 25})
     assert res
 
     total = client.ft.search(Query("Jon").return_fields("name", "just_a_number")).docs
@@ -1046,14 +1047,14 @@ def testFieldsAsName(client):
 @pytest.mark.search
 @skip_ifmodversion_lt("2.2.0", "search")
 def testSearchReturnFields(client):
-    res = client.json.jsonset(
+    res = client.json.set(
         "doc:1",
         Path.rootPath(),
         {"t": "riceratops", "t2": "telmatosaurus", "n": 9072, "flt": 97.2},
     )
     assert res
 
-    # create index json
+    # create index on
     definition = IndexDefinition(index_type=IndexType.JSON)
     SCHEMA = (
         TextField("$.t"),
