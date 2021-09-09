@@ -302,6 +302,17 @@ def test_explain(client):
 
     client.delete()
 
+@pytest.mark.integrations
+@pytest.mark.graph
+def test_slowlog(client):
+    create_query = """CREATE (:Rider {name:'Valentino Rossi'})-[:rides]->(:Team {name:'Yamaha'}),
+    (:Rider {name:'Dani Pedrosa'})-[:rides]->(:Team {name:'Honda'}),
+    (:Rider {name:'Andrea Dovizioso'})-[:rides]->(:Team {name:'Ducati'})"""
+    client.query(create_query)
+
+    results = client.slowlog()
+    assert results[0][1] == "GRAPH.QUERY"
+    assert results[0][2] == create_query
 
 @pytest.mark.integrations
 @pytest.mark.graph
