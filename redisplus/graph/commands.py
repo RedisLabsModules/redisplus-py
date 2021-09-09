@@ -29,3 +29,6 @@ class CommandMixin:
 
         plan = self.execute_command("GRAPH.EXPLAIN", self.name, query)
         return "\n".join(plan)
+
+    def profile(self, query):
+        return self.query(query, profile=True)

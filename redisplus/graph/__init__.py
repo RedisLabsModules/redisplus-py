@@ -165,7 +165,7 @@ class Graph(CommandMixin, AbstractFeature, object):
             params_header += str(key) + "=" + str(value) + " "
         return params_header
 
-    def query(self, q, params=None, timeout=None, read_only=False):
+    def query(self, q, params=None, timeout=None, read_only=False, profile=False):
         """
         Executes a query against the graph.
 
@@ -174,6 +174,7 @@ class Graph(CommandMixin, AbstractFeature, object):
             params: query parameters
             timeout: maximum runtime for read queries in milliseconds
             read_only: executes a readonly query if set to True
+            profile: return details on results produced by and time spent in each operation.
         """
 
         # maintain original 'q'
@@ -186,7 +187,10 @@ class Graph(CommandMixin, AbstractFeature, object):
         # construct query command
         # ask for compact result-set format
         # specify known graph version
-        cmd = "GRAPH.RO_QUERY" if read_only else "GRAPH.QUERY"
+        if profile:
+            cmd = "GRAPH.PROFILE"
+        else:
+            cmd = "GRAPH.RO_QUERY" if read_only else "GRAPH.QUERY"
         command = [cmd, self.name, query, "--compact"]
 
         # include timeout is specified
@@ -198,7 +202,7 @@ class Graph(CommandMixin, AbstractFeature, object):
         # issue query
         try:
             response = self.execute_command(*command)
-            return QueryResult(self, response)
+            return QueryResult(self, response, profile)
         except ResponseError as e:
             if "wrong number of arguments" in str(e):
                 print("Note: RedisGraph Python requires server version 2.2.8 or above")
