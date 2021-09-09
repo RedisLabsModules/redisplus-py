@@ -302,6 +302,7 @@ def test_explain(client):
 
     client.delete()
 
+
 @pytest.mark.integrations
 @pytest.mark.graph
 def test_slowlog(client):
@@ -313,6 +314,7 @@ def test_slowlog(client):
     results = client.slowlog()
     assert results[0][1] == "GRAPH.QUERY"
     assert results[0][2] == create_query
+
 
 @pytest.mark.integrations
 @pytest.mark.graph
