@@ -82,9 +82,6 @@ def test_array_functions(client):
 
     assert [a] == result.result_set[0][0]
 
-    # All done, remove graph.
-    client.graph.delete()
-
 
 @pytest.mark.integrations
 @pytest.mark.graph
@@ -107,9 +104,6 @@ def test_path(client):
     result = graph.query(query)
     assert expected_results == result.result_set
 
-    # All done, remove graph.
-    graph.delete()
-
 
 @pytest.mark.integrations
 @pytest.mark.graph
@@ -120,9 +114,6 @@ def test_param(client):
         result = client.graph.query(query, {"param": param})
         expected_results = [[param]]
         assert expected_results == result.result_set
-
-    # All done, remove graph.
-    client.graph.delete()
 
 
 @pytest.mark.integrations
@@ -143,9 +134,6 @@ def test_map(client):
 
     assert actual == expected
 
-    # All done, remove graph.
-    client.graph.delete()
-
 
 @pytest.mark.integrations
 @pytest.mark.graph
@@ -165,9 +153,6 @@ def test_point(client):
     assert abs(actual["latitude"] - expected_lat) < 0.001
     assert abs(actual["longitude"] - expected_lon) < 0.001
 
-    # All done, remove graph.
-    client.graph.delete()
-
 
 @pytest.mark.integrations
 @pytest.mark.graph
@@ -183,9 +168,7 @@ def test_index_response(client):
     assert 1 == result_set.indices_deleted
 
     with pytest.raises(ResponseError):
-        result_set = client.graph.query("DROP INDEX ON :person(age)")
-
-    client.graph.delete()
+        client.graph.query("DROP INDEX ON :person(age)")
 
 
 @pytest.mark.integrations
@@ -285,8 +268,6 @@ def test_cached_execution(client):
     # should be cached on all threads by now
     assert cached_result.cached_execution
 
-    client.graph.delete()
-
 
 @pytest.mark.integrations
 @pytest.mark.graph
@@ -302,8 +283,6 @@ def test_explain(client):
     )
     expected = "Results\n    Project\n        Conditional Traverse | (t:Team)->(r:Rider)\n            Filter\n                Node By Label Scan | (t:Team)"
     assert result == expected
-
-    client.graph.delete()
 
 
 @pytest.mark.integrations
