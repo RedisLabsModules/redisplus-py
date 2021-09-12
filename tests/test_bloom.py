@@ -289,7 +289,7 @@ def testTopK(client):
         "E",
         "E",
     )
-    assert ["A", "B", "D"] == client.bf.topklist("topklist").sort()
+    assert ["A", "B", "D"] == sorted(client.bf.topklist("topklist"))
     info = client.bf.topkinfo("topklist")
     assert 3 == info.k
     assert 50 == info.width
