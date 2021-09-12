@@ -60,11 +60,19 @@ class ResultSetScalarTypes:
 
 class QueryResult:
     def __init__(self, graph, response, profile=False):
+        """
+        A class that represents a result of the query operation.
+
+        Args:
+            graph: The graph on which the query was executed.
+            response: The response from the server.
+            profile: A boolean indicating if the query command was "GRAPH.PROFILE"
+        """
         self.graph = graph
         self.header = []
         self.result_set = []
 
-        # incase of an error an exception will be raised
+        # in case of an error an exception will be raised
         self._check_for_errors(response)
 
         if len(response) == 1:

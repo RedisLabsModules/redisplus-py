@@ -1,7 +1,92 @@
 from redis import DataError
+from redis.exceptions import ResponseError
+from .exceptions import VersionMismatchException
+from .query_result import QueryResult
 
 
 class CommandMixin:
+    def commit(self):
+        """
+        Create entire graph.
+        """
+        if len(self.nodes) == 0 and len(self.edges) == 0:
+            return None
+
+        query = "CREATE "
+        for _, node in self.nodes.items():
+            query += str(node) + ","
+
+        query += ",".join([str(edge) for edge in self.edges])
+
+        # Discard leading comma.
+        if query[-1] == ",":
+            query = query[:-1]
+
+        return self.query(query)
+
+    def query(self, q, params=None, timeout=None, read_only=False, profile=False):
+        """
+        Executes a query against the graph.
+
+        Args:
+            q: the query
+            params: query parameters
+            timeout: maximum runtime for read queries in milliseconds
+            read_only: executes a readonly query if set to True
+            profile: return details on results produced by and time spent in each operation.
+        """
+
+        # maintain original 'q'
+        query = q
+
+        # handle query parameters
+        if params is not None:
+            query = self._build_params_header(params) + query
+
+        # construct query command
+        # ask for compact result-set format
+        # specify known graph version
+        if profile:
+            cmd = "GRAPH.PROFILE"
+        else:
+            cmd = "GRAPH.RO_QUERY" if read_only else "GRAPH.QUERY"
+        command = [cmd, self.name, query, "--compact"]
+
+        # include timeout is specified
+        if timeout:
+            if not isinstance(timeout, int):
+                raise Exception("Timeout argument must be a positive integer")
+            command += ["timeout", timeout]
+
+        # issue query
+        try:
+            response = self.execute_command(*command)
+            return QueryResult(self, response, profile)
+        except ResponseError as e:
+            if "wrong number of arguments" in str(e):
+                print("Note: RedisGraph Python requires server version 2.2.8 or above")
+            if "unknown command" in str(e) and read_only:
+                # `GRAPH.RO_QUERY` is unavailable in older versions.
+                return self.query(q, params, timeout, read_only=False)
+            raise e
+        except VersionMismatchException as e:
+            # client view over the graph schema is out of sync
+            # set client version and refresh local schema
+            self.version = e.version
+            self._refresh_schema()
+            # re-issue query
+            return self.query(q, params, timeout, read_only)
+
+    def merge(self, pattern):
+        """
+        Merge pattern.
+        """
+
+        query = "MERGE "
+        query += str(pattern)
+
+        return self.query(query)
+
     def delete(self):
         """
         Deletes graph.
@@ -34,6 +119,12 @@ class CommandMixin:
         return "\n".join(plan)
 
     def profile(self, query):
+        """
+        Execute a query and produce an execution plan augmented with metrics
+        for each operation's execution. Return a string representation of a
+        query execution plan, with details on results produced by and time
+        spent in each operation.
+        """
         return self.query(query, profile=True)
 
     def slowlog(self):
