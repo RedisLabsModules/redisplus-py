@@ -18,6 +18,7 @@ def client():
 @pytest.mark.integrations
 @pytest.mark.graph
 def test_graph_creation(client):
+    graph = client.graph
 
     john = Node(
         label="person",
@@ -28,21 +29,21 @@ def test_graph_creation(client):
             "status": "single",
         },
     )
-    client.graph.add_node(john)
+    graph.add_node(john)
     japan = Node(label="country", properties={"name": "Japan"})
 
-    client.graph.add_node(japan)
+    graph.add_node(japan)
     edge = Edge(john, "visited", japan, properties={"purpose": "pleasure"})
-    client.graph.add_edge(edge)
+    graph.add_edge(edge)
 
-    client.graph.commit()
+    graph.commit()
 
     query = (
         'MATCH (p:person)-[v:visited {purpose:"pleasure"}]->(c:country) '
         "RETURN p, v, c"
     )
 
-    result = client.graph.query(query)
+    result = graph.query(query)
 
     person = result.result_set[0][0]
     visit = result.result_set[0][1]
@@ -53,11 +54,11 @@ def test_graph_creation(client):
     assert country == japan
 
     query = """RETURN [1, 2.3, "4", true, false, null]"""
-    result = client.graph.query(query)
+    result = graph.query(query)
     assert [1, 2.3, "4", True, False, None] == result.result_set[0][0]
 
     # All done, remove graph.
-    client.graph.delete()
+    graph.delete()
 
 
 @pytest.mark.integrations
@@ -93,21 +94,21 @@ def test_path(client):
     node1 = Node(node_id=1, label="L1")
     edge01 = Edge(node0, "R1", node1, edge_id=0, properties={"value": 1})
 
-    client.graph.add_node(node0)
-    client.graph.add_node(node1)
-    client.graph.add_edge(edge01)
-
-    client.graph.flush()
+    graph = client.graph
+    graph.add_node(node0)
+    graph.add_node(node1)
+    graph.add_edge(edge01)
+    graph.flush()
 
     path01 = Path.new_empty_path().add_node(node0).add_edge(edge01).add_node(node1)
     expected_results = [[path01]]
 
     query = "MATCH p=(:L1)-[:R1]->(:L1) RETURN p ORDER BY p"
-    result = client.graph.query(query)
+    result = graph.query(query)
     assert expected_results == result.result_set
 
     # All done, remove graph.
-    client.graph.delete()
+    graph.delete()
 
 
 @pytest.mark.integrations
@@ -190,6 +191,7 @@ def test_index_response(client):
 @pytest.mark.integrations
 @pytest.mark.graph
 def test_stringify_query_result(client):
+    graph = client.graph
 
     john = Node(
         alias="a",
@@ -201,12 +203,13 @@ def test_stringify_query_result(client):
             "status": "single",
         },
     )
-    client.graph.add_node(john)
-    japan = Node(alias="b", label="country", properties={"name": "Japan"})
+    graph.add_node(john)
 
-    client.graph.add_node(japan)
+    japan = Node(alias="b", label="country", properties={"name": "Japan"})
+    graph.add_node(japan)
+
     edge = Edge(john, "visited", japan, properties={"purpose": "pleasure"})
-    client.graph.add_edge(edge)
+    graph.add_edge(edge)
 
     assert (
         str(john)
@@ -220,7 +223,7 @@ def test_stringify_query_result(client):
     )
     assert str(japan) == """(b:country{name:"Japan"})"""
 
-    client.graph.commit()
+    graph.commit()
 
     query = """MATCH (p:person)-[v:visited {purpose:"pleasure"}]->(c:country)
             RETURN p, v, c"""
@@ -237,7 +240,7 @@ def test_stringify_query_result(client):
     assert str(visit) == """()-[:visited{purpose:"pleasure"}]->()"""
     assert str(country) == """(:country{name:"Japan"})"""
 
-    client.graph.delete()
+    graph.delete()
 
 
 @pytest.mark.integrations
@@ -250,11 +253,11 @@ def test_optional_match(client):
 
     edge01 = Edge(node0, "R", node1, edge_id=0)
 
-    client.graph.add_node(node0)
-    client.graph.add_node(node1)
-    client.graph.add_edge(edge01)
-
-    client.graph.flush()
+    graph = client.graph
+    graph.add_node(node0)
+    graph.add_node(node1)
+    graph.add_edge(edge01)
+    graph.flush()
 
     # Issue a query that collects all outgoing edges from both nodes (the second has none).
     query = """MATCH (a) OPTIONAL MATCH (a)-[e]->(b) RETURN a, e, b ORDER BY a.value"""
@@ -263,7 +266,7 @@ def test_optional_match(client):
     result = client.graph.query(query)
     assert expected_results == result.result_set
 
-    client.graph.delete()
+    graph.delete()
 
 
 @pytest.mark.integrations
