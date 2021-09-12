@@ -58,6 +58,7 @@ class Bloom(CommandMixin, AbstractFeature, object):
             CMS_INFO: CMSInfo,
             TOPK_RESERVE: bool_ok,
             TOPK_ADD: parseToList,
+            TOPK_INCRBY: parseToList,
             # TOPK_QUERY: spaceHolder,
             # TOPK_COUNT: spaceHolder,
             TOPK_LIST: parseToList,
