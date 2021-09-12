@@ -305,6 +305,19 @@ def test_explain(client):
 
 @pytest.mark.integrations
 @pytest.mark.graph
+def test_slowlog(client):
+    create_query = """CREATE (:Rider {name:'Valentino Rossi'})-[:rides]->(:Team {name:'Yamaha'}),
+    (:Rider {name:'Dani Pedrosa'})-[:rides]->(:Team {name:'Honda'}),
+    (:Rider {name:'Andrea Dovizioso'})-[:rides]->(:Team {name:'Ducati'})"""
+    client.query(create_query)
+
+    results = client.slowlog()
+    assert results[0][1] == "GRAPH.QUERY"
+    assert results[0][2] == create_query
+
+
+@pytest.mark.integrations
+@pytest.mark.graph
 def test_query_timeout(client):
     # Build a sample graph with 1000 nodes.
     client.query("UNWIND range(0,1000) as val CREATE ({v: val})")
