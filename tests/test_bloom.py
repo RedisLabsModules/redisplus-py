@@ -302,9 +302,14 @@ def testTopK(client):
 def testTopKincrby(client):
     client.flushdb()
     assert client.bf.topkreserve("topk", 3, 10, 3, 1)
-    assert [None, None, None] == client.bf.topkincrby("topk", ["bar", "baz", "42"], [3, 6, 2])
+    assert [None, None, None] == client.bf.topkincrby(
+        "topk", ["bar", "baz", "42"], [3, 6, 2]
+    )
     assert [None, "bar"] == client.bf.topkincrby("topk", ["42", "xyzzy"], [8, 4])
-    assert [3, 6, 10, 4, 0] == client.bf.topkcount("topk", "bar", "baz", "42", "xyzzy", 4)
+    assert [3, 6, 10, 4, 0] == client.bf.topkcount(
+        "topk", "bar", "baz", "42", "xyzzy", 4
+    )
+
 
 # endregion
 
