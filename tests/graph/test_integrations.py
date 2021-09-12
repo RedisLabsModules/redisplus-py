@@ -318,6 +318,30 @@ def test_slowlog(client):
 
 @pytest.mark.integrations
 @pytest.mark.graph
+def test_list(client):
+    result = client.graph.list()
+    assert result == []
+
+    client.execute_command("GRAPH.EXPLAIN", "G", "RETURN 1")
+    result = client.graph.list()
+    assert result == ["G"]
+
+    client.execute_command("GRAPH.EXPLAIN", "X", "RETURN 1")
+    result = client.graph.list()
+    assert result == ["G", "X"]
+
+    client.delete("G")
+    client.rename("X", "Z")
+    result = client.graph.list()
+    assert result == ["Z"]
+
+    client.delete("Z")
+    result = client.graph.list()
+    assert result == []
+
+
+@pytest.mark.integrations
+@pytest.mark.graph
 def test_query_timeout(client):
     # Build a sample graph with 1000 nodes.
     client.graph.query("UNWIND range(0,1000) as val CREATE ({v: val})")
