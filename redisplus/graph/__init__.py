@@ -92,12 +92,12 @@ class Graph(CommandMixin, AbstractFeature, object):
             idx: The index of the relation
         """
         try:
-            relationshipType = self._relationshipTypes[idx]
+            relationship_type = self._relationshipTypes[idx]
         except IndexError:
             # Refresh relationship types.
             self._refresh_relations()
-            relationshipType = self._relationshipTypes[idx]
-        return relationshipType
+            relationship_type = self._relationshipTypes[idx]
+        return relationship_type
 
     def get_property(self, idx):
         """

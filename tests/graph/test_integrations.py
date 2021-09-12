@@ -305,6 +305,19 @@ def test_explain(client):
 
 @pytest.mark.integrations
 @pytest.mark.graph
+def test_slowlog(client):
+    create_query = """CREATE (:Rider {name:'Valentino Rossi'})-[:rides]->(:Team {name:'Yamaha'}),
+    (:Rider {name:'Dani Pedrosa'})-[:rides]->(:Team {name:'Honda'}),
+    (:Rider {name:'Andrea Dovizioso'})-[:rides]->(:Team {name:'Ducati'})"""
+    client.query(create_query)
+
+    results = client.slowlog()
+    assert results[0][1] == "GRAPH.QUERY"
+    assert results[0][2] == create_query
+
+
+@pytest.mark.integrations
+@pytest.mark.graph
 def test_query_timeout(client):
     # Build a sample graph with 1000 nodes.
     client.query("UNWIND range(0,1000) as val CREATE ({v: val})")
@@ -341,6 +354,38 @@ def test_profile(client):
     assert "Project | Records produced: 2" in profile
     assert "Filter | Records produced: 2" in profile
     assert "Node By Label Scan | (p:Person) | Records produced: 3" in profile
+
+
+@pytest.mark.integrations
+@pytest.mark.graph
+def test_config(client):
+    config_name = "RESULTSET_SIZE"
+    config_value = 3
+
+    # Set configuration
+    response = client.config(config_name, config_value, set=True)
+    assert response == "OK"
+
+    # Make sure config been updated.
+    response = client.config(config_name, set=False)
+    expected_response = [config_name, config_value]
+    assert response == expected_response
+
+    config_name = "QUERY_MEM_CAPACITY"
+    config_value = 1 << 20  # 1MB
+
+    # Set configuration
+    response = client.config(config_name, config_value, set=True)
+    assert response == "OK"
+
+    # Make sure config been updated.
+    response = client.config(config_name, set=False)
+    expected_response = [config_name, config_value]
+    assert response == expected_response
+
+    # reset to default
+    client.config("QUERY_MEM_CAPACITY", 0, set=True)
+    client.config("RESULTSET_SIZE", -100, set=True)
 
 
 @pytest.mark.integrations
