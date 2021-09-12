@@ -309,9 +309,9 @@ def test_slowlog(client):
     create_query = """CREATE (:Rider {name:'Valentino Rossi'})-[:rides]->(:Team {name:'Yamaha'}),
     (:Rider {name:'Dani Pedrosa'})-[:rides]->(:Team {name:'Honda'}),
     (:Rider {name:'Andrea Dovizioso'})-[:rides]->(:Team {name:'Ducati'})"""
-    client.query(create_query)
+    client.graph.query(create_query)
 
-    results = client.slowlog()
+    results = client.graph.slowlog()
     assert results[0][1] == "GRAPH.QUERY"
     assert results[0][2] == create_query
 
@@ -347,11 +347,11 @@ def test_config(client):
     config_value = 3
 
     # Set configuration
-    response = client.config(config_name, config_value, set=True)
+    response = client.graph.config(config_name, config_value, set=True)
     assert response == "OK"
 
     # Make sure config been updated.
-    response = client.config(config_name, set=False)
+    response = client.graph.config(config_name, set=False)
     expected_response = [config_name, config_value]
     assert response == expected_response
 
@@ -359,17 +359,17 @@ def test_config(client):
     config_value = 1 << 20  # 1MB
 
     # Set configuration
-    response = client.config(config_name, config_value, set=True)
+    response = client.graph.config(config_name, config_value, set=True)
     assert response == "OK"
 
     # Make sure config been updated.
-    response = client.config(config_name, set=False)
+    response = client.graph.config(config_name, set=False)
     expected_response = [config_name, config_value]
     assert response == expected_response
 
     # reset to default
-    client.config("QUERY_MEM_CAPACITY", 0, set=True)
-    client.config("RESULTSET_SIZE", -100, set=True)
+    client.graph.config("QUERY_MEM_CAPACITY", 0, set=True)
+    client.graph.config("RESULTSET_SIZE", -100, set=True)
 
 
 @pytest.mark.integrations
