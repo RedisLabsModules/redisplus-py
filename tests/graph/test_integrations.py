@@ -342,6 +342,38 @@ def test_read_only_query(client):
 
 @pytest.mark.integrations
 @pytest.mark.graph
+def test_config(client):
+    config_name = "RESULTSET_SIZE"
+    config_value = 3
+
+    # Set configuration
+    response = client.config(config_name, config_value, set=True)
+    assert response == "OK"
+
+    # Make sure config been updated.
+    response = client.config(config_name, set=False)
+    expected_response = [config_name, config_value]
+    assert response == expected_response
+
+    config_name = "QUERY_MEM_CAPACITY"
+    config_value = 1 << 20  # 1MB
+
+    # Set configuration
+    response = client.config(config_name, config_value, set=True)
+    assert response == "OK"
+
+    # Make sure config been updated.
+    response = client.config(config_name, set=False)
+    expected_response = [config_name, config_value]
+    assert response == expected_response
+
+    # reset to default
+    client.config("QUERY_MEM_CAPACITY", 0, set=True)
+    client.config("RESULTSET_SIZE", -100, set=True)
+
+
+@pytest.mark.integrations
+@pytest.mark.graph
 def test_cache_sync(client):
     pass
     return
