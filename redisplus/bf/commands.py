@@ -29,6 +29,7 @@ CMS_INFO = "CMS.INFO"
 
 TOPK_RESERVE = "TOPK.RESERVE"
 TOPK_ADD = "TOPK.ADD"
+TOPK_INCRBY = "TOPK.INCRBY"
 TOPK_QUERY = "TOPK.QUERY"
 TOPK_COUNT = "TOPK.COUNT"
 TOPK_LIST = "TOPK.LIST"
@@ -246,7 +247,7 @@ class CommandMixin:
         Add/increase ``items`` to a Count-Min Sketch ``key`` by ''increments''.
 
         Both ``items`` and ``increments`` are lists.
-        Example - cmsIncrBy('A', ['foo'], [1])
+        Example - cmsincrby('A', ['foo'], [1])
         """
         params = [key]
         self.appendItemsAndIncrements(params, items, increments)
@@ -279,15 +280,29 @@ class CommandMixin:
 
     # region Top-K Functions
     def topkreserve(self, key, k, width, depth, decay):
-        """Create a new Cuckoo Filter ``key`` with desired probability of false positives ``errorRate`` expected entries to be inserted as ``size``."""
+        """
+        Create a new Top-K Filter ``key`` with desired probability of false
+        positives ``errorRate`` expected entries to be inserted as ``size``.
+        """
         params = [key, k, width, depth, decay]
         return self.execute_command(TOPK_RESERVE, *params)
 
     def topkadd(self, key, *items):
-        """Add one ``item`` or more to a Cuckoo Filter ``key``."""
+        """Add one ``item`` or more to a Top-K Filter ``key``."""
         params = [key]
         params += items
         return self.execute_command(TOPK_ADD, *params)
+
+    def topkincrby(self, key, items, increments):
+        """
+        Add/increase ``items`` to a Top-K Sketch ``key`` by ''increments''.
+
+        Both ``items`` and ``increments`` are lists.
+        Example - topkincrby('A', ['foo'], [1])
+        """
+        params = [key]
+        self.appendItemsAndIncrements(params, items, increments)
+        return self.execute_command(TOPK_INCRBY, *params)
 
     def topkquery(self, key, *items):
         """Check whether one ``item`` or more is a Top-K item at ``key``."""
