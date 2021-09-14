@@ -45,10 +45,42 @@ class Client(Commands, object):
     @property
     def bf(self):
         """For running bloom commands."""
-        kwargs = self.__extras__.get("bf", {})
         import redisplus.bf
 
-        return redisplus.bf.Bloom(self.client, **kwargs)
+        kwargs = self.__extras__.get("bf", {})
+        return redisplus.bf.BFBloom(self.client, **kwargs)
+
+    @property
+    def cms(self):
+        """For running bloom commands."""
+        import redisplus.bf
+
+        kwargs = self.__extras__.get("cms", {})
+        return redisplus.bf.CMSBloom(self.client, **kwargs)
+
+    @property
+    def topk(self):
+        """For running bloom commands."""
+        import redisplus.bf
+
+        kwargs = self.__extras__.get("topk", {})
+        return redisplus.bf.TOPKBloom(self.client, **kwargs)
+
+    @property
+    def cf(self):
+        """For running bloom commands."""
+        import redisplus.bf
+
+        kwargs = self.__extras__.get("cf", {})
+        return redisplus.bf.CFBloom(self.client, **kwargs)
+
+    @property
+    def tdigest(self):
+        """For running bloom commands."""
+        import redisplus.bf
+
+        kwargs = self.__extras__.get("cf", {})
+        return redisplus.bf.TDigestBloom(self.client, **kwargs)
 
     @property
     def tf(self):

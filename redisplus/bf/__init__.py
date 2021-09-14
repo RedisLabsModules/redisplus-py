@@ -12,74 +12,7 @@ from .info import (
 )
 
 
-class Bloom(CommandMixin, AbstractFeature, object):
-    """
-    This class subclasses redis-py's `Redis` and implements RedisBloom's commands.
-
-    The client allows to interact with RedisBloom and use all of
-    it's functionality.
-    Prefix is according to the DS used.
-    - BF for Bloom Filter
-    - CF for Cuckoo Filter
-    - CMS for Count-Min Sketch
-    - TOPK for TopK Data Structure
-    - TDIGEST for estimate rank statistics
-    """
-
-    def __init__(self, client, **kwargs):
-        """Create a new RedisBloom client."""
-        # Set the module commands' callbacks
-        MODULE_CALLBACKS = {
-            BF_RESERVE: bool_ok,
-            # BF_ADD: spaceHolder,
-            # BF_MADD: spaceHolder,
-            # BF_INSERT: spaceHolder,
-            # BF_EXISTS: spaceHolder,
-            # BF_MEXISTS: spaceHolder,
-            # BF_SCANDUMP: spaceHolder,
-            # BF_LOADCHUNK: spaceHolder,
-            BF_INFO: BFInfo,
-            CF_RESERVE: bool_ok,
-            # CF_ADD: spaceHolder,
-            # CF_ADDNX: spaceHolder,
-            # CF_INSERT: spaceHolder,
-            # CF_INSERTNX: spaceHolder,
-            # CF_EXISTS: spaceHolder,
-            # CF_DEL: spaceHolder,
-            # CF_COUNT: spaceHolder,
-            # CF_SCANDUMP: spaceHolder,
-            # CF_LOADCHUNK: spaceHolder,
-            CF_INFO: CFInfo,
-            CMS_INITBYDIM: bool_ok,
-            CMS_INITBYPROB: bool_ok,
-            # CMS_INCRBY: spaceHolder,
-            # CMS_QUERY: spaceHolder,
-            CMS_MERGE: bool_ok,
-            CMS_INFO: CMSInfo,
-            TOPK_RESERVE: bool_ok,
-            TOPK_ADD: parseToList,
-            TOPK_INCRBY: parseToList,
-            # TOPK_QUERY: spaceHolder,
-            # TOPK_COUNT: spaceHolder,
-            TOPK_LIST: parseToList,
-            TOPK_INFO: TopKInfo,
-            TDIGEST_CREATE: bool_ok,
-            # TDIGEST_RESET: bool_ok,
-            # TDIGEST_ADD: spaceHolder,
-            # TDIGEST_MERGE: spaceHolder,
-            TDIGEST_CDF: float,
-            TDIGEST_QUANTILE: float,
-            TDIGEST_MIN: float,
-            TDIGEST_MAX: float,
-            TDIGEST_INFO: TDigestInfo,
-        }
-
-        self.client = client
-        self.commandmixin = CommandMixin
-
-        for k, v in MODULE_CALLBACKS.items():
-            self.client.set_response_callback(k, v)
-
+class AbstractBloom(AbstractFeature, object):
     @staticmethod
     def appendItems(params, items):
         """Append ITEMS to params."""
@@ -148,3 +81,128 @@ class Bloom(CommandMixin, AbstractFeature, object):
         """Append BUCKETSIZE to params."""
         if bucket_size is not None:
             params.extend(["BUCKETSIZE", bucket_size])
+
+
+class CMSBloom(CMSCommandMixin, AbstractBloom):
+    def __init__(self, client, **kwargs):
+        """Create a new RedisBloom client."""
+        # Set the module commands' callbacks
+        MODULE_CALLBACKS = {
+            CMS_INITBYDIM: bool_ok,
+            CMS_INITBYPROB: bool_ok,
+            # CMS_INCRBY: spaceHolder,
+            # CMS_QUERY: spaceHolder,
+            CMS_MERGE: bool_ok,
+            CMS_INFO: CMSInfo,
+        }
+
+        self.client = client
+        self.commandmixin = CMSCommandMixin
+
+        for k, v in MODULE_CALLBACKS.items():
+            self.client.set_response_callback(k, v)
+
+
+class TOPKBloom(TOPKCommandMixin, AbstractBloom):
+    def __init__(self, client, **kwargs):
+        """Create a new RedisBloom client."""
+        # Set the module commands' callbacks
+        MODULE_CALLBACKS = {
+            TOPK_RESERVE: bool_ok,
+            TOPK_ADD: parseToList,
+            TOPK_INCRBY: parseToList,
+            # TOPK_QUERY: spaceHolder,
+            # TOPK_COUNT: spaceHolder,
+            TOPK_LIST: parseToList,
+            TOPK_INFO: TopKInfo,
+        }
+
+        self.client = client
+        self.commandmixin = TOPKCommandMixin
+
+        for k, v in MODULE_CALLBACKS.items():
+            self.client.set_response_callback(k, v)
+
+
+class CFBloom(CFCommandMixin, AbstractBloom):
+    def __init__(self, client, **kwargs):
+        """Create a new RedisBloom client."""
+        # Set the module commands' callbacks
+        MODULE_CALLBACKS = {
+            CF_RESERVE: bool_ok,
+            # CF_ADD: spaceHolder,
+            # CF_ADDNX: spaceHolder,
+            # CF_INSERT: spaceHolder,
+            # CF_INSERTNX: spaceHolder,
+            # CF_EXISTS: spaceHolder,
+            # CF_DEL: spaceHolder,
+            # CF_COUNT: spaceHolder,
+            # CF_SCANDUMP: spaceHolder,
+            # CF_LOADCHUNK: spaceHolder,
+            CF_INFO: CFInfo,
+        }
+
+        self.client = client
+        self.commandmixin = CFCommandMixin
+
+        for k, v in MODULE_CALLBACKS.items():
+            self.client.set_response_callback(k, v)
+
+
+class TDigestBloom(TDigestCommandMixin, AbstractBloom):
+    def __init__(self, client, **kwargs):
+        """Create a new RedisBloom client."""
+        # Set the module commands' callbacks
+        MODULE_CALLBACKS = {
+            TDIGEST_CREATE: bool_ok,
+            # TDIGEST_RESET: bool_ok,
+            # TDIGEST_ADD: spaceHolder,
+            # TDIGEST_MERGE: spaceHolder,
+            TDIGEST_CDF: float,
+            TDIGEST_QUANTILE: float,
+            TDIGEST_MIN: float,
+            TDIGEST_MAX: float,
+            TDIGEST_INFO: TDigestInfo,
+        }
+
+        self.client = client
+        self.commandmixin = TDigestCommandMixin
+
+        for k, v in MODULE_CALLBACKS.items():
+            self.client.set_response_callback(k, v)
+
+
+class BFBloom(BFCommandMixin, AbstractBloom):
+    """
+    This class subclasses redis-py's `Redis` and implements RedisBloom's commands.
+
+    The client allows to interact with RedisBloom and use all of
+    it's functionality.
+    Prefix is according to the DS used.
+    - BF for Bloom Filter
+    - CF for Cuckoo Filter
+    - CMS for Count-Min Sketch
+    - TOPK for TopK Data Structure
+    - TDIGEST for estimate rank statistics
+    """
+
+    def __init__(self, client, **kwargs):
+        """Create a new RedisBloom client."""
+        # Set the module commands' callbacks
+        MODULE_CALLBACKS = {
+            BF_RESERVE: bool_ok,
+            # BF_ADD: spaceHolder,
+            # BF_MADD: spaceHolder,
+            # BF_INSERT: spaceHolder,
+            # BF_EXISTS: spaceHolder,
+            # BF_MEXISTS: spaceHolder,
+            # BF_SCANDUMP: spaceHolder,
+            # BF_LOADCHUNK: spaceHolder,
+            BF_INFO: BFInfo,
+        }
+
+        self.client = client
+        self.commandmixin = BFCommandMixin
+
+        for k, v in MODULE_CALLBACKS.items():
+            self.client.set_response_callback(k, v)
