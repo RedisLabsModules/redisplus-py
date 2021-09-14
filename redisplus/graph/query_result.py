@@ -59,16 +59,26 @@ class ResultSetScalarTypes:
 
 
 class QueryResult:
-    def __init__(self, graph, response):
+    def __init__(self, graph, response, profile=False):
+        """
+        A class that represents a result of the query operation.
+
+        Args:
+            graph: The graph on which the query was executed.
+            response: The response from the server.
+            profile: A boolean indicating if the query command was "GRAPH.PROFILE"
+        """
         self.graph = graph
         self.header = []
         self.result_set = []
 
-        # incase of an error an exception will be raised
+        # in case of an error an exception will be raised
         self._check_for_errors(response)
 
         if len(response) == 1:
             self.parse_statistics(response[0])
+        elif profile:
+            self.parse_profile(response)
         else:
             # start by parsing statistics, matches the one we have
             self.parse_statistics(response[-1])  # Last element.
@@ -254,6 +264,9 @@ class QueryResult:
             print("Unknown scalar type\n")
 
         return scalar
+
+    def parse_profile(self, response):
+        self.result_set = [x[0 : x.index(",")].strip() for x in response]
 
     # """Prints the data from the query response:
     #    1. First row result_set contains the columns names. Thus the first row in PrettyTable
