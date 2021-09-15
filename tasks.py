@@ -1,6 +1,7 @@
 from invoke import task
 import shutil
 import tox
+import os
 
 
 @task
@@ -15,9 +16,10 @@ def dockerstart(c):
 @task
 def build_docs(c, frm="html"):
     """Build docs"""
-    shutil.rmtree("dist/docs")
+    if os.path.isdir("dist/docs"):
+        shutil.rmtree("dist/docs")
     c.run("rm -rf docs/redisplus* docs/modules.rst")
-    c.run("sphinx-apidoc -o docs src/redisplus")
+    c.run("sphinx-apidoc -o docs redisplus")
     c.run("rm -rf dist/docs")
     c.run("sphinx-build -M {} docs dist/docs".format(frm))
 
