@@ -60,3 +60,28 @@ jobs:
 
       - name: run integration tests
         run: tox -e integrations
+
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+        uses: actions/cache@v2
+        with:
+          path: |
+            .tox
+            ~/.cache
+            poetry.lock
+          key: 3.7-${{ hashFiles('**/pyproject.toml', '**/tox.ini') }}
+          restore-keys:
+            3.7-${{ hashFiles('**/pyproject.toml', '**/tox.ini') }}
+      - uses: snok/install-poetry@v1
+        with:
+          version: 1.1.8
+          virtualenvs-create: false
+          installer-parallel: true
+      - name: Build docs
+        run: |
+          invoke build-docs
