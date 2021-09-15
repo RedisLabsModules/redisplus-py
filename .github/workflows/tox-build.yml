@@ -84,4 +84,5 @@ jobs:
           installer-parallel: true
       - name: Build docs
         run: |
+          poetry install
           invoke build-docs
