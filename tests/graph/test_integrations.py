@@ -324,6 +324,22 @@ def test_read_only_query(client):
 
 @pytest.mark.integrations
 @pytest.mark.graph
+def test_profile(client):
+    q = """UNWIND range(1, 3) AS x CREATE (p:Person {v:x})"""
+    profile = client.graph.profile(q).result_set
+    assert "Create | Records produced: 3" in profile
+    assert "Unwind | Records produced: 3" in profile
+
+    q = "MATCH (p:Person) WHERE p.v > 1 RETURN p"
+    profile = client.graph.profile(q).result_set
+    assert "Results | Records produced: 2" in profile
+    assert "Project | Records produced: 2" in profile
+    assert "Filter | Records produced: 2" in profile
+    assert "Node By Label Scan | (p:Person) | Records produced: 3" in profile
+
+
+@pytest.mark.integrations
+@pytest.mark.graph
 def test_config(client):
     config_name = "RESULTSET_SIZE"
     config_value = 3
