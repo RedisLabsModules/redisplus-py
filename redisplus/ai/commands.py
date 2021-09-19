@@ -17,8 +17,8 @@ class CommandMixin:
 
     def pipeline(self, transaction: bool = True, shard_hint: bool = None) -> "Pipeline":
         """
-        It follows the same pipeline implementation of native redis client but enables it
-        to access redisai operation as well. This function is experimental in the
+        It follows the same pipeline implementation of native redis client but enables
+        it to access redisai operation as well. This function is experimental in the
         current release.
 
         Example
@@ -48,6 +48,8 @@ class CommandMixin:
         """
         It returns a DAG object on which other DAG-allowed operations can be called. For
         more details about DAG in RedisAI, refer to the RedisAI documentation.
+
+        More information `here https://oss.redis.com/redisai/master/commands/#aidagrun`_
 
         Parameters
         ----------
@@ -132,6 +134,8 @@ class CommandMixin:
         """
         Set the model on provided key.
 
+        More information `https://oss.redis.com/redisai/master/commands/#aimodelstore`_
+
         Parameters
         ----------
         key : AnyStr
@@ -208,6 +212,8 @@ class CommandMixin:
         """
         Set the model on provided key.
 
+        More information `https://oss.redis.com/redisai/master/commands/#aimodelset`_
+
         Parameters
         ----------
         key : AnyStr
@@ -257,7 +263,9 @@ class CommandMixin:
 
     def modelget(self, key: AnyStr, meta_only=False) -> dict:
         """
-        Fetch the model details and the model blob back from RedisAI
+        Fetch the model details and the model blob back from RedisAI.
+
+        More information `https://oss.redis.com/redisai/master/commands/#aimodelget`_
 
         Parameters
         ----------
@@ -283,7 +291,9 @@ class CommandMixin:
 
     def modeldel(self, key: AnyStr) -> str:
         """
-        Delete the model from the RedisAI server
+        Delete the model from the RedisAI server.
+
+        More information `https://oss.redis.com/redisai/master/commands/#aimodeldel`_
 
         Parameters
         ----------
@@ -315,7 +325,9 @@ class CommandMixin:
         Run the model using input(s) which are already in the scope and are associated
         to some keys. Modelexecute also needs the output key name(s) to store the output
         from the model. The number of outputs from the model and the number of keys
-        provided here must be same. Otherwise, RedisAI throws an error
+        provided here must be same. Otherwise, RedisAI throws an error.
+
+        More information `https://oss.redis.com/redisai/master/commands/#aimodelexecute`_
 
         Parameters
         ----------
@@ -364,7 +376,9 @@ class CommandMixin:
         Run the model using input(s) which are already in the scope and are associated
         to some keys. Modelrun also needs the output key name(s) to store the output
         from the model. The number of outputs from the model and the number of keys
-        provided here must be same. Otherwise, RedisAI throws an error
+        provided here must be same. Otherwise, RedisAI throws an error.
+
+        This is a deprecated function. Use :func:`~ai.CommandMixin.modelexecute`
 
         Parameters
         ----------
@@ -402,7 +416,9 @@ class CommandMixin:
         """
         Returns the list of all the models in the RedisAI server. Modelscan API is
         currently experimental and might be removed or changed in the future without
-        warning
+        warning.
+
+        More information `https://oss.redis.com/redisai/master/commands/#ai_modelscan`_
 
         Returns
         -------
@@ -431,7 +447,9 @@ class CommandMixin:
         dtype: str = None,
     ) -> str:
         """
-        Set the tensor to a key in RedisAI
+        Set the tensor to a key in RedisAI.
+
+        More information `https://oss.redis.com/redisai/master/commands/#aitensorset`_
 
         Parameters
         ----------
@@ -471,6 +489,8 @@ class CommandMixin:
         """
         Retrieve the value of a tensor from the server. By default it returns the numpy
         array but it can be controlled using the `as_type` and `meta_only` argument.
+
+        More information `https://oss.redis.com/redisai/master/commands/#aitensorget`_
 
         Parameters
         ----------
@@ -525,6 +545,8 @@ class CommandMixin:
         mention that using redisai script to do post processing or pre processing for a
         Tensorflow (or any other backend) is completely valid. For more details about
         TorchScript and supported ops, checkout TorchScript documentation.
+
+        More information `https://oss.redis.com/redisai/master/commands/#aiscriptstore`_
 
         Parameters
         ----------
@@ -584,6 +606,8 @@ class CommandMixin:
         is completely valid. For more details about TorchScript and supported ops,
         checkout TorchScript documentation.
 
+        This is a deprecated function. Use :func:`~ai.CommandMixin.scriptstore`
+
         Parameters
         ----------
         key : AnyStr
@@ -621,7 +645,9 @@ class CommandMixin:
 
     def scriptget(self, key: AnyStr, meta_only=False) -> dict:
         """
-        Get the saved script from RedisAI. Operation similar to model get
+        Get the saved script from RedisAI. Operation similar to model get.
+
+        More information `https://oss.redis.com/redisai/master/commands/#aiscriptget`_
 
         Parameters
         ----------
@@ -646,7 +672,9 @@ class CommandMixin:
 
     def scriptdel(self, key: AnyStr) -> str:
         """
-        Delete the script from the RedisAI server
+        Delete the script from the RedisAI server.
+
+        More information `https://oss.redis.com/redisai/master/commands/#aiscriptdel`_
 
         Parameters
         ----------
@@ -676,7 +704,8 @@ class CommandMixin:
         outputs: Union[AnyStr, Sequence[AnyStr]],
     ) -> str:
         """
-        Run an already set script. Similar to modelrun
+        Run an already set script. Similar to modelrun.
+        This is a deprecated function. Use :func:`~ai.CommandMixin.scriptexecute`
 
         Parameters
         ----------
@@ -718,6 +747,8 @@ class CommandMixin:
         """
         Run an already set script. Similar to modelexecute.
         Must specify keys or inputs.
+
+        More information `https://oss.redis.com/redisai/master/commands/#aiscriptexecute`_
 
         Parameters
         ----------
@@ -766,7 +797,9 @@ class CommandMixin:
     def scriptscan(self) -> List[List[AnyStr]]:
         """
         Returns the list of all the script in the RedisAI server. Scriptscan API is
-        currently experimental and might remove or change in the future without warning
+        currently experimental and might remove or change in the future without warning.
+
+        More information `https://oss.redis.com/redisai/master/commands/#ai_scriptscan`_
 
         Returns
         -------
@@ -795,6 +828,8 @@ class CommandMixin:
         - How many calls handled
         - How many errors raised
         - etc.
+
+        More information `https://oss.redis.com/redisai/master/commands/#aiinfo`_
 
         Parameters
         ----------
