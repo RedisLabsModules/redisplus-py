@@ -156,5 +156,6 @@ class CommandMixin:
                 raise DataError("``value`` can be provided only when ``set`` is True")
         return self.execute_command("GRAPH.CONFIG", *params)
 
-    def list(self):
+    def list_keys(self):
+        """Lists all graph keys in the keyspace."""
         return self.execute_command("GRAPH.LIST")

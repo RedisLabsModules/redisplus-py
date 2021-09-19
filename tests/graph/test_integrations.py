@@ -372,25 +372,25 @@ def test_config(client):
 
 @pytest.mark.integrations
 @pytest.mark.graph
-def test_list(client):
-    result = client.graph.list()
+def test_list_keys(client):
+    result = client.graph.list_keys()
     assert result == []
 
     client.execute_command("GRAPH.EXPLAIN", "G", "RETURN 1")
-    result = client.graph.list()
+    result = client.graph.list_keys()
     assert result == ["G"]
 
     client.execute_command("GRAPH.EXPLAIN", "X", "RETURN 1")
-    result = client.graph.list()
+    result = client.graph.list_keys()
     assert result == ["G", "X"]
 
     client.delete("G")
     client.rename("X", "Z")
-    result = client.graph.list()
+    result = client.graph.list_keys()
     assert result == ["Z"]
 
     client.delete("Z")
-    result = client.graph.list()
+    result = client.graph.list_keys()
     assert result == []
 
 
