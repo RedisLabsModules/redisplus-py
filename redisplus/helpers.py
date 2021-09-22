@@ -36,7 +36,7 @@ def parseToList(response):
     for item in response:
         if isinstance(item, int):
             res.append(item)
-        if item is not None:
+        elif item is not None:
             res.append(nativestr(item))
         else:
             res.append(None)
