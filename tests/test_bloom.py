@@ -286,7 +286,7 @@ def testTopK(client):
         "E",
     )
     assert ["A", "B", "E"] == client.topk.list("topklist")
-    assert ['A', 4, 'B', 3, 'E', 3] == client.topk.list("topklist", withcount=True)
+    assert ["A", 4, "B", 3, "E", 3] == client.topk.list("topklist", withcount=True)
     info = client.topk.info("topklist")
     assert 3 == info.k
     assert 50 == info.width
