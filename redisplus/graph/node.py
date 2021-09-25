@@ -8,7 +8,7 @@ class Node:
 
     def __init__(self, node_id=None, alias=None, label=None, properties=None):
         """
-        Create a new node
+        Create a new node.
         """
         self.id = node_id
         self.alias = alias

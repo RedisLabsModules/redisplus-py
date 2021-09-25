@@ -37,7 +37,7 @@ class Field(object):
 
 class TextField(Field):
     """
-    TextField is used to define a text field in a schema definition
+    TextField is used to define a text field in a schema definition.
     """
 
     NOSTEM = "NOSTEM"
@@ -62,7 +62,7 @@ class TextField(Field):
 
 class NumericField(Field):
     """
-    NumericField is used to define a numeric field in a schema definition
+    NumericField is used to define a numeric field in a schema definition.
     """
 
     def __init__(self, name, **kwargs):
@@ -71,7 +71,7 @@ class NumericField(Field):
 
 class GeoField(Field):
     """
-    GeoField is used to define a geo-indexing field in a schema definition
+    GeoField is used to define a geo-indexing field in a schema definition.
     """
 
     def __init__(self, name, **kwargs):

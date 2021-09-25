@@ -71,7 +71,9 @@ class Graph(CommandMixin, AbstractFeature, object):
         Returns a label by it's index
 
         Args:
-            idx: The index of the label
+
+        idx:
+            The index of the label
         """
         try:
             label = self._labels[idx]
@@ -86,7 +88,9 @@ class Graph(CommandMixin, AbstractFeature, object):
         Returns a relationship type by it's index
 
         Args:
-            idx: The index of the relation
+
+        idx:
+            The index of the relation
         """
         try:
             relationship_type = self._relationshipTypes[idx]
@@ -101,7 +105,9 @@ class Graph(CommandMixin, AbstractFeature, object):
         Returns a property by it's index
 
         Args:
-            idx: The index of the property
+
+        idx:
+            The index of the property
         """
         try:
             propertie = self._properties[idx]

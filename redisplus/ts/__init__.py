@@ -15,13 +15,11 @@ from .commands import *  # lgtm [py/polluting-import]
 class TimeSeries(CommandMixin, AbstractFeature, object):
     """
     This class subclasses redis-py's `Redis` and implements RedisTimeSeries's commands (prefixed with "ts").
-
     The client allows to interact with RedisTimeSeries and use all of it's functionality.
     """
 
     def __init__(self, client=None, **kwargs):
         """Create a new RedisTimeSeries client."""
-
         # Set the module commands' callbacks
         MODULE_CALLBACKS = {
             CREATE_CMD: bool_ok,

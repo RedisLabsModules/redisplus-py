@@ -3,7 +3,7 @@ import six
 
 class Document(object):
     """
-    Represents a single document in a result set
+    Represents a single document in a result set.
     """
 
     def __init__(self, id, payload=None, **fields):

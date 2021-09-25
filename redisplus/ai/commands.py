@@ -22,8 +22,6 @@ class CommandMixin:
         current release.
 
         Example:
-
-        -------
         >>> pipe = con.pipeline(transaction=False)
         >>> pipe = pipe.set('nativeKey', 1)
         >>> pipe = pipe.tensorset('redisaiKey', np.array([1, 2]))
@@ -49,12 +47,10 @@ class CommandMixin:
         """
         It returns a DAG object on which other DAG-allowed operations can be called. For
         more details about DAG in RedisAI, refer to the RedisAI documentation.
-
         More information `here <https://oss.redis.com/redisai/master/commands/#aidagrun>`_.
 
         Parameters:
 
-        ----------
         load : Union[AnyStr, List[AnyStr]]
             Load the list of given values from the keyspace to DAG scope.
         persist : Union[AnyStr, List[AnyStr]]
@@ -75,13 +71,10 @@ class CommandMixin:
 
         Returns:
 
-        -------
         Any
             Dag object which holds other operations permitted inside DAG as attributes.
 
         Example:
-
-        -------
         >>> con.tensorset('tensor', ...)
         'OK'
         >>> con.modelstore('model', ...)
@@ -103,7 +96,6 @@ class CommandMixin:
 
         Parameters:
 
-        ----------
         identifier : str
             Representing which backend. Allowed values - TF, TFLITE, TORCH & ONNX.
         path: str
@@ -111,7 +103,6 @@ class CommandMixin:
 
         Returns:
 
-        -------
         str
             'OK' if success, raise an exception otherwise.
 
@@ -140,12 +131,10 @@ class CommandMixin:
     ) -> str:
         """
         Set the model on provided key.
-
         More information `here <https://oss.redis.com/redisai/master/commands/#aimodelstore>`_.
 
         Parameters:
 
-        ----------
         key : AnyStr
             Key name.
         backend : str
@@ -172,13 +161,10 @@ class CommandMixin:
 
         Returns:
 
-        -------
         str
             'OK' if success, raise an exception otherwise.
 
         Example:
-
-        -------
         >>> # Torch model
         >>> model_path = os.path.join('path/to/TorchScriptModel.pt')
         >>> model = open(model_path, 'rb').read()
@@ -221,12 +207,10 @@ class CommandMixin:
     ) -> str:
         """
         Set the model on provided key.
-
         More information `here <https://oss.redis.com/redisai/master/commands/#aimodelset>`_.
 
         Parameters:
 
-        ----------
         key : AnyStr
             Key name.
         backend : str
@@ -249,13 +233,10 @@ class CommandMixin:
 
         Returns:
 
-        -------
         str
             'OK' if success, raise an exception otherwise.
 
         Example:
-
-        -------
         >>> # Torch model
         >>> model_path = os.path.join('path/to/TorchScriptModel.pt')
         >>> model = open(model_path, 'rb').read()
@@ -277,12 +258,10 @@ class CommandMixin:
     def modelget(self, key: AnyStr, meta_only=False) -> dict:
         """
         Fetch the model details and the model blob back from RedisAI.
-
         More information `here <https://oss.redis.com/redisai/master/commands/#aimodelget>`_.
 
         Parameters:
 
-        ----------
         key : AnyStr
             Model key in RedisAI.
         meta_only : bool
@@ -290,14 +269,11 @@ class CommandMixin:
 
         Returns:
 
-        -------
         dict
             A dictionary of model details such as device, backend etc. The model
             blob will be available at the key `blob`.
 
         Example:
-
-        -------
         >>> con.modelget('model', meta_only=True)
         {'backend': 'TF', 'device': 'cpu', 'tag': 'v1.0'}
         """
@@ -308,24 +284,19 @@ class CommandMixin:
     def modeldel(self, key: AnyStr) -> str:
         """
         Delete the model from the RedisAI server.
-
         More information `here <https://oss.redis.com/redisai/master/commands/#aimodeldel>`_.
 
         Parameters:
 
-        ----------
         key : AnyStr
             Key of the model to be deleted.
 
         Returns:
 
-        -------
         str
             'OK' if success, raise an exception otherwise.
 
         Example:
-
-        -------
         >>> con.modeldel('model')
         'OK'
         """
@@ -345,12 +316,10 @@ class CommandMixin:
         to some keys. Modelexecute also needs the output key name(s) to store the output
         from the model. The number of outputs from the model and the number of keys
         provided here must be same. Otherwise, RedisAI throws an error.
-
         More information `here <https://oss.redis.com/redisai/master/commands/#aimodelexecute>`_.
 
         Parameters:
 
-        ----------
         key : str
             Model key to run.
         inputs : Union[AnyStr, List[AnyStr]]
@@ -366,13 +335,10 @@ class CommandMixin:
 
         Returns:
 
-        -------
         str
             'OK' if success, raise an exception otherwise.
 
         Example:
-
-        -------
         >>> con.modelstore('m', 'tf', 'cpu', model_pb,
         ...              inputs=['a', 'b'], outputs=['mul'], tag='v1.0')
         'OK'
@@ -404,7 +370,6 @@ class CommandMixin:
 
         Parameters:
 
-        ----------
         key : str
             Model key to run.
         inputs : Union[AnyStr, List[AnyStr]]
@@ -416,13 +381,10 @@ class CommandMixin:
 
         Returns:
 
-        -------
         str
             'OK' if success, raise an exception otherwise.
 
         Example:
-
-        -------
         >>> con.modelstore('m', 'tf', 'cpu', model_pb,
         ...              inputs=['a', 'b'], outputs=['mul'], tag='v1.0')
         'OK'
@@ -442,18 +404,14 @@ class CommandMixin:
         Returns the list of all the models in the RedisAI server. Modelscan API is
         currently experimental and might be removed or changed in the future without
         warning.
-
         More information `here <https://oss.redis.com/redisai/master/commands/#ai_modelscan>`_.
 
         Returns:
 
-        -------
         List[List[AnyStr]]
             List of list of models and tags for each model if they existed.
 
         Example:
-
-        -------
         >>> con.modelscan()
         [['pt_model', ''], ['m', 'v1.2']]
         """
@@ -475,12 +433,10 @@ class CommandMixin:
     ) -> str:
         """
         Set the tensor to a key in RedisAI.
-
         More information `here <https://oss.redis.com/redisai/master/commands/#aitensorset>`_.
 
         Parameters:
 
-        ----------
         key : AnyStr
             The name of the tensor.
         tensor : Union[np.ndarray, list, tuple]
@@ -492,13 +448,10 @@ class CommandMixin:
 
         Returns:
 
-        -------
         str
             'OK' if success, raise an exception otherwise
 
         Example:
-
-        -------
         >>> con.tensorset('a', (2, 3), dtype='float')
         'OK'
         >>> input_array = np.array([2, 3], dtype=np.float32)
@@ -519,12 +472,10 @@ class CommandMixin:
         """
         Retrieve the value of a tensor from the server. By default it returns the numpy
         array but it can be controlled using the `as_type` and `meta_only` argument.
-
         More information `here <https://oss.redis.com/redisai/master/commands/#aitensorget>`_.
 
         Parameters:
 
-        ----------
         key : AnyStr
             The name of the tensor.
         as_numpy : bool
@@ -540,13 +491,10 @@ class CommandMixin:
 
         Returns:
 
-        -------
         Union[dict, np.ndarray]
             Returns a dictionary of data or a numpy array. Default is numpy array.
 
         Example:
-
-        -------
         >>> con.tensorget('x')
         array([2, 3, 4])
         >>> con.tensorget('x' as_numpy=False)
@@ -584,7 +532,6 @@ class CommandMixin:
 
         Parameters:
 
-        ----------
         key : AnyStr
             Script key at the server.
         device : str
@@ -603,23 +550,16 @@ class CommandMixin:
 
         Returns:
 
-        -------
         str
             'OK' if success, raise an exception otherwise.
 
-        Note:
-
-        Note
-        ----
-        Even though `script` is pure Python code, it's a subset of Python language and not
-        all the Python operations are supported. For more details, checkout TorchScript
+        **Note**: Even though `script` is pure Python code, it's a subset of Python language
+        and not all the Python operations are supported. For more details, checkout TorchScript
         documentation. It's also important to note that that the script is executed on a high
         performance C++ runtime instead of the Python interpreter. And hence `script` should
         not have any import statements (A common mistake people make all the time).
 
         Example:
-
-        -------
         >>> script = r'''
         >>> def bar(tensors: List[Tensor], keys: List[str], args: List[str]):
         >>>     a = tensors[0]
@@ -649,7 +589,6 @@ class CommandMixin:
 
         Parameters:
 
-        ----------
         key : AnyStr
             Script key at the server.
         device : str
@@ -662,21 +601,16 @@ class CommandMixin:
 
         Returns:
 
-        -------
         str
             'OK' if success, raise an exception otherwise.
 
-        Note
-        ----
-        Even though `script` is pure Python code, it's a subset of Python language and not
-        all the Python operations are supported. For more details, checkout TorchScript
+        **Note**: Even though `script` is pure Python code, it's a subset of Python language
+        and not all the Python operations are supported. For more details, checkout TorchScript
         documentation. It's also important to note that that the script is executed on a high
         performance C++ runtime instead of the Python interpreter. And hence `script` should
         not have any import statements (A common mistake people make all the time).
 
         Example:
-
-        -------
         >>> script = open(scriptpath).read()
         >>> con.scriptset('ket', 'cpu', script)
         'OK'
@@ -688,12 +622,10 @@ class CommandMixin:
     def scriptget(self, key: AnyStr, meta_only=False) -> dict:
         """
         Get the saved script from RedisAI. Operation similar to model get.
-
         More information `here <https://oss.redis.com/redisai/master/commands/#aiscriptget>`_.
 
         Parameters:
 
-        ----------
         key : AnyStr
             Key of the script.
         meta_only : bool
@@ -701,13 +633,11 @@ class CommandMixin:
 
         Returns:
 
-        -------
         dict
             Dictionary of script details which includes the script at the key `source`.
 
         Example:
 
-        -------
         >>> con.scriptget('ket', meta_only=True)
         {'device': 'cpu'}
         """
@@ -718,24 +648,19 @@ class CommandMixin:
     def scriptdel(self, key: AnyStr) -> str:
         """
         Delete the script from the RedisAI server.
-
         More information `here <https://oss.redis.com/redisai/master/commands/#aiscriptdel>`_.
 
         Parameters:
 
-        ----------
         key : AnyStr
             Script key to be deleted.
 
         Returns:
 
-        -------
         str
             'OK' if success, raise an exception otherwise.
 
         Example:
-
-        -------
         >>> con.scriptdel('ket')
         'OK'
         """
@@ -758,7 +683,6 @@ class CommandMixin:
 
         Parameters:
 
-        ----------
         key : AnyStr
             Script key.
         function : str
@@ -772,13 +696,10 @@ class CommandMixin:
 
         Returns:
 
-        -------
         str
             'OK' if success, raise an exception otherwise.
 
         Example:
-
-        -------
         >>> con.scriptrun('ket', 'bar', inputs=['a', 'b'], outputs=['c'])
         'OK'
         """
@@ -799,12 +720,10 @@ class CommandMixin:
         """
         Run an already set script. Similar to modelexecute.
         Must specify keys or inputs.
-
         More information `here <https://oss.redis.com/redisai/master/commands/#aiscriptexecute>`_.
 
         Parameters:
 
-        ----------
         key : AnyStr
             Script key.
         function : str
@@ -828,13 +747,10 @@ class CommandMixin:
 
         Returns:
 
-        -------
         str
             'OK' if success, raise an exception otherwise.
 
         Example:
-
-        -------
         >>> con.scriptexecute('myscript', 'bar', inputs=['a', 'b'], outputs=['c'])
         'OK'
         >>> con.scriptexecute('myscript{tag}', 'addn',
@@ -858,13 +774,11 @@ class CommandMixin:
 
         Returns:
 
-        -------
         List[List[AnyStr]]
             List of list of scripts and tags for each script if they existed.
 
         Example:
 
-        -------
         >>> con.scriptscan()
         [['ket1', 'v1.0'], ['ket2', '']]
         """
@@ -890,19 +804,15 @@ class CommandMixin:
 
         Parameters:
 
-        ----------
         key : AnyStr
             Model key
 
         Returns:
 
-        -------
         dict
             Dictionary of model run details.
 
         Example:
-
-        -------
         >>> con.infoget('m')
         {'key': 'm', 'type': 'MODEL', 'backend': 'TF', 'device': 'cpu', 'tag': '',
         'duration': 0, 'samples': 0, 'calls': 0, 'errors': 0}
@@ -914,24 +824,19 @@ class CommandMixin:
     def inforeset(self, key: AnyStr) -> str:
         """
         Reset the run information about the model.
-
         More information `here <https://oss.redis.com/redisai/master/commands/#aiinfo>`_.
 
         Parameters:
 
-        ----------
         key : AnyStr
             Model key.
 
         Returns:
 
-        -------
         str
             'OK' if success, raise an exception otherwise.
 
         Example:
-
-        -------
         >>> con.inforeset('m')
         'OK'
         """
