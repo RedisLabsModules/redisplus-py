@@ -501,7 +501,7 @@ def testQueryIndex(client):
     client.tf.create(2, labels={"Test": "This", "Taste": "That"})
     assert 2 == len(client.tf.queryindex(["Test=This"]))
     assert 1 == len(client.tf.queryindex(["Taste=That"]))
-    assert ["2"] == client.tf.queryindex(["Taste=That"])
+    assert [2] == client.tf.queryindex(["Taste=That"])
 
 
 @pytest.mark.integrations
