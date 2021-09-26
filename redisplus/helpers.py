@@ -34,6 +34,12 @@ def parseToList(response):
     """Parse the response to a list."""
     res = []
     for item in response:
+        try:
+            res.append(int(item))
+        except ValueError:
+            res.append(nativestr(item))
+        except TypeError:
+            res.append(None)
         if isinstance(item, int):
             res.append(item)
         elif item is not None:
