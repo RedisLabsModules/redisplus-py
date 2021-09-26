@@ -79,7 +79,10 @@ class CommandMixin:
                 args += list(stopwords)
 
         args.append("SCHEMA")
-        args += list(itertools.chain(*(f.redis_args() for f in fields)))
+        try:
+            args += list(itertools.chain(*(f.redis_args() for f in fields)))
+        except TypeError:
+            args += fields.redis_args()
 
         return self.execute_command(*args)
 
@@ -93,7 +96,10 @@ class CommandMixin:
         """
 
         args = [ALTER_CMD, self.index_name, "SCHEMA", "ADD"]
-        args += list(itertools.chain(*(f.redis_args() for f in fields)))
+        try:
+            args += list(itertools.chain(*(f.redis_args() for f in fields)))
+        except TypeError:
+            args += fields.redis_args()
 
         return self.execute_command(*args)
 

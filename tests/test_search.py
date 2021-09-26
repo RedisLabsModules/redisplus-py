@@ -701,10 +701,10 @@ def testTextFieldSortableNostem(client):
 @pytest.mark.search
 def testAlterSchemaAdd(client):
     # Creating the index definition and schema
-    client.ft.create_index((TextField("title"),))
+    client.ft.create_index(TextField("title"))
 
     # Using alter to add a field
-    client.ft.alter_schema_add((TextField("body"),))
+    client.ft.alter_schema_add(TextField("body"))
 
     # Indexing a document
     client.ft.add_document(
