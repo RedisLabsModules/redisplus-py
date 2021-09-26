@@ -40,12 +40,6 @@ def parseToList(response):
             res.append(nativestr(item))
         except TypeError:
             res.append(None)
-        if isinstance(item, int):
-            res.append(item)
-        elif item is not None:
-            res.append(nativestr(item))
-        else:
-            res.append(None)
     return res
 
 
