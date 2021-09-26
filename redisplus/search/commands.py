@@ -7,6 +7,7 @@ from .result import Result
 from .query import Query
 from ._util import to_string
 from .aggregation import AggregateRequest, AggregateResult, Cursor
+from .suggestion import SuggestionParser
 
 NUMERIC = "NUMERIC"
 
@@ -32,10 +33,17 @@ ALIAS_ADD_CMD = "FT.ALIASADD"
 ALIAS_UPDATE_CMD = "FT.ALIASUPDATE"
 ALIAS_DEL_CMD = "FT.ALIASDEL"
 INFO_CMD = "FT.INFO"
+SUGADD_COMMAND = "FT.SUGADD"
+SUGDEL_COMMAND = "FT.SUGDEL"
+SUGLEN_COMMAND = "FT.SUGLEN"
+SUGGET_COMMAND = "FT.SUGGET"
 
 NOOFFSETS = "NOOFFSETS"
 NOFIELDS = "NOFIELDS"
 STOPWORDS = "STOPWORDS"
+WITHSCORES = "WITHSCORES"
+FUZZY = "FUZZY"
+WITHPAYLOADS = "WITHPAYLOADS"
 
 
 class CommandMixin:
@@ -561,3 +569,70 @@ class CommandMixin:
 
         cmd = self.execute_command(ALIAS_DEL_CMD, alias)
         return cmd
+
+    def sugadd(self, key, *suggestions, **kwargs):
+        """
+        Add suggestion terms to the AutoCompleter engine. Each suggestion has a score and string.
+
+        If kwargs["increment"] is true and the terms are already in the server's dictionary, we increment their scores
+        """
+        # If Transaction is not set to false it will attempt a MULTI/EXEC which will error
+        pipe = self.pipeline(transaction=False)
+        for sug in suggestions:
+            args = [SUGADD_COMMAND, key, sug.string, sug.score]
+            if kwargs.get("increment"):
+                args.append("INCR")
+            if sug.payload:
+                args.append("PAYLOAD")
+                args.append(sug.payload)
+
+            pipe.execute_command(*args)
+
+        return pipe.execute()[-1]
+
+    def suglen(self, key):
+        """
+        Return the number of entries in the AutoCompleter index
+        """
+        return self.execute_command(SUGLEN_COMMAND, key)
+
+    def sugdel(self, key, string):
+        """
+        Delete a string from the AutoCompleter index.
+        Returns 1 if the string was found and deleted, 0 otherwise
+        """
+        return self.execute_command(SUGDEL_COMMAND, key, string)
+
+    def get_suggestions(
+        self, key, prefix, fuzzy=False, num=10, with_scores=False, with_payloads=False
+    ):
+        """
+        Get a list of suggestions from the AutoCompleter, for a given prefix
+
+        ### Parameters:
+        - **prefix**: the prefix we are searching. **Must be valid ascii or utf-8**
+        - **fuzzy**: If set to true, the prefix search is done in fuzzy mode.
+            **NOTE**: Running fuzzy searches on short (<3 letters) prefixes can be very slow, and even scan the entire index.
+        - **with_scores**: if set to true, we also return the (refactored) score of each suggestion.
+          This is normally not needed, and is NOT the original score inserted into the index
+        - **with_payloads**: Return suggestion payloads
+        - **num**: The maximum number of results we return. Note that we might return less. The algorithm trims irrelevant suggestions.
+
+        Returns a list of Suggestion objects. If with_scores was False, the score of all suggestions is 1.
+        """
+
+        args = [SUGGET_COMMAND, key, prefix, "MAX", num]
+        if fuzzy:
+            args.append(FUZZY)
+        if with_scores:
+            args.append(WITHSCORES)
+        if with_payloads:
+            args.append(WITHPAYLOADS)
+
+        ret = self.execute_command(*args)
+        results = []
+        if not ret:
+            return results
+
+        parser = SuggestionParser(with_scores, with_payloads, ret)
+        return [s for s in parser]

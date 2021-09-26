@@ -18,7 +18,7 @@ from redisplus.search.field import *
 from redisplus.search.query import *
 from redisplus.search.result import *
 from redisplus.search.indexDefinition import *
-from redisplus.search.auto_complete import *
+from redisplus.search.suggestion import *
 import redisplus.search.aggregation as aggregations
 import redisplus.search.reducers as reducers
 
@@ -397,7 +397,6 @@ def testExample(client):
 @pytest.mark.integrations
 @pytest.mark.search
 def testAutoComplete(client):
-    ac = AutoCompleter("ac", conn=client)
     n = 0
     with open(TITLES_CSV) as f:
         cr = csv.reader(f)
@@ -406,10 +405,10 @@ def testAutoComplete(client):
             n += 1
             term, score = row[0], float(row[1])
             # print term, score
-            assert n == ac.add_suggestions(Suggestion(term, score=score))
+            assert n == client.ft.sugadd("ac", Suggestion(term, score=score))
 
-    assert n == ac.len()
-    ret = ac.get_suggestions("bad", with_scores=True)
+    assert n == client.ft.suglen("ac")
+    ret = client.ft.get_suggestions("ac", "bad", with_scores=True)
     assert 2 == len(ret)
     assert "badger" == ret[0].string
     assert isinstance(ret[0].score, float)
@@ -418,28 +417,28 @@ def testAutoComplete(client):
     assert isinstance(ret[1].score, float)
     assert 1.0 != ret[1].score
 
-    ret = ac.get_suggestions("bad", fuzzy=True, num=10)
+    ret = client.ft.get_suggestions("ac", "bad", fuzzy=True, num=10)
     assert 10 == len(ret)
     assert 1.0 == ret[0].score
     strs = {x.string for x in ret}
 
     for sug in strs:
-        assert 1 == ac.delete(sug)
+        assert 1 == client.ft.sugdel("ac", sug)
     # make sure a second delete returns 0
     for sug in strs:
-        assert 0 == ac.delete(sug)
+        assert 0 == client.ft.sugdel("ac", sug)
 
     # make sure they were actually deleted
-    ret2 = ac.get_suggestions("bad", fuzzy=True, num=10)
+    ret2 = client.ft.get_suggestions("ac", "bad", fuzzy=True, num=10)
     for sug in ret2:
         assert sug.string not in strs
 
     # Test with payload
-    ac.add_suggestions(Suggestion("pay1", payload="pl1"))
-    ac.add_suggestions(Suggestion("pay2", payload="pl2"))
-    ac.add_suggestions(Suggestion("pay3", payload="pl3"))
+    client.ft.sugadd("ac", Suggestion("pay1", payload="pl1"))
+    client.ft.sugadd("ac", Suggestion("pay2", payload="pl2"))
+    client.ft.sugadd("ac", Suggestion("pay3", payload="pl3"))
 
-    sugs = ac.get_suggestions("pay", with_payloads=True, with_scores=True)
+    sugs = client.ft.get_suggestions("ac", "pay", with_payloads=True, with_scores=True)
     assert 3 == len(sugs)
     for sug in sugs:
         assert sug.payload
