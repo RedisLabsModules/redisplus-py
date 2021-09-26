@@ -1072,3 +1072,16 @@ def testSearchReturnFields(client):
     assert 1 == len(total)
     assert "doc:1" == total[0].id
     assert "telmatosaurus" == total[0].txt
+
+@pytest.mark.integrations
+@pytest.mark.search
+def testSynupdate(client):
+    definition = IndexDefinition(index_type=IndexType.HASH)
+    client.ft.create_index((TextField("title"), TextField("body"),), definition=definition)
+    client.ft.synupdate("id1", False, "boy", "child")
+
+    client.ft.add_document("doc1", title="he is a boy", body="this is a test")
+    res = client.ft.search(Query("child").expander("SYNONYM"))
+    assert res.docs[0].id == "doc1"
+    assert res.docs[0].title == "he is a boy"
+    assert res.docs[0].body == "this is a test"

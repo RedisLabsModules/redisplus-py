@@ -35,6 +35,7 @@ class Query(object):
         self._summarize_fields = []
         self._highlight_fields = []
         self._language = None
+        self._expander = None
 
     def query_string(self):
         """Return the query string of this query only."""
@@ -191,6 +192,8 @@ class Query(object):
             args += self._sortby.args
         if self._language:
             args += ["LANGUAGE", self._language]
+        if self._expander:
+            args += ["EXPANDER", self._expander]
 
         return args
 
@@ -261,6 +264,15 @@ class Query(object):
         - **asc** - when `True`, sorting will be done in asceding order
         """
         self._sortby = SortbyField(field, asc)
+        return self
+
+    def expander(self, expander):
+        """
+        Add a expander field to the query.
+
+        - **expander** - the name of the expander
+        """
+        self._expander = expander
         return self
 
 
