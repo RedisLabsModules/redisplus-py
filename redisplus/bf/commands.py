@@ -269,9 +269,16 @@ class TOPKCommandMixin:
         params += items
         return self.execute_command(TOPK_COUNT, *params)
 
-    def list(self, key):
-        """Return full list of items in Top-K list of ``key```."""
-        return self.execute_command(TOPK_LIST, key)
+    def list(self, key, withcount=False):
+        """
+        Return full list of items in Top-K list of ``key```.
+        If `withcount` set to True, return full list of items
+        with probabilistic count in Top-K list of ``key```.
+        """
+        params = [key]
+        if withcount:
+            params.append("WITHCOUNT")
+        return self.execute_command(TOPK_LIST, *params)
 
     def info(self, key):
         """Return k, width, depth and decay values of ``key``."""

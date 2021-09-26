@@ -223,19 +223,19 @@ def testTopK(client):
         None,
         None,
         None,
+        "A",
+        "C",
+        "D",
         None,
         None,
+        "E",
         None,
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
+        "B",
         "C",
         None,
         None,
         None,
+        "D",
         None,
     ] == client.topk.add(
         "topk",
@@ -257,7 +257,7 @@ def testTopK(client):
         "E",
         1,
     )
-    assert [1, 1, 0, 1, 0, 0, 0] == client.topk.query(
+    assert [1, 1, 0, 0, 1, 0, 0] == client.topk.query(
         "topk", "A", "B", "C", "D", "E", "F", "G"
     )
     assert [4, 3, 2, 3, 3, 0, 1] == client.topk.count(
@@ -285,7 +285,8 @@ def testTopK(client):
         "E",
         "E",
     )
-    assert ["A", "B", "D"] == sorted(client.topk.list("topklist"))
+    assert ["A", "B", "E"] == client.topk.list("topklist")
+    assert ["A", 4, "B", 3, "E", 3] == client.topk.list("topklist", withcount=True)
     info = client.topk.info("topklist")
     assert 3 == info.k
     assert 50 == info.width
