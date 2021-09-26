@@ -1096,3 +1096,29 @@ def testSynupdate(client):
     assert res.docs[0].id == "doc2"
     assert res.docs[0].title == "he is another baby"
     assert res.docs[0].body == "another test"
+
+
+@pytest.mark.integrations
+@pytest.mark.search
+def testSyndump(client):
+    definition = IndexDefinition(index_type=IndexType.HASH)
+    client.ft.create_index(
+        (
+            TextField("title"),
+            TextField("body"),
+        ),
+        definition=definition,
+    )
+
+    client.ft.synupdate("id1", False, "boy", "child", "offspring")
+    client.ft.synupdate("id2", False, "baby", "child")
+    client.ft.synupdate("id3", False, "tree", "wood")
+    res = client.ft.syndump()
+    assert res == {
+        "boy": ["id1"],
+        "tree": ["id3"],
+        "wood": ["id3"],
+        "child": ["id1", "id2"],
+        "baby": ["id2"],
+        "offspring": ["id1"],
+    }

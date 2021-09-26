@@ -33,6 +33,7 @@ ALIAS_UPDATE_CMD = "FT.ALIASUPDATE"
 ALIAS_DEL_CMD = "FT.ALIASDEL"
 INFO_CMD = "FT.INFO"
 SYNUPDATE_CMD = "FT.SYNUPDATE"
+SYNDUMP_CMD = "FT.SYNDUMP"
 
 NOOFFSETS = "NOOFFSETS"
 NOFIELDS = "NOFIELDS"
@@ -573,3 +574,13 @@ class CommandMixin:
             cmd.extend(["SKIPINITIALSCAN"])
         cmd.extend(terms)
         return self.execute_command(*cmd)
+
+    def syndump(self):
+        """
+        Dumps the contents of a synonym group.
+
+        The command is used to dump the synonyms data structure.
+        Returns a list of synonym terms and their synonym group ids.
+        """
+        raw = self.execute_command(SYNDUMP_CMD, self.index_name)
+        return {raw[i]: raw[i + 1] for i in range(0, len(raw), 2)}
