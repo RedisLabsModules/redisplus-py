@@ -1078,10 +1078,14 @@ def testSearchReturnFields(client):
 def testSynupdate(client):
     definition = IndexDefinition(index_type=IndexType.HASH)
     client.ft.create_index((TextField("title"), TextField("body"),), definition=definition)
-    client.ft.synupdate("id1", False, "boy", "child")
 
-    client.ft.add_document("doc1", title="he is a boy", body="this is a test")
+    client.ft.synupdate("id1", True, "boy", "child", "offspring")
+    client.ft.add_document("doc1", title="he is a baby", body="this is a test")
+
+    client.ft.synupdate("id1", True, "baby")
+    client.ft.add_document("doc2", title="he is another baby", body="another test")
+
     res = client.ft.search(Query("child").expander("SYNONYM"))
-    assert res.docs[0].id == "doc1"
-    assert res.docs[0].title == "he is a boy"
-    assert res.docs[0].body == "this is a test"
+    assert res.docs[0].id == "doc2"
+    assert res.docs[0].title == "he is another baby"
+    assert res.docs[0].body == "another test"
