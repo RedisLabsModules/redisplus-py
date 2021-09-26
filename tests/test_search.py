@@ -728,11 +728,33 @@ def testSpellCheck(client):
     client.ft.add_document("doc2", f1="very important", f2="lorem ipsum")
     waitForIndex(client, "idx")
 
+    # test spellcheck
     res = client.ft.spellcheck("impornant")
     assert "important" == res["impornant"][0]["suggestion"]
 
     res = client.ft.spellcheck("contnt")
     assert "content" == res["contnt"][0]["suggestion"]
+
+    # test spellcheck with Levenshtein distance
+    res = client.ft.spellcheck("vlis")
+    assert res == {}
+    res = client.ft.spellcheck("vlis", distance=2)
+    assert "valid" == res["vlis"][0]["suggestion"]
+
+    # test spellcheck include
+    client.ft.dict_add("dict", "lore", "lorem", "lorm")
+    res = client.ft.spellcheck("lorm", include="dict")
+    assert len(res["lorm"]) == 3
+    assert (
+        res["lorm"][0]["suggestion"],
+        res["lorm"][1]["suggestion"],
+        res["lorm"][2]["suggestion"],
+    ) == ("lorem", "lore", "lorm")
+    assert (res["lorm"][0]["score"], res["lorm"][1]["score"]) == ("0.5", "0")
+
+    # test spellcheck exclude
+    res = client.ft.spellcheck("lorm", exclude="dict")
+    assert res == {}
 
 
 @pytest.mark.integrations
