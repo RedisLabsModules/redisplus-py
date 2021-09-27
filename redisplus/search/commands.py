@@ -7,6 +7,7 @@ from .result import Result
 from .query import Query
 from ._util import to_string
 from .aggregation import AggregateRequest, AggregateResult, Cursor
+from .suggestion import SuggestionParser
 
 NUMERIC = "NUMERIC"
 
@@ -32,10 +33,19 @@ ALIAS_ADD_CMD = "FT.ALIASADD"
 ALIAS_UPDATE_CMD = "FT.ALIASUPDATE"
 ALIAS_DEL_CMD = "FT.ALIASDEL"
 INFO_CMD = "FT.INFO"
+SUGADD_COMMAND = "FT.SUGADD"
+SUGDEL_COMMAND = "FT.SUGDEL"
+SUGLEN_COMMAND = "FT.SUGLEN"
+SUGGET_COMMAND = "FT.SUGGET"
+SYNUPDATE_CMD = "FT.SYNUPDATE"
+SYNDUMP_CMD = "FT.SYNDUMP"
 
 NOOFFSETS = "NOOFFSETS"
 NOFIELDS = "NOFIELDS"
 STOPWORDS = "STOPWORDS"
+WITHSCORES = "WITHSCORES"
+FUZZY = "FUZZY"
+WITHPAYLOADS = "WITHPAYLOADS"
 
 
 class CommandMixin:
@@ -86,7 +96,10 @@ class CommandMixin:
                 args += list(stopwords)
 
         args.append("SCHEMA")
-        args += list(itertools.chain(*(f.redis_args() for f in fields)))
+        try:
+            args += list(itertools.chain(*(f.redis_args() for f in fields)))
+        except TypeError:
+            args += fields.redis_args()
 
         return self.execute_command(*args)
 
@@ -102,7 +115,10 @@ class CommandMixin:
         """
 
         args = [ALTER_CMD, self.index_name, "SCHEMA", "ADD"]
-        args += list(itertools.chain(*(f.redis_args() for f in fields)))
+        try:
+            args += list(itertools.chain(*(f.redis_args() for f in fields)))
+        except TypeError:
+            args += fields.redis_args()
 
         return self.execute_command(*args)
 
@@ -434,8 +450,6 @@ class CommandMixin:
             Specifies an exclusion custom dictionary.
         """
         cmd = [SPELLCHECK_CMD, self.index_name, query]
-
-        # todo: All these 3 param are not tested
         if distance:
             cmd.extend(["DISTANCE", distance])
         if include:
@@ -495,8 +509,7 @@ class CommandMixin:
         """
         cmd = [DICT_ADD_CMD, name]
         cmd.extend(terms)
-        raw = self.execute_command(*cmd)
-        return raw
+        return self.execute_command(*cmd)
 
     def dict_del(self, name, *terms):
         """
@@ -512,8 +525,7 @@ class CommandMixin:
         """
         cmd = [DICT_DEL_CMD, name]
         cmd.extend(terms)
-        raw = self.execute_command(*cmd)
-        return raw
+        return self.execute_command(*cmd)
 
     def dict_dump(self, name):
         """
@@ -526,8 +538,7 @@ class CommandMixin:
             Dictionary name.
         """
         cmd = [DICT_DUMP_CMD, name]
-        raw = self.execute_command(*cmd)
-        return raw
+        return self.execute_command(*cmd)
 
     def config_set(self, option, value):
         """
@@ -573,8 +584,7 @@ class CommandMixin:
         tagfield : str
             Tag field name.
         """
-        cmd = self.execute_command(TAGVALS_CMD, self.index_name, tagfield)
-        return cmd
+        return self.execute_command(TAGVALS_CMD, self.index_name, tagfield)
 
     def aliasadd(self, alias):
         """
@@ -586,8 +596,7 @@ class CommandMixin:
         alias : str
             Name of the alias to create.
         """
-        cmd = self.execute_command(ALIAS_ADD_CMD, alias, self.index_name)
-        return cmd
+        return self.execute_command(ALIAS_ADD_CMD, alias, self.index_name)
 
     def aliasupdate(self, alias):
         """
@@ -599,8 +608,7 @@ class CommandMixin:
         alias : str
             Name of the alias to create.
         """
-        cmd = self.execute_command(ALIAS_UPDATE_CMD, alias, self.index_name)
-        return cmd
+        return self.execute_command(ALIAS_UPDATE_CMD, alias, self.index_name)
 
     def aliasdel(self, alias):
         """
@@ -612,5 +620,115 @@ class CommandMixin:
         alias : str
             Name of the alias to delete
         """
-        cmd = self.execute_command(ALIAS_DEL_CMD, alias)
-        return cmd
+        return self.execute_command(ALIAS_DEL_CMD, alias)
+
+    def sugadd(self, key, *suggestions, **kwargs):
+        """
+        Add suggestion terms to the AutoCompleter engine. Each suggestion has a score and string.
+        If kwargs["increment"] is true and the terms are already in the server's dictionary, we increment their scores.
+        More information `here <https://oss.redis.com/redisearch/master/Commands/#ftsugadd>`_.
+        """
+        # If Transaction is not set to false it will attempt a MULTI/EXEC which will error
+        pipe = self.pipeline(transaction=False)
+        for sug in suggestions:
+            args = [SUGADD_COMMAND, key, sug.string, sug.score]
+            if kwargs.get("increment"):
+                args.append("INCR")
+            if sug.payload:
+                args.append("PAYLOAD")
+                args.append(sug.payload)
+
+            pipe.execute_command(*args)
+
+        return pipe.execute()[-1]
+
+    def suglen(self, key):
+        """
+        Return the number of entries in the AutoCompleter index.
+        More information `here <https://oss.redis.com/redisearch/master/Commands/#ftsuglen>`_.
+        """
+        return self.execute_command(SUGLEN_COMMAND, key)
+
+    def sugdel(self, key, string):
+        """
+        Delete a string from the AutoCompleter index.
+        Returns 1 if the string was found and deleted, 0 otherwise.
+        More information `here <https://oss.redis.com/redisearch/master/Commands/#ftsugdel>`_.
+        """
+        return self.execute_command(SUGDEL_COMMAND, key, string)
+
+    def sugget(
+        self, key, prefix, fuzzy=False, num=10, with_scores=False, with_payloads=False
+    ):
+        """
+        Get a list of suggestions from the AutoCompleter, for a given prefix.
+        More information `here <https://oss.redis.com/redisearch/master/Commands/#ftsugget>`_.
+
+        Parameters:
+
+        prefix : str
+            The prefix we are searching. **Must be valid ascii or utf-8**
+        fuzzy : bool
+            If set to true, the prefix search is done in fuzzy mode.
+            **NOTE**: Running fuzzy searches on short (<3 letters) prefixes can be very
+            slow, and even scan the entire index.
+        with_scores : bool
+            If set to true, we also return the (refactored) score of each suggestion.
+            This is normally not needed, and is NOT the original score inserted into the index.
+        with_payloads : bool
+            Return suggestion payloads
+        num : int
+            The maximum number of results we return. Note that we might return less.
+            The algorithm trims irrelevant suggestions.
+
+        Returns:
+
+        list:
+             A list of Suggestion objects. If with_scores was False, the score of all suggestions is 1.
+        """
+        args = [SUGGET_COMMAND, key, prefix, "MAX", num]
+        if fuzzy:
+            args.append(FUZZY)
+        if with_scores:
+            args.append(WITHSCORES)
+        if with_payloads:
+            args.append(WITHPAYLOADS)
+
+        ret = self.execute_command(*args)
+        results = []
+        if not ret:
+            return results
+
+        parser = SuggestionParser(with_scores, with_payloads, ret)
+        return [s for s in parser]
+
+    def synupdate(self, groupid, skipinitial=False, *terms):
+        """
+        Updates a synonym group.
+        The command is used to create or update a synonym group with additional terms.
+        Only documents which were indexed after the update will be affected.
+
+        Parameters:
+
+        groupid :
+            Synonym group id.
+        skipinitial : bool
+            If set to true, we do not scan and index.
+        terms :
+            The terms.
+        """
+        cmd = [SYNUPDATE_CMD, self.index_name, groupid]
+        if skipinitial:
+            cmd.extend(["SKIPINITIALSCAN"])
+        cmd.extend(terms)
+        return self.execute_command(*cmd)
+
+    def syndump(self):
+        """
+        Dumps the contents of a synonym group.
+
+        The command is used to dump the synonyms data structure.
+        Returns a list of synonym terms and their synonym group ids.
+        """
+        raw = self.execute_command(SYNDUMP_CMD, self.index_name)
+        return {raw[i]: raw[i + 1] for i in range(0, len(raw), 2)}

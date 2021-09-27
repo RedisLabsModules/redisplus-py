@@ -304,7 +304,6 @@ class TOPKCommandMixin:
 
         Example:
 
-        -------
         >>> topkincrby('A', ['foo'], [1])
         """
         params = [key]
@@ -368,7 +367,6 @@ class TDigestCommandMixin:
 
         Example:
 
-        -------
         >>> tdigestadd('A', [1500.0], [1.0])
         """
         params = [key]
@@ -450,7 +448,6 @@ class CMSCommandMixin:
 
         Example:
 
-        -------
         >>> cmsincrby('A', ['foo'], [1])
         """
         params = [key]
