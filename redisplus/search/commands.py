@@ -32,6 +32,8 @@ ALIAS_ADD_CMD = "FT.ALIASADD"
 ALIAS_UPDATE_CMD = "FT.ALIASUPDATE"
 ALIAS_DEL_CMD = "FT.ALIASDEL"
 INFO_CMD = "FT.INFO"
+SYNUPDATE_CMD = "FT.SYNUPDATE"
+SYNDUMP_CMD = "FT.SYNDUMP"
 
 NOOFFSETS = "NOOFFSETS"
 NOFIELDS = "NOFIELDS"
@@ -460,8 +462,7 @@ class CommandMixin:
         """
         cmd = [DICT_ADD_CMD, name]
         cmd.extend(terms)
-        raw = self.execute_command(*cmd)
-        return raw
+        return self.execute_command(*cmd)
 
     def dict_del(self, name, *terms):
         """Deletes terms from a dictionary.
@@ -473,8 +474,7 @@ class CommandMixin:
         """
         cmd = [DICT_DEL_CMD, name]
         cmd.extend(terms)
-        raw = self.execute_command(*cmd)
-        return raw
+        return self.execute_command(*cmd)
 
     def dict_dump(self, name):
         """Dumps all terms in the given dictionary.
@@ -484,8 +484,7 @@ class CommandMixin:
         - **name**: Dictionary name.
         """
         cmd = [DICT_DUMP_CMD, name]
-        raw = self.execute_command(*cmd)
-        return raw
+        return self.execute_command(*cmd)
 
     def config_set(self, option, value):
         """Set runtime configuration option.
@@ -523,8 +522,7 @@ class CommandMixin:
         - **tagfield**: Tag field name
         """
 
-        cmd = self.execute_command(TAGVALS_CMD, self.index_name, tagfield)
-        return cmd
+        return self.execute_command(TAGVALS_CMD, self.index_name, tagfield)
 
     def aliasadd(self, alias):
         """
@@ -535,8 +533,7 @@ class CommandMixin:
         - **alias**: Name of the alias to create
         """
 
-        cmd = self.execute_command(ALIAS_ADD_CMD, alias, self.index_name)
-        return cmd
+        return self.execute_command(ALIAS_ADD_CMD, alias, self.index_name)
 
     def aliasupdate(self, alias):
         """
@@ -547,8 +544,7 @@ class CommandMixin:
         - **alias**: Name of the alias to create
         """
 
-        cmd = self.execute_command(ALIAS_UPDATE_CMD, alias, self.index_name)
-        return cmd
+        return self.execute_command(ALIAS_UPDATE_CMD, alias, self.index_name)
 
     def aliasdel(self, alias):
         """
@@ -559,5 +555,32 @@ class CommandMixin:
         - **alias**: Name of the alias to delete
         """
 
-        cmd = self.execute_command(ALIAS_DEL_CMD, alias)
-        return cmd
+        return self.execute_command(ALIAS_DEL_CMD, alias)
+
+    def synupdate(self, groupid, skipinitial=False, *terms):
+        """
+        Updates a synonym group.
+        The command is used to create or update a synonym group with additional terms.
+        Only documents which were indexed after the update will be affected.
+
+        ### Parameters
+
+        - **groupid**: synonym group id.
+        - **skipinitial**: If set to true, we do not scan and index.
+        - **terms**: The terms.
+        """
+        cmd = [SYNUPDATE_CMD, self.index_name, groupid]
+        if skipinitial:
+            cmd.extend(["SKIPINITIALSCAN"])
+        cmd.extend(terms)
+        return self.execute_command(*cmd)
+
+    def syndump(self):
+        """
+        Dumps the contents of a synonym group.
+
+        The command is used to dump the synonyms data structure.
+        Returns a list of synonym terms and their synonym group ids.
+        """
+        raw = self.execute_command(SYNDUMP_CMD, self.index_name)
+        return {raw[i]: raw[i + 1] for i in range(0, len(raw), 2)}
