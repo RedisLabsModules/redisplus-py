@@ -75,6 +75,7 @@ class Asc(SortDirection):
     """
     Indicate that the given field should be sorted in ascending order
     """
+
     DIRSTRING = "ASC"
 
 
@@ -82,6 +83,7 @@ class Desc(SortDirection):
     """
     Indicate that the given field should be sorted in descending order
     """
+
     DIRSTRING = "DESC"
 
 

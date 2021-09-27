@@ -3,12 +3,14 @@ from enum import Enum
 
 class IndexType(Enum):
     """Enum of the currently supported index types."""
+
     HASH = 1
     JSON = 2
 
 
 class IndexDefinition(object):
     """IndexDefinition is used to define a index definition for automatic indexing on Hash or Json update."""
+
     def __init__(
         self,
         prefix=[],
