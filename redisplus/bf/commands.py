@@ -328,12 +328,17 @@ class TOPKCommandMixin:
         params += items
         return self.execute_command(TOPK_COUNT, *params)
 
-    def list(self, key):
+    def list(self, key, withcount=False):
         """
-        Return full list of items in Top-K list of `key``.
+        Return full list of items in Top-K list of `key`.
+        If `withcount` set to True, return full list of items
+        with probabilistic count in Top-K list of `key`.
         More information `here <https://oss.redis.com/redisbloom/master/TopK_Commands/#topklist>`_.
         """
-        return self.execute_command(TOPK_LIST, key)
+        params = [key]
+        if withcount:
+            params.append("WITHCOUNT")
+        return self.execute_command(TOPK_LIST, *params)
 
     def info(self, key):
         """
