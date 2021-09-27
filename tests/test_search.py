@@ -408,7 +408,7 @@ def testAutoComplete(client):
             assert n == client.ft.sugadd("ac", Suggestion(term, score=score))
 
     assert n == client.ft.suglen("ac")
-    ret = client.ft.get_suggestions("ac", "bad", with_scores=True)
+    ret = client.ft.sugget("ac", "bad", with_scores=True)
     assert 2 == len(ret)
     assert "badger" == ret[0].string
     assert isinstance(ret[0].score, float)
@@ -417,7 +417,7 @@ def testAutoComplete(client):
     assert isinstance(ret[1].score, float)
     assert 1.0 != ret[1].score
 
-    ret = client.ft.get_suggestions("ac", "bad", fuzzy=True, num=10)
+    ret = client.ft.sugget("ac", "bad", fuzzy=True, num=10)
     assert 10 == len(ret)
     assert 1.0 == ret[0].score
     strs = {x.string for x in ret}
@@ -429,7 +429,7 @@ def testAutoComplete(client):
         assert 0 == client.ft.sugdel("ac", sug)
 
     # make sure they were actually deleted
-    ret2 = client.ft.get_suggestions("ac", "bad", fuzzy=True, num=10)
+    ret2 = client.ft.sugget("ac", "bad", fuzzy=True, num=10)
     for sug in ret2:
         assert sug.string not in strs
 
@@ -438,7 +438,7 @@ def testAutoComplete(client):
     client.ft.sugadd("ac", Suggestion("pay2", payload="pl2"))
     client.ft.sugadd("ac", Suggestion("pay3", payload="pl3"))
 
-    sugs = client.ft.get_suggestions("ac", "pay", with_payloads=True, with_scores=True)
+    sugs = client.ft.sugget("ac", "pay", with_payloads=True, with_scores=True)
     assert 3 == len(sugs)
     for sug in sugs:
         assert sug.payload
