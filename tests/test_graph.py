@@ -14,6 +14,7 @@ def client():
 
     return rc
 
+
 @pytest.mark.graph
 @pytest.mark.integrations
 def test_bulk(client):
