@@ -3,7 +3,7 @@ name = "redisplus"
 version = "0.1.1"
 description = "An all purpose client for redis modules."
 keywords = ["redis"]
-authors = ["RedisLabs OSS <oss@redislabs.com>"]
+authors = ["Redis OSS <oss@.com>"]
 license = "BSD-3-Clause"
 
 classifiers = [

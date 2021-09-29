@@ -119,7 +119,9 @@ class CommandMixin:
         return "\n".join(plan)
 
     def bulk(self, **kwargs):
-        raise NotImplementedError("GRAPH.BULK is internal only. Use https://github.com/redisgraph/redisgraph-bulk-loader.")
+        raise NotImplementedError(
+            "GRAPH.BULK is internal only. Use https://github.com/redisgraph/redisgraph-bulk-loader."
+        )
 
     def profile(self, query):
         """

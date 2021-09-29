@@ -15,7 +15,7 @@ sys.path.insert(0, os.path.abspath('redisplus'))
 
 pyproject = toml.loads(open(os.path.join(os.path.dirname(__file__), "..", "pyproject.toml")).read())
 project = pyproject["tool"]["poetry"]["name"]
-copyright = '2021, RedisLabs OSS'
+copyright = '2021, Redis OSS'
 author = pyproject["tool"]["poetry"]["authors"][0]
 release = pyproject["tool"]["poetry"]["version"]
 
