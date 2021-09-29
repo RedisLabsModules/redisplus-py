@@ -118,6 +118,9 @@ class CommandMixin:
         plan = self.execute_command("GRAPH.EXPLAIN", self.name, query)
         return "\n".join(plan)
 
+    def bulk(self, **kwargs):
+        raise NotImplementedError("GRAPH.BULK is internal only. Use https://github.com/redisgraph/redisgraph-bulk-loader.")
+
     def profile(self, query):
         """
         Execute a query and produce an execution plan augmented with metrics

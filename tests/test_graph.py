@@ -14,6 +14,13 @@ def client():
 
     return rc
 
+@pytest.mark.graph
+@pytest.mark.integrations
+def test_bulk(client):
+    with pytest.raises(NotImplementedError):
+        client.graph.bulk()
+        client.graph.bulk(foo="bar!")
+
 
 @pytest.mark.integrations
 @pytest.mark.graph
