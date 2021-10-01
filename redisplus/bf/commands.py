@@ -55,7 +55,7 @@ class BFCommandMixin:
         Create a new Bloom Filter `key` with desired probability of false positives
         `errorRate` expected entries to be inserted as `capacity`.
         Default expansion value is 2. By default, filter is auto-scaling.
-        More information `here <https://oss.redis.com/redisbloom/master/Bloom_Commands/#bfreserve>`_.
+        For more information see `BF.RESERVE <https://oss.redis.com/redisbloom/master/Bloom_Commands/#bfreserve>`_.
         """
         params = [key, errorRate, capacity]
         self.appendExpansion(params, expansion)
@@ -65,7 +65,7 @@ class BFCommandMixin:
     def add(self, key, item):
         """
         Add to a Bloom Filter `key` an `item`.
-        More information `here <https://oss.redis.com/redisbloom/master/Bloom_Commands/#bfadd>`_.
+        For more information see `BF.ADD <https://oss.redis.com/redisbloom/master/Bloom_Commands/#bfadd>`_.
         """
         params = [key, item]
         return self.execute_command(BF_ADD, *params)
@@ -73,7 +73,7 @@ class BFCommandMixin:
     def madd(self, key, *items):
         """
         Add to a Bloom Filter `key` multiple `items`.
-        More information `here <https://oss.redis.com/redisbloom/master/Bloom_Commands/#bfmadd>`_.
+        For more information see `BF.MADD <https://oss.redis.com/redisbloom/master/Bloom_Commands/#bfmadd>`_.
         """
         params = [key]
         params += items
@@ -95,7 +95,7 @@ class BFCommandMixin:
         If `nocreate` remain `None` and `key` does not exist, a new Bloom Filter
         `key` will be created with desired probability of false positives `errorRate`
         and expected entries to be inserted as `size`.
-        More information `here <https://oss.redis.com/redisbloom/master/Bloom_Commands/#bfinsert>`_.
+        For more information see `BF.INSERT <https://oss.redis.com/redisbloom/master/Bloom_Commands/#bfinsert>`_.
         """
         params = [key]
         self.appendCapacity(params, capacity)
@@ -110,7 +110,7 @@ class BFCommandMixin:
     def exists(self, key, item):
         """
         Check whether an `item` exists in Bloom Filter `key`.
-        More information `here <https://oss.redis.com/redisbloom/master/Bloom_Commands/#bfexists>`_.
+        For more information see `BF.EXISTS <https://oss.redis.com/redisbloom/master/Bloom_Commands/#bfexists>`_.
         """
         params = [key, item]
         return self.execute_command(BF_EXISTS, *params)
@@ -118,7 +118,7 @@ class BFCommandMixin:
     def mexists(self, key, *items):
         """
         Check whether `items` exist in Bloom Filter `key`.
-        More information `here <https://oss.redis.com/redisbloom/master/Bloom_Commands/#bfmexists>`_.
+        For more information see `BF.MEXISTS <https://oss.redis.com/redisbloom/master/Bloom_Commands/#bfmexists>`_.
         """
         params = [key]
         params += items
@@ -131,8 +131,7 @@ class BFCommandMixin:
         This is useful for large bloom filters which cannot fit into the normal SAVE and RESTORE model.
         The first time this command is called, the value of `iter` should be 0.
         This command will return successive (iter, data) pairs until (0, NULL) to indicate completion.
-
-        More information `here <https://oss.redis.com/redisbloom/master/Bloom_Commands/#bfscandump>`_.
+        For more information see `BF.SCANDUMP <https://oss.redis.com/redisbloom/master/Bloom_Commands/#bfscandump>`_.
         """
         params = [key, iter]
         return self.execute_command(BF_SCANDUMP, *params)
@@ -144,8 +143,7 @@ class BFCommandMixin:
         See the SCANDUMP command for example usage.
         This command will overwrite any bloom filter stored under key.
         Ensure that the bloom filter will not be modified between invocations.
-
-        More information `here <https://oss.redis.com/redisbloom/master/Bloom_Commands/#bfloadchunk>`_.
+        For more information see `BF.LOADCHUNK <https://oss.redis.com/redisbloom/master/Bloom_Commands/#bfloadchunk>`_.
         """
         params = [key, iter, data]
         return self.execute_command(BF_LOADCHUNK, *params)
@@ -153,7 +151,7 @@ class BFCommandMixin:
     def info(self, key):
         """
         Return capacity, size, number of filters, number of items inserted, and expansion rate.
-        More information `here <https://oss.redis.com/redisbloom/master/Bloom_Commands/#bfinfo>`_.
+        For more information see `BF.INFO <https://oss.redis.com/redisbloom/master/Bloom_Commands/#bfinfo>`_.
         """
         return self.execute_command(BF_INFO, key)
 
@@ -166,7 +164,7 @@ class CFCommandMixin:
     ):
         """
         Create a new Cuckoo Filter `key` an initial `capacity` items.
-        More information `here <https://oss.redis.com/redisbloom/master/Cuckoo_Commands/#cfreserve>`_.
+        For more information see `CF.RESERVE <https://oss.redis.com/redisbloom/master/Cuckoo_Commands/#cfreserve>`_.
         """
         params = [key, capacity]
         self.appendExpansion(params, expansion)
@@ -177,7 +175,7 @@ class CFCommandMixin:
     def add(self, key, item):
         """
         Add an `item` to a Cuckoo Filter `key`.
-        More information `here <https://oss.redis.com/redisbloom/master/Cuckoo_Commands/#cfadd>`_.
+        For more information see `CF.ADD <https://oss.redis.com/redisbloom/master/Cuckoo_Commands/#cfadd>`_.
         """
         params = [key, item]
         return self.execute_command(CF_ADD, *params)
@@ -185,8 +183,8 @@ class CFCommandMixin:
     def addnx(self, key, item):
         """
         Add an `item` to a Cuckoo Filter `key` only if item does not yet exist.
-        Command might be slower that `cfAdd`.
-        More information `here <https://oss.redis.com/redisbloom/master/Cuckoo_Commands/#cfaddnx>`_.
+        Command might be slower that `add`.
+        For more information see `CF.ADDNX <https://oss.redis.com/redisbloom/master/Cuckoo_Commands/#cfaddnx>`_.
         """
         params = [key, item]
         return self.execute_command(CF_ADDNX, *params)
@@ -196,7 +194,7 @@ class CFCommandMixin:
         Add multiple `items` to a Cuckoo Filter `key`, allowing the filter
         to be created with a custom `capacity` if it does not yet exist.
         `items` must be provided as a list.
-        More information `here <https://oss.redis.com/redisbloom/master/Cuckoo_Commands/#cfinsert>`_.
+        For more information see `CF.INSERT <https://oss.redis.com/redisbloom/master/Cuckoo_Commands/#cfinsert>`_.
         """
         params = [key]
         self.appendCapacity(params, capacity)
@@ -209,7 +207,7 @@ class CFCommandMixin:
         Add multiple `items` to a Cuckoo Filter `key` only if they do not exist yet,
         allowing the filter to be created with a custom `capacity` if it does not yet exist.
         `items` must be provided as a list.
-        More information `here <https://oss.redis.com/redisbloom/master/Cuckoo_Commands/#cfinsertnx>`_.
+        For more information see `CF.INSERTNX <https://oss.redis.com/redisbloom/master/Cuckoo_Commands/#cfinsertnx>`_.
         """
         params = [key]
         self.appendCapacity(params, capacity)
@@ -220,7 +218,7 @@ class CFCommandMixin:
     def exists(self, key, item):
         """
         Check whether an `item` exists in Cuckoo Filter `key`.
-        More information `here <https://oss.redis.com/redisbloom/master/Cuckoo_Commands/#cfexists>`_.
+        For more information see `CF.EXISTS <https://oss.redis.com/redisbloom/master/Cuckoo_Commands/#cfexists>`_.
         """
         params = [key, item]
         return self.execute_command(CF_EXISTS, *params)
@@ -228,7 +226,7 @@ class CFCommandMixin:
     def delete(self, key, item):
         """
         Delete `item` from `key`.
-        More information `here <https://oss.redis.com/redisbloom/master/Cuckoo_Commands/#cfdel>`_.
+        For more information see `CF.DEL <https://oss.redis.com/redisbloom/master/Cuckoo_Commands/#cfdel>`_.
         """
         params = [key, item]
         return self.execute_command(CF_DEL, *params)
@@ -236,7 +234,7 @@ class CFCommandMixin:
     def count(self, key, item):
         """
         Return the number of times an `item` may be in the `key`.
-        More information `here <https://oss.redis.com/redisbloom/master/Cuckoo_Commands/#cfcount>`_.
+        For more information see `CF.COUNT <https://oss.redis.com/redisbloom/master/Cuckoo_Commands/#cfcount>`_.
         """
         params = [key, item]
         return self.execute_command(CF_COUNT, *params)
@@ -250,8 +248,7 @@ class CFCommandMixin:
         The first time this command is called, the value of `iter` should be 0.
         This command will return successive (iter, data) pairs until
         (0, NULL) to indicate completion.
-
-        More information `here <https://oss.redis.com/redisbloom/master/Cuckoo_Commands/#cfscandump>`_.
+        For more information see `CF.SCANDUMP <https://oss.redis.com/redisbloom/master/Cuckoo_Commands/#cfscandump>`_.
         """
         params = [key, iter]
         return self.execute_command(CF_SCANDUMP, *params)
@@ -262,8 +259,7 @@ class CFCommandMixin:
 
         This command will overwrite any Cuckoo filter stored under key.
         Ensure that the Cuckoo filter will not be modified between invocations.
-
-        More information `here <https://oss.redis.com/redisbloom/master/Cuckoo_Commands/#cfloadchunk>`_.
+        For more information see `CF.LOADCHUNK <https://oss.redis.com/redisbloom/master/Cuckoo_Commands/#cfloadchunk>`_.
         """
         params = [key, iter, data]
         return self.execute_command(CF_LOADCHUNK, *params)
@@ -272,7 +268,7 @@ class CFCommandMixin:
         """
         Return size, number of buckets, number of filter, number of items inserted,
         number of items deleted, bucket size, expansion rate, and max iteration.
-        More information `here <https://oss.redis.com/redisbloom/master/Cuckoo_Commands/#cfinfo>`_.
+        For more information see `CF.INFO <https://oss.redis.com/redisbloom/master/Cuckoo_Commands/#cfinfo>`_.
         """
         return self.execute_command(CF_INFO, key)
 
@@ -282,7 +278,7 @@ class TOPKCommandMixin:
         """
         Create a new Top-K Filter `key` with desired probability of false
         positives `errorRate` expected entries to be inserted as `size`.
-        More information `here <https://oss.redis.com/redisbloom/master/TopK_Commands/#topkreserve>`_.
+        For more information see `TOPK.RESERVE <https://oss.redis.com/redisbloom/master/TopK_Commands/#topkreserve>`_.
         """
         params = [key, k, width, depth, decay]
         return self.execute_command(TOPK_RESERVE, *params)
@@ -290,7 +286,7 @@ class TOPKCommandMixin:
     def add(self, key, *items):
         """
         Add one `item` or more to a Top-K Filter `key`.
-        More information `here <https://oss.redis.com/redisbloom/master/TopK_Commands/#topkadd>`_.
+        For more information see `TOPK.ADD <https://oss.redis.com/redisbloom/master/TopK_Commands/#topkadd>`_.
         """
         params = [key]
         params += items
@@ -300,7 +296,7 @@ class TOPKCommandMixin:
         """
         Add/increase `items` to a Top-K Sketch `key` by ''increments''.
         Both `items` and `increments` are lists.
-        More information `here <https://oss.redis.com/redisbloom/master/TopK_Commands/#topkincrby>`_.
+        For more information see `TOPK.INCRBY <https://oss.redis.com/redisbloom/master/TopK_Commands/#topkincrby>`_.
 
         Example:
 
@@ -313,7 +309,7 @@ class TOPKCommandMixin:
     def query(self, key, *items):
         """
         Check whether one `item` or more is a Top-K item at `key`.
-        More information `here <https://oss.redis.com/redisbloom/master/TopK_Commands/#topkquery>`_.
+        For more information see `TOPK.QUERY <https://oss.redis.com/redisbloom/master/TopK_Commands/#topkquery>`_.
         """
         params = [key]
         params += items
@@ -322,7 +318,7 @@ class TOPKCommandMixin:
     def count(self, key, *items):
         """
         Return count for one `item` or more from `key`.
-        More information `here <https://oss.redis.com/redisbloom/master/TopK_Commands/#topkcount>`_.
+        For more information see `TOPK.COUNT <https://oss.redis.com/redisbloom/master/TopK_Commands/#topkcount>`_.
         """
         params = [key]
         params += items
@@ -333,7 +329,7 @@ class TOPKCommandMixin:
         Return full list of items in Top-K list of `key`.
         If `withcount` set to True, return full list of items
         with probabilistic count in Top-K list of `key`.
-        More information `here <https://oss.redis.com/redisbloom/master/TopK_Commands/#topklist>`_.
+        For more information see `TOPK.LIST <https://oss.redis.com/redisbloom/master/TopK_Commands/#topklist>`_.
         """
         params = [key]
         if withcount:
@@ -343,7 +339,7 @@ class TOPKCommandMixin:
     def info(self, key):
         """
         Return k, width, depth and decay values of `key`.
-        More information `here <https://oss.redis.com/redisbloom/master/TopK_Commands/#topkinfo>`_.
+        For more information see `TOPK.INFO <https://oss.redis.com/redisbloom/master/TopK_Commands/#topkinfo>`_.
         """
         return self.execute_command(TOPK_INFO, key)
 
@@ -352,7 +348,7 @@ class TDigestCommandMixin:
     def create(self, key, compression):
         """
         Allocate the memory and initialize the t-digest.
-        More information `here <https://oss.redis.com/redisbloom/master/TDigest_Commands/#tdigestcreate>`_.
+        For more information see `TDIGEST.CREATE <https://oss.redis.com/redisbloom/master/TDigest_Commands/#tdigestcreate>`_.
         """
         params = [key, compression]
         return self.execute_command(TDIGEST_CREATE, *params)
@@ -360,7 +356,7 @@ class TDigestCommandMixin:
     def reset(self, key):
         """
         Reset the sketch `key` to zero - empty out the sketch and re-initialize it.
-        More information `here <https://oss.redis.com/redisbloom/master/TDigest_Commands/#tdigestreset>`_.
+        For more information see `TDIGEST.RESET <https://oss.redis.com/redisbloom/master/TDigest_Commands/#tdigestreset>`_.
         """
         return self.execute_command(TDIGEST_RESET, key)
 
@@ -368,7 +364,7 @@ class TDigestCommandMixin:
         """
         Add one or more samples (value with weight) to a sketch `key`.
         Both `values` and `weights` are lists.
-        More information `here <https://oss.redis.com/redisbloom/master/TDigest_Commands/#tdigestadd>`_.
+        For more information see `TDIGEST.ADD <https://oss.redis.com/redisbloom/master/TDigest_Commands/#tdigestadd>`_.
 
         Example:
 
@@ -381,7 +377,7 @@ class TDigestCommandMixin:
     def merge(self, toKey, fromKey):
         """
         Merge all of the values from 'fromKey' to 'toKey' sketch.
-        More information `here <https://oss.redis.com/redisbloom/master/TDigest_Commands/#tdigestmerge>`_.
+        For more information see `TDIGEST.MERGE <https://oss.redis.com/redisbloom/master/TDigest_Commands/#tdigestmerge>`_.
         """
         params = [toKey, fromKey]
         return self.execute_command(TDIGEST_MERGE, *params)
@@ -389,14 +385,14 @@ class TDigestCommandMixin:
     def min(self, key):
         """
         Return minimum value from the sketch `key`. Will return DBL_MAX if the sketch is empty.
-        More information `here <https://oss.redis.com/redisbloom/master/TDigest_Commands/#tdigestmin>`_.
+        For more information see `TDIGEST.MIN <https://oss.redis.com/redisbloom/master/TDigest_Commands/#tdigestmin>`_.
         """
         return self.execute_command(TDIGEST_MIN, key)
 
     def max(self, key):
         """
         Return maximum value from the sketch `key`. Will return DBL_MIN if the sketch is empty.
-        More information `here <https://oss.redis.com/redisbloom/master/TDigest_Commands/#tdigestmax>`_.
+        For more information see `TDIGEST.MAX <https://oss.redis.com/redisbloom/master/TDigest_Commands/#tdigestmax>`_.
         """
         return self.execute_command(TDIGEST_MAX, key)
 
@@ -404,7 +400,7 @@ class TDigestCommandMixin:
         """
         Return double value estimate of the cutoff such that a specified fraction of the data
         added to this TDigest would be less than or equal to the cutoff.
-        More information `here <https://oss.redis.com/redisbloom/master/TDigest_Commands/#tdigestquantile>`_.
+        For more information see `TDIGEST.QUANTILE <https://oss.redis.com/redisbloom/master/TDigest_Commands/#tdigestquantile>`_.
         """
         params = [key, quantile]
         return self.execute_command(TDIGEST_QUANTILE, *params)
@@ -412,7 +408,7 @@ class TDigestCommandMixin:
     def cdf(self, key, value):
         """
         Return double fraction of all points added which are <= value.
-        More information `here <https://oss.redis.com/redisbloom/master/TDigest_Commands/#tdigestcdf>`_.
+        For more information see `TDIGEST.CDF <https://oss.redis.com/redisbloom/master/TDigest_Commands/#tdigestcdf>`_.
         """
         params = [key, value]
         return self.execute_command(TDIGEST_CDF, *params)
@@ -421,7 +417,7 @@ class TDigestCommandMixin:
         """
         Return Compression, Capacity, Merged Nodes, Unmerged Nodes, Merged Weight, Unmerged Weight
         and Total Compressions.
-        More information `here <https://oss.redis.com/redisbloom/master/TDigest_Commands/#tdigestinfo>`_.
+        For more information see `TDIGEST.INFO <https://oss.redis.com/redisbloom/master/TDigest_Commands/#tdigestinfo>`_.
         """
         return self.execute_command(TDIGEST_INFO, key)
 
@@ -432,7 +428,7 @@ class CMSCommandMixin:
     def initbydim(self, key, width, depth):
         """
         Initialize a Count-Min Sketch `key` to dimensions (`width`, `depth`) specified by user.
-        More information `here <https://oss.redis.com/redisbloom/master/CountMinSketch_Commands/#cmsinitbydim>`_.
+        For more information see `CMS.INITBYDIM <https://oss.redis.com/redisbloom/master/CountMinSketch_Commands/#cmsinitbydim>`_.
         """
         params = [key, width, depth]
         return self.execute_command(CMS_INITBYDIM, *params)
@@ -440,7 +436,7 @@ class CMSCommandMixin:
     def initbyprob(self, key, error, probability):
         """
         Initialize a Count-Min Sketch `key` to characteristics (`error`, `probability`) specified by user.
-        More information `here <https://oss.redis.com/redisbloom/master/CountMinSketch_Commands/#cmsinitbyprob>`_.
+        For more information see `CMS.INITBYPROB <https://oss.redis.com/redisbloom/master/CountMinSketch_Commands/#cmsinitbyprob>`_.
         """
         params = [key, error, probability]
         return self.execute_command(CMS_INITBYPROB, *params)
@@ -449,7 +445,7 @@ class CMSCommandMixin:
         """
         Add/increase `items` to a Count-Min Sketch `key` by ''increments''.
         Both `items` and `increments` are lists.
-        More information `here <https://oss.redis.com/redisbloom/master/CountMinSketch_Commands/#cmsincrby>`_.
+        For more information see `CMS.INCRBY <https://oss.redis.com/redisbloom/master/CountMinSketch_Commands/#cmsincrby>`_.
 
         Example:
 
@@ -462,7 +458,7 @@ class CMSCommandMixin:
     def query(self, key, *items):
         """
         Return count for an `item` from `key`. Multiple items can be queried with one call.
-        More information `here <https://oss.redis.com/redisbloom/master/CountMinSketch_Commands/#cmsquery>`_.
+        For more information see `CMS.QUERY <https://oss.redis.com/redisbloom/master/CountMinSketch_Commands/#cmsquery>`_.
         """
         params = [key]
         params += items
@@ -474,7 +470,7 @@ class CMSCommandMixin:
         All sketches must have identical width and depth.
         `Weights` can be used to multiply certain sketches. Default weight is 1.
         Both `srcKeys` and `weights` are lists.
-        More information `here <https://oss.redis.com/redisbloom/master/CountMinSketch_Commands/#cmsmerge>`_.
+        For more information see `CMS.MERGE <https://oss.redis.com/redisbloom/master/CountMinSketch_Commands/#cmsmerge>`_.
         """
         params = [destKey, numKeys]
         params += srcKeys
@@ -484,6 +480,6 @@ class CMSCommandMixin:
     def info(self, key):
         """
         Return width, depth and total count of the sketch.
-        More information `here <https://oss.redis.com/redisbloom/master/CountMinSketch_Commands/#cmsinfo>`_.
+        For more information see `CMS.INFO <https://oss.redis.com/redisbloom/master/CountMinSketch_Commands/#cmsinfo>`_.
         """
         return self.execute_command(CMS_INFO, key)

@@ -67,7 +67,7 @@ class CommandMixin:
     ):
         """
         Create the search index. The index must not already exist.
-        More information `here <https://oss.redis.com/redisearch/master/Commands/#ftcreate>`_.
+        For more information see `FT.CREATE <https://oss.redis.com/redisearch/master/Commands/#ftcreate>`_.
 
         Parameters:
 
@@ -106,7 +106,7 @@ class CommandMixin:
     def alter_schema_add(self, fields):
         """
         Alter the existing search index by adding new fields. The index must already exist.
-        More information `here <https://oss.redis.com/redisearch/master/Commands/#ftalter_schema_add>`_.
+        For more information see `FT.ALTER <https://oss.redis.com/redisearch/master/Commands/#ftalter_schema_add>`_.
 
         Parameters:
 
@@ -126,7 +126,7 @@ class CommandMixin:
         """
         Drop the index if it exists.
         Default behavior was changed to not delete the indexed documents.
-        More information `here <https://oss.redis.com/redisearch/master/Commands/#ftdrop>`_.
+        For more information see `FT.DROP <https://oss.redis.com/redisearch/master/Commands/#ftdrop>`_.
 
         Parameters:
 
@@ -214,7 +214,7 @@ class CommandMixin:
     ):
         """
         Add a single document to the index.
-        More information `here <https://oss.redis.com/redisearch/master/Commands/#ftadd>`_.
+        For more information see `FT.ADD <https://oss.redis.com/redisearch/master/Commands/#ftadd>`_.
 
         Parameters:
 
@@ -288,7 +288,7 @@ class CommandMixin:
         """
         Delete a document from index.
         Returns 1 if the document was deleted, 0 if not.
-        More information `here <https://oss.redis.com/redisearch/master/Commands/#ftdel>`_.
+        For more information see `FT.DEL <https://oss.redis.com/redisearch/master/Commands/#ftdel>`_.
 
         Parameters:
 
@@ -322,7 +322,7 @@ class CommandMixin:
     def get_documents(self, *ids):
         """
         Returns the full contents of multiple documents.
-        More information `here <https://oss.redis.com/redisearch/master/Commands/#ftmget>`_.
+        For more information see `FT.MGET <https://oss.redis.com/redisearch/master/Commands/#ftmget>`_.
 
         Parameters:
 
@@ -335,7 +335,7 @@ class CommandMixin:
     def info(self):
         """
         Get info an stats about the the current index, including the number of documents, memory consumption, etc.
-        More information `here <https://oss.redis.com/redisearch/master/Commands/#ftinfo>`_.
+        For more information see `FT.INFO <https://oss.redis.com/redisearch/master/Commands/#ftinfo>`_.
         """
 
         res = self.client.execute_command(INFO_CMD, self.index_name)
@@ -357,7 +357,7 @@ class CommandMixin:
     def search(self, query):
         """
         Search the index for a given query, and return a result of documents.
-        More information `here <https://oss.redis.com/redisearch/master/Commands/#ftsearch>`_.
+        For more information see `FT.SEARCH <https://oss.redis.com/redisearch/master/Commands/#ftsearch>`_.
 
         Parameters:
 
@@ -380,7 +380,7 @@ class CommandMixin:
     def explain(self, query):
         """
         Return the execution plan for a complex query.
-        More information `here <https://oss.redis.com/redisearch/master/Commands/#ftexplain>`_.
+        For more information see `FT.EXPLAIN <https://oss.redis.com/redisearch/master/Commands/#ftexplain>`_.
 
         Parameters:
 
@@ -396,7 +396,7 @@ class CommandMixin:
         Issue an aggregation query.
         An `AggregateResult` object is returned. You can access the rows from its
         `rows` property, which will always yield the rows of the result.
-        More information `here <https://oss.redis.com/redisearch/master/Commands/#ftaggregate>`_.
+        For more information see `FT.AGGREGATE <https://oss.redis.com/redisearch/master/Commands/#ftaggregate>`_.
 
         Parameters:
 
@@ -436,7 +436,7 @@ class CommandMixin:
     def spellcheck(self, query, distance=None, include=None, exclude=None):
         """
         Issue a spellcheck query.
-        More information `here <https://oss.redis.com/redisearch/master/Commands/#ftspellcheck>`_.
+        For more information see `FT.SPELLCHECK <https://oss.redis.com/redisearch/master/Commands/#ftspellcheck>`_.
 
         Parameters:
 
@@ -498,7 +498,7 @@ class CommandMixin:
     def dict_add(self, name, *terms):
         """
         Adds terms to a dictionary.
-        More information `here <https://oss.redis.com/redisearch/master/Commands/#ftdictadd>`_.
+        For more information see `FT.DICTADD <https://oss.redis.com/redisearch/master/Commands/#ftdictadd>`_.
 
         Parameters:
 
@@ -514,7 +514,7 @@ class CommandMixin:
     def dict_del(self, name, *terms):
         """
         Deletes terms from a dictionary.
-        More information `here <https://oss.redis.com/redisearch/master/Commands/#ftdictdel>`_.
+        For more information see `FT.DICTDEL <https://oss.redis.com/redisearch/master/Commands/#ftdictdel>`_.
 
         Parameters:
 
@@ -530,7 +530,7 @@ class CommandMixin:
     def dict_dump(self, name):
         """
         Dumps all terms in the given dictionary.
-        More information `here <https://oss.redis.com/redisearch/master/Commands/#ftdictdump>`_.
+        For more information see `FT.DICTDUMP <https://oss.redis.com/redisearch/master/Commands/#ftdictdump>`_.
 
         Parameters:
 
@@ -543,7 +543,7 @@ class CommandMixin:
     def config_set(self, option, value):
         """
         Set runtime configuration option.
-        More information `here <https://oss.redis.com/redisearch/master/Commands/#ftconfig>`_.
+        For more information see `FT.CONFIG <https://oss.redis.com/redisearch/master/Commands/#ftconfig>`_.
 
         Parameters:
 
@@ -559,7 +559,7 @@ class CommandMixin:
     def config_get(self, option):
         """
         Get runtime configuration option value.
-        More information `here <https://oss.redis.com/redisearch/master/Commands/#ftconfig>`_.
+        For more information see `FT.CONFIG <https://oss.redis.com/redisearch/master/Commands/#ftconfig>`_.
 
         Parameters:
 
@@ -577,7 +577,7 @@ class CommandMixin:
     def tagvals(self, tagfield):
         """
         Return a list of all possible tag values.
-        More information `here <https://oss.redis.com/redisearch/master/Commands/#fttagvals>`_.
+        For more information see `FT.TAGVALS <https://oss.redis.com/redisearch/master/Commands/#fttagvals>`_.
 
         Parameters:
 
@@ -589,7 +589,7 @@ class CommandMixin:
     def aliasadd(self, alias):
         """
         Alias a search index - will fail if alias already exists.
-        More information `here <https://oss.redis.com/redisearch/master/Commands/#ftaliasadd>`_.
+        For more information see `FT.ALIASADD <https://oss.redis.com/redisearch/master/Commands/#ftaliasadd>`_.
 
         Parameters:
 
@@ -601,7 +601,7 @@ class CommandMixin:
     def aliasupdate(self, alias):
         """
         Updates an alias - will fail if alias does not already exist.
-        More information `here <https://oss.redis.com/redisearch/master/Commands/#ftaliasupdate>`_.
+        For more information see `FT.ALIASUPDATE <https://oss.redis.com/redisearch/master/Commands/#ftaliasupdate>`_.
 
         Parameters:
 
@@ -613,7 +613,7 @@ class CommandMixin:
     def aliasdel(self, alias):
         """
         Removes an alias to a search index.
-        More information `here <https://oss.redis.com/redisearch/master/Commands/#ftaliasdel>`_.
+        For more information see `FT.ALIASDEL <https://oss.redis.com/redisearch/master/Commands/#ftaliasdel>`_.
 
         Parameters:
 
@@ -626,7 +626,7 @@ class CommandMixin:
         """
         Add suggestion terms to the AutoCompleter engine. Each suggestion has a score and string.
         If kwargs["increment"] is true and the terms are already in the server's dictionary, we increment their scores.
-        More information `here <https://oss.redis.com/redisearch/master/Commands/#ftsugadd>`_.
+        For more information see `FT.SUGADD <https://oss.redis.com/redisearch/master/Commands/#ftsugadd>`_.
         """
         # If Transaction is not set to false it will attempt a MULTI/EXEC which will error
         pipe = self.pipeline(transaction=False)
@@ -645,7 +645,7 @@ class CommandMixin:
     def suglen(self, key):
         """
         Return the number of entries in the AutoCompleter index.
-        More information `here <https://oss.redis.com/redisearch/master/Commands/#ftsuglen>`_.
+        For more information see `FT.SUGLEN <https://oss.redis.com/redisearch/master/Commands/#ftsuglen>`_.
         """
         return self.execute_command(SUGLEN_COMMAND, key)
 
@@ -653,7 +653,7 @@ class CommandMixin:
         """
         Delete a string from the AutoCompleter index.
         Returns 1 if the string was found and deleted, 0 otherwise.
-        More information `here <https://oss.redis.com/redisearch/master/Commands/#ftsugdel>`_.
+        For more information see `FT.SUGDEL <https://oss.redis.com/redisearch/master/Commands/#ftsugdel>`_.
         """
         return self.execute_command(SUGDEL_COMMAND, key, string)
 
@@ -662,7 +662,7 @@ class CommandMixin:
     ):
         """
         Get a list of suggestions from the AutoCompleter, for a given prefix.
-        More information `here <https://oss.redis.com/redisearch/master/Commands/#ftsugget>`_.
+        For more information see `FT.SUGGET <https://oss.redis.com/redisearch/master/Commands/#ftsugget>`_.
 
         Parameters:
 
@@ -707,6 +707,7 @@ class CommandMixin:
         Updates a synonym group.
         The command is used to create or update a synonym group with additional terms.
         Only documents which were indexed after the update will be affected.
+        For more information see `FT.SYNUPDATE <https://oss.redis.com/redisearch/master/Commands/#ftsynupdate>`_.
 
         Parameters:
 
@@ -729,6 +730,7 @@ class CommandMixin:
 
         The command is used to dump the synonyms data structure.
         Returns a list of synonym terms and their synonym group ids.
+        For more information see `FT.SYNDUMP <https://oss.redis.com/redisearch/master/Commands/#ftsyndump>`_.
         """
         raw = self.execute_command(SYNDUMP_CMD, self.index_name)
         return {raw[i]: raw[i + 1] for i in range(0, len(raw), 2)}

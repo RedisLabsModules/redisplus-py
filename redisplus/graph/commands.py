@@ -8,7 +8,7 @@ class CommandMixin:
     def commit(self):
         """
         Create entire graph.
-        More information `here <https://oss.redis.com/redisgraph/commands/#create>`_.
+        For more information see `CREATE <https://oss.redis.com/redisgraph/master/commands/#create>`_.
         """
         if len(self.nodes) == 0 and len(self.edges) == 0:
             return None
@@ -28,7 +28,7 @@ class CommandMixin:
     def query(self, q, params=None, timeout=None, read_only=False, profile=False):
         """
         Executes a query against the graph.
-        More information `here <https://oss.redis.com/redisgraph/commands/#graphquery>`_.
+        For more information see `GRAPH.QUERY <https://oss.redis.com/redisgraph/master/commands/#graphquery>`_.
 
         Args:
 
@@ -89,9 +89,8 @@ class CommandMixin:
     def merge(self, pattern):
         """
         Merge pattern.
-        More information `here <https://oss.redis.com/redisgraph/commands/#merge>`_.
+        For more information see `MERGE <https://oss.redis.com/redisgraph/master/commands/#merge>`_.
         """
-
         query = "MERGE "
         query += str(pattern)
 
@@ -100,7 +99,7 @@ class CommandMixin:
     def delete(self):
         """
         Deletes graph.
-        More information `here <https://oss.redis.com/redisgraph/commands/#delete>`_.
+        For more information see `DELETE <https://oss.redis.com/redisgraph/master/commands/#delete>`_.
         """
         self._clear_schema()
         return self.execute_command("GRAPH.DELETE", self.name)
@@ -117,8 +116,8 @@ class CommandMixin:
     def explain(self, query, params=None):
         """
         Get the execution plan for given query,
-        GRAPH.EXPLAIN returns an array of operations.
-        More information `here <https://oss.redis.com/redisgraph/commands/#graphexplain>`_.
+        Returns an array of operations.
+        For more information see `GRAPH.EXPLAIN <https://oss.redis.com/redisgraph/master/commands/#graphexplain>`_.
 
         Args:
 
@@ -135,6 +134,7 @@ class CommandMixin:
         return "\n".join(plan)
 
     def bulk(self, **kwargs):
+        """Internal only. Not supported."""
         raise NotImplementedError("GRAPH.BULK is internal only. Use https://github.com/redisgraph/redisgraph-bulk-loader.")
 
     def profile(self, query):
@@ -143,27 +143,27 @@ class CommandMixin:
         for each operation's execution. Return a string representation of a
         query execution plan, with details on results produced by and time
         spent in each operation.
-        More information `here <https://oss.redis.com/redisgraph/commands/#graphprofile>`_.
+        For more information see `GRAPH.PROFILE <https://oss.redis.com/redisgraph/master/commands/#graphprofile>`_.
         """
         return self.query(query, profile=True)
 
     def slowlog(self):
         """
         Get a list containing up to 10 of the slowest queries issued against the given graph ID.
-        More information `here <https://oss.redis.com/redisgraph/commands/#graphslowlog>`_.
+        For more information see `GRAPH.SLOWLOG <https://oss.redis.com/redisgraph/master/commands/#graphslowlog>`_.
 
         Each item in the list has the following structure:
-        | 1. A unix timestamp at which the log entry was processed.
-        | 2. The issued command.
-        | 3. The issued query.
-        | 4. The amount of time needed for its execution, in milliseconds.
+        1. A unix timestamp at which the log entry was processed.
+        2. The issued command.
+        3. The issued query.
+        4. The amount of time needed for its execution, in milliseconds.
         """
         return self.execute_command("GRAPH.SLOWLOG", self.name)
 
     def config(self, name, value=None, set=False):
         """
         Retrieve or update a RedisGraph configuration.
-        More information `here <https://oss.redis.com/redisgraph/commands/#graphconfig>`_.
+        For more information see `GRAPH.CONFIG <https://oss.redis.com/redisgraph/master/commands/#graphconfig>`_.
 
         Args:
 
@@ -171,7 +171,7 @@ class CommandMixin:
         name : str
             The name of the configuration
         value :
-            The value we want to ser (can be used only when ``set`` is on)
+            The value we want to ser (can be used only when `set` is on)
         set : bool
             Turn on to set a configuration. Default behavior is get.
         """
@@ -186,6 +186,6 @@ class CommandMixin:
     def list_keys(self):
         """
         Lists all graph keys in the keyspace.
-        More information `here <https://oss.redis.com/redisgraph/commands/#graphlist>`_.
+        For more information see `GRAPH.LIST <https://oss.redis.com/redisgraph/master/commands/#graphlist>`_.
         """
         return self.execute_command("GRAPH.LIST")

@@ -23,7 +23,7 @@ class CommandMixin:
     def create(self, key, **kwargs):
         """
         Create a new time-series.
-        More information `here <https://oss.redis.com/redistimeseries/master/commands/#tscreate>`_.
+        For more information see `TS.CREATE <https://oss.redis.com/redistimeseries/master/commands/#tscreate>`_.
 
         Args:
 
@@ -57,18 +57,18 @@ class CommandMixin:
         chunk_size = kwargs.get("chunk_size", None)
         duplicate_policy = kwargs.get("duplicate_policy", None)
         params = [key]
-        self.appendRetention(params, retention_msecs)
-        self.appendUncompressed(params, uncompressed)
-        self.appendChunkSize(params, chunk_size)
-        self.appendDuplicatePolicy(params, CREATE_CMD, duplicate_policy)
-        self.appendLabels(params, labels)
+        self._appendRetention(params, retention_msecs)
+        self._appendUncompressed(params, uncompressed)
+        self._appendChunkSize(params, chunk_size)
+        self._appendDuplicatePolicy(params, CREATE_CMD, duplicate_policy)
+        self._appendLabels(params, labels)
 
         return self.execute_command(CREATE_CMD, *params)
 
     def alter(self, key, **kwargs):
         """
         Update the retention, labels of an existing key.
-        More information `here <https://oss.redis.com/redistimeseries/master/commands/#tsalter>`_.
+        For more information see `TS.ALTER <https://oss.redis.com/redistimeseries/master/commands/#tsalter>`_.
 
         The parameters are the same as TS.CREATE.
         """
@@ -76,16 +76,16 @@ class CommandMixin:
         labels = kwargs.get("labels", {})
         duplicate_policy = kwargs.get("duplicate_policy", None)
         params = [key]
-        self.appendRetention(params, retention_msecs)
-        self.appendDuplicatePolicy(params, ALTER_CMD, duplicate_policy)
-        self.appendLabels(params, labels)
+        self._appendRetention(params, retention_msecs)
+        self._appendDuplicatePolicy(params, ALTER_CMD, duplicate_policy)
+        self._appendLabels(params, labels)
 
         return self.execute_command(ALTER_CMD, *params)
 
     def add(self, key, timestamp, value, **kwargs):
         """
         Append (or create and append) a new sample to the series.
-        More information `here <https://oss.redis.com/redistimeseries/master/commands/#tsadd>`_.
+        For more information see `TS.ADD <https://oss.redis.com/redistimeseries/master/commands/#tsadd>`_.
 
         Args:
 
@@ -124,11 +124,11 @@ class CommandMixin:
         chunk_size = kwargs.get("chunk_size", None)
         duplicate_policy = kwargs.get("duplicate_policy", None)
         params = [key, timestamp, value]
-        self.appendRetention(params, retention_msecs)
-        self.appendUncompressed(params, uncompressed)
-        self.appendChunkSize(params, chunk_size)
-        self.appendDuplicatePolicy(params, ADD_CMD, duplicate_policy)
-        self.appendLabels(params, labels)
+        self._appendRetention(params, retention_msecs)
+        self._appendUncompressed(params, uncompressed)
+        self._appendChunkSize(params, chunk_size)
+        self._appendDuplicatePolicy(params, ADD_CMD, duplicate_policy)
+        self._appendLabels(params, labels)
 
         return self.execute_command(ADD_CMD, *params)
 
@@ -137,7 +137,7 @@ class CommandMixin:
         Append (or create and append) a new `value` to series `key` with `timestamp`.
         Expects a list of `tuples` as (`key`,`timestamp`, `value`).
         Return value is an array with timestamps of insertions.
-        More information `here <https://oss.redis.com/redistimeseries/master/commands/#tsmadd>`_.
+        For more information see `TS.MADD <https://oss.redis.com/redistimeseries/master/commands/#tsmadd>`_.
         """
         params = []
         for ktv in ktv_tuples:
@@ -150,7 +150,7 @@ class CommandMixin:
         """
         Increment (or create an time-series and increment) the latest sample's of a series.
         This command can be used as a counter or gauge that automatically gets history as a time series.
-        More information `here <https://oss.redis.com/redistimeseries/master/commands/#tsincrbytsdecrby>`_.
+        For more information see `TS.INCRBY <https://oss.redis.com/redistimeseries/master/commands/#tsincrbytsdecrby>`_.
 
         Args:
 
@@ -179,11 +179,11 @@ class CommandMixin:
         labels = kwargs.get("labels", {})
         chunk_size = kwargs.get("chunk_size", None)
         params = [key, value]
-        self.appendTimestamp(params, timestamp)
-        self.appendRetention(params, retention_msecs)
-        self.appendUncompressed(params, uncompressed)
-        self.appendChunkSize(params, chunk_size)
-        self.appendLabels(params, labels)
+        self._appendTimestamp(params, timestamp)
+        self._appendRetention(params, retention_msecs)
+        self._appendUncompressed(params, uncompressed)
+        self._appendChunkSize(params, chunk_size)
+        self._appendLabels(params, labels)
 
         return self.execute_command(INCRBY_CMD, *params)
 
@@ -191,7 +191,7 @@ class CommandMixin:
         """
         Decrement (or create an time-series and decrement) the latest sample's of a series.
         This command can be used as a counter or gauge that automatically gets history as a time series.
-        More information `here <https://oss.redis.com/redistimeseries/master/commands/#tsincrbytsdecrby>`_.
+        For more information see `TS.DECRBY <https://oss.redis.com/redistimeseries/master/commands/#tsincrbytsdecrby>`_.
 
         Args:
 
@@ -220,11 +220,11 @@ class CommandMixin:
         labels = kwargs.get("labels", {})
         chunk_size = kwargs.get("chunk_size", None)
         params = [key, value]
-        self.appendTimestamp(params, timestamp)
-        self.appendRetention(params, retention_msecs)
-        self.appendUncompressed(params, uncompressed)
-        self.appendChunkSize(params, chunk_size)
-        self.appendLabels(params, labels)
+        self._appendTimestamp(params, timestamp)
+        self._appendRetention(params, retention_msecs)
+        self._appendUncompressed(params, uncompressed)
+        self._appendChunkSize(params, chunk_size)
+        self._appendLabels(params, labels)
 
         return self.execute_command(DECRBY_CMD, *params)
 
@@ -233,7 +233,7 @@ class CommandMixin:
         Delete data points for a given timeseries and interval range in the form of start and end delete timestamps.
         The given timestamp interval is closed (inclusive), meaning start and end data points will also be deleted.
         Return the count for deleted items.
-        More information `here <https://oss.redis.com/redistimeseries/master/commands/#tsdel>`_.
+        For more information see `TS.DEL <https://oss.redis.com/redistimeseries/master/commands/#tsdel>`_.
 
         Args:
 
@@ -251,17 +251,17 @@ class CommandMixin:
         Create a compaction rule from values added to `source_key` into `dest_key`.
         Aggregating for `bucket_size_msec` where an `aggregation_type` can be
         [`avg`, `sum`, `min`, `max`, `range`, `count`, `first`, `last`, `std.p`, `std.s`, `var.p`, `var.s`].
-        More information `here <https://oss.redis.com/redistimeseries/master/commands/#tscreaterule>`_.
+        For more information see `TS.CREATERULE <https://oss.redis.com/redistimeseries/master/commands/#tscreaterule>`_.
         """
         params = [source_key, dest_key]
-        self.appendAggregation(params, aggregation_type, bucket_size_msec)
+        self._appendAggregation(params, aggregation_type, bucket_size_msec)
 
         return self.execute_command(CREATERULE_CMD, *params)
 
     def deleterule(self, source_key, dest_key):
         """
         Delete a compaction rule.
-        More information `here <https://oss.redis.com/redistimeseries/master/commands/#tsdeleterule>`_.
+        For more information see `TS.DELETERULE <https://oss.redis.com/redistimeseries/master/commands/#tsdeleterule>`_.
         """
         return self.execute_command(DELETERULE_CMD, source_key, dest_key)
 
@@ -280,11 +280,11 @@ class CommandMixin:
     ):
         """Create TS.RANGE and TS.REVRANGE arguments."""
         params = [key, from_time, to_time]
-        self.appendFilerByTs(params, filter_by_ts)
-        self.appendFilerByValue(params, filter_by_min_value, filter_by_max_value)
-        self.appendCount(params, count)
-        self.appendAlign(params, align)
-        self.appendAggregation(params, aggregation_type, bucket_size_msec)
+        self._appendFilerByTs(params, filter_by_ts)
+        self._appendFilerByValue(params, filter_by_min_value, filter_by_max_value)
+        self._appendCount(params, count)
+        self._appendAlign(params, align)
+        self._appendAggregation(params, aggregation_type, bucket_size_msec)
 
         return params
 
@@ -303,7 +303,7 @@ class CommandMixin:
     ):
         """
         Query a range in forward direction for a specific time-serie.
-        More information `here <https://oss.redis.com/redistimeseries/master/commands/#tsrangetsrevrange>`_.
+        For more information see `TS.RANGE <https://oss.redis.com/redistimeseries/master/commands/#tsrangetsrevrange>`_.
 
         Args:
 
@@ -358,7 +358,7 @@ class CommandMixin:
     ):
         """
         Query a range in reverse direction for a specific time-series.
-        More information `here <https://oss.redis.com/redistimeseries/master/commands/#tsrangetsrevrange>`_.
+        For more information see `TS.REVRANGE <https://oss.redis.com/redistimeseries/master/commands/#tsrangetsrevrange>`_.
 
         **Note**: This command is only available since RedisTimeSeries >= v1.4
 
@@ -419,15 +419,15 @@ class CommandMixin:
     ):
         """Create TS.MRANGE and TS.MREVRANGE arguments."""
         params = [from_time, to_time]
-        self.appendFilerByTs(params, filter_by_ts)
-        self.appendFilerByValue(params, filter_by_min_value, filter_by_max_value)
-        self.appendCount(params, count)
-        self.appendAlign(params, align)
-        self.appendAggregation(params, aggregation_type, bucket_size_msec)
-        self.appendWithLabels(params, with_labels, select_labels)
+        self._appendFilerByTs(params, filter_by_ts)
+        self._appendFilerByValue(params, filter_by_min_value, filter_by_max_value)
+        self._appendCount(params, count)
+        self._appendAlign(params, align)
+        self._appendAggregation(params, aggregation_type, bucket_size_msec)
+        self._appendWithLabels(params, with_labels, select_labels)
         params.extend(["FILTER"])
         params += filters
-        self.appendGroupbyReduce(params, groupby, reduce)
+        self._appendGroupbyReduce(params, groupby, reduce)
         return params
 
     def mrange(
@@ -449,7 +449,7 @@ class CommandMixin:
     ):
         """
         Query a range across multiple time-series by filters in forward direction.
-        More information `here <https://oss.redis.com/redistimeseries/master/commands/#tsmrangetsmrevrange>`_.
+        For more information see `TS.MRANGE <https://oss.redis.com/redistimeseries/master/commands/#tsmrangetsmrevrange>`_.
 
         Args:
 
@@ -522,7 +522,7 @@ class CommandMixin:
     ):
         """
         Query a range across multiple time-series by filters in reverse direction.
-        More information `here <https://oss.redis.com/redistimeseries/master/commands/#tsmrangetsmrevrange>`_.
+        For more information see `TS.MREVRANGE <https://oss.redis.com/redistimeseries/master/commands/#tsmrangetsmrevrange>`_.
 
         Args:
 
@@ -579,17 +579,17 @@ class CommandMixin:
     def get(self, key):
         """
         Get the last sample of `key`.
-        More information `here <https://oss.redis.com/redistimeseries/master/commands/#tsget>`_.
+        For more information see `TS.GET <https://oss.redis.com/redistimeseries/master/commands/#tsget>`_.
         """
         return self.execute_command(GET_CMD, key)
 
     def mget(self, filters, with_labels=False):
         """
         Get the last samples matching the specific `filter`.
-        More information `here <https://oss.redis.com/redistimeseries/master/commands/#tsmget>`_.
+        For more information see `TS.MGET <https://oss.redis.com/redistimeseries/master/commands/#tsmget>`_.
         """
         params = []
-        self.appendWithLabels(params, with_labels)
+        self._appendWithLabels(params, with_labels)
         params.extend(["FILTER"])
         params += filters
         return self.execute_command(MGET_CMD, *params)
@@ -597,25 +597,25 @@ class CommandMixin:
     def info(self, key):
         """
         Get information of `key`.
-        More information `here <https://oss.redis.com/redistimeseries/master/commands/#tsinfo>`_.
+        For more information see `TS.INFO <https://oss.redis.com/redistimeseries/master/commands/#tsinfo>`_.
         """
         return self.execute_command(INFO_CMD, key)
 
     def queryindex(self, filters):
         """
         Get all the keys matching the `filter` list.
-        More information `here <https://oss.redis.com/redistimeseries/master/commands/#tsqueryindex>`_.
+        For more information see `TS.QUERYINDEX <https://oss.redis.com/redistimeseries/master/commands/#tsqueryindex>`_.
         """
         return self.execute_command(QUERYINDEX_CMD, *filters)
 
     @staticmethod
-    def appendUncompressed(params, uncompressed):
+    def _appendUncompressed(params, uncompressed):
         """Append UNCOMPRESSED tag to params."""
         if uncompressed:
             params.extend(["UNCOMPRESSED"])
 
     @staticmethod
-    def appendWithLabels(params, with_labels, select_labels=None):
+    def _appendWithLabels(params, with_labels, select_labels=None):
         """Append labels behavior to params."""
         if with_labels and select_labels:
             raise DataError(
@@ -628,19 +628,19 @@ class CommandMixin:
             params.extend(["SELECTED_LABELS", *select_labels])
 
     @staticmethod
-    def appendGroupbyReduce(params, groupby, reduce):
+    def _appendGroupbyReduce(params, groupby, reduce):
         """Append GROUPBY REDUCE property to params."""
         if groupby is not None and reduce is not None:
             params.extend(["GROUPBY", groupby, "REDUCE", reduce.upper()])
 
     @staticmethod
-    def appendRetention(params, retention):
+    def _appendRetention(params, retention):
         """Append RETENTION property to params."""
         if retention is not None:
             params.extend(["RETENTION", retention])
 
     @staticmethod
-    def appendLabels(params, labels):
+    def _appendLabels(params, labels):
         """Append LABELS property to params."""
         if labels:
             params.append("LABELS")
@@ -648,38 +648,38 @@ class CommandMixin:
                 params.extend([k, v])
 
     @staticmethod
-    def appendCount(params, count):
+    def _appendCount(params, count):
         """Append COUNT property to params."""
         if count is not None:
             params.extend(["COUNT", count])
 
     @staticmethod
-    def appendTimestamp(params, timestamp):
+    def _appendTimestamp(params, timestamp):
         """Append TIMESTAMP property to params."""
         if timestamp is not None:
             params.extend(["TIMESTAMP", timestamp])
 
     @staticmethod
-    def appendAlign(params, align):
+    def _appendAlign(params, align):
         """Append ALIGN property to params."""
         if align is not None:
             params.extend(["ALIGN", align])
 
     @staticmethod
-    def appendAggregation(params, aggregation_type, bucket_size_msec):
+    def _appendAggregation(params, aggregation_type, bucket_size_msec):
         """Append AGGREGATION property to params."""
         if aggregation_type is not None:
             params.append("AGGREGATION")
             params.extend([aggregation_type, bucket_size_msec])
 
     @staticmethod
-    def appendChunkSize(params, chunk_size):
+    def _appendChunkSize(params, chunk_size):
         """Append CHUNK_SIZE property to params."""
         if chunk_size is not None:
             params.extend(["CHUNK_SIZE", chunk_size])
 
     @staticmethod
-    def appendDuplicatePolicy(params, command, duplicate_policy):
+    def _appendDuplicatePolicy(params, command, duplicate_policy):
         """Append DUPLICATE_POLICY property to params on CREATE and ON_DUPLICATE on ADD."""
         if duplicate_policy is not None:
             if command == "TS.ADD":
@@ -688,13 +688,13 @@ class CommandMixin:
                 params.extend(["DUPLICATE_POLICY", duplicate_policy])
 
     @staticmethod
-    def appendFilerByTs(params, ts_list):
+    def _appendFilerByTs(params, ts_list):
         """Append FILTER_BY_TS property to params."""
         if ts_list is not None:
             params.extend(["FILTER_BY_TS", *ts_list])
 
     @staticmethod
-    def appendFilerByValue(params, min_value, max_value):
+    def _appendFilerByValue(params, min_value, max_value):
         """Append FILTER_BY_VALUE property to params."""
         if min_value is not None and max_value is not None:
             params.extend(["FILTER_BY_VALUE", min_value, max_value])
