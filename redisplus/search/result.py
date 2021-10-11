@@ -6,7 +6,7 @@ from ._util import to_string
 
 class Result(object):
     """
-    Represents the result of a search query, and has an array of Document objects
+    Represents the result of a search query, and has an array of Document objects.
     """
 
     def __init__(

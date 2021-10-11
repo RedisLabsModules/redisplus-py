@@ -64,9 +64,13 @@ class QueryResult:
         A class that represents a result of the query operation.
 
         Args:
-            graph: The graph on which the query was executed.
-            response: The response from the server.
-            profile: A boolean indicating if the query command was "GRAPH.PROFILE"
+
+        graph:
+            The graph on which the query was executed.
+        response:
+            The response from the server.
+        profile:
+            A boolean indicating if the query command was "GRAPH.PROFILE"
         """
         self.graph = graph
         self.header = []

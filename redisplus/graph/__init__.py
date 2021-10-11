@@ -4,7 +4,7 @@ from .path import Path  # noqa
 
 from redis.client import Redis
 from ..feature import AbstractFeature
-from ..helpers import random_string, quote_string
+from ..helpers import random_string, quote_string, stringify_param_value
 from .commands import CommandMixin
 
 
@@ -71,7 +71,9 @@ class Graph(CommandMixin, AbstractFeature, object):
         Returns a label by it's index
 
         Args:
-            idx: The index of the label
+
+        idx:
+            The index of the label
         """
         try:
             label = self._labels[idx]
@@ -86,7 +88,9 @@ class Graph(CommandMixin, AbstractFeature, object):
         Returns a relationship type by it's index
 
         Args:
-            idx: The index of the relation
+
+        idx:
+            The index of the relation
         """
         try:
             relationship_type = self._relationshipTypes[idx]
@@ -101,7 +105,9 @@ class Graph(CommandMixin, AbstractFeature, object):
         Returns a property by it's index
 
         Args:
-            idx: The index of the property
+
+        idx:
+            The index of the property
         """
         try:
             propertie = self._properties[idx]
@@ -134,13 +140,7 @@ class Graph(CommandMixin, AbstractFeature, object):
         # Header starts with "CYPHER"
         params_header = "CYPHER "
         for key, value in params.items():
-            # If value is string add quotation marks.
-            if isinstance(value, str):
-                value = quote_string(value)
-            # Value is None, replace with "null" string.
-            elif value is None:
-                value = "null"
-            params_header += str(key) + "=" + str(value) + " "
+            params_header += str(key) + "=" + stringify_param_value(value) + " "
         return params_header
 
     # Procedures.

@@ -53,7 +53,7 @@ class CommandMixin:
 
     def batch_indexer(self, chunk_size=100):
         """
-        Create a new batch indexer from the client with a given chunk size
+        Create a new batch indexer from the client with a given chunk size.
         """
         return self.BatchIndexer(self, chunk_size=chunk_size)
 
@@ -67,13 +67,20 @@ class CommandMixin:
     ):
         """
         Create the search index. The index must not already exist.
+        For more information see `FT.CREATE <https://oss.redis.com/redisearch/master/Commands/#ftcreate>`_.
 
-        ### Parameters:
+        Parameters:
 
-        - **fields**: a list of TextField or NumericField objects
-        - **no_term_offsets**: If true, we will not save term offsets in the index
-        - **no_field_flags**: If true, we will not save field flags that allow searching in specific fields
-        - **stopwords**: If not None, we create the index with this custom stopword list. The list can be empty
+        fields : list of search.Field
+            a list of TextField or NumericField objects.
+        no_term_offsets : bool
+            If true, we will not save term offsets in the index.
+        no_field_flags : bool
+            If true, we will not save field flags that allow searching in specific fields.
+        stopwords : list, tuple or set of str
+            If not None, we create the index with this custom stopword list. The list can be empty.
+        definition : search.IndexDefinition
+            IndexDefinition instance that defines the index.
         """
 
         args = [CREATE_CMD, self.index_name]
@@ -99,10 +106,12 @@ class CommandMixin:
     def alter_schema_add(self, fields):
         """
         Alter the existing search index by adding new fields. The index must already exist.
+        For more information see `FT.ALTER <https://oss.redis.com/redisearch/master/Commands/#ftalter_schema_add>`_.
 
-        ### Parameters:
+        Parameters:
 
-        - **fields**: a list of Field objects to add for the index
+        fields : list of search.Field
+            A list of Field objects to add for the index.
         """
 
         args = [ALTER_CMD, self.index_name, "SCHEMA", "ADD"]
@@ -113,26 +122,16 @@ class CommandMixin:
 
         return self.execute_command(*args)
 
-    def drop_index(self, delete_documents=True):
-        """
-        Drop the index if it exists. Deprecated from RediSearch 2.0.
-
-        ### Parameters:
-
-        - **delete_documents**: If `True`, all documents will be deleted.
-        """
-        keep_str = "" if delete_documents else "KEEPDOCS"
-        return self.execute_command(DROP_CMD, self.index_name, keep_str)
-
     def dropindex(self, delete_documents=False):
         """
         Drop the index if it exists.
-        Replaced `drop_index` in RediSearch 2.0.
         Default behavior was changed to not delete the indexed documents.
+        For more information see `FT.DROP <https://oss.redis.com/redisearch/master/Commands/#ftdrop>`_.
 
-        ### Parameters:
+        Parameters:
 
-        - **delete_documents**: If `True`, all documents will be deleted.
+        delete_documents : bool
+            If `True`, all documents will be deleted.
         """
         keep_str = "" if delete_documents else "KEEPDOCS"
         return self.execute_command(DROP_CMD, self.index_name, keep_str)
@@ -215,22 +214,33 @@ class CommandMixin:
     ):
         """
         Add a single document to the index.
+        For more information see `FT.ADD <https://oss.redis.com/redisearch/master/Commands/#ftadd>`_.
 
-        ### Parameters
+        Parameters:
 
-        - **doc_id**: the id of the saved document.
-        - **nosave**: if set to true, we just index the document, and don't save a copy of it. This means that searches will just return ids.
-        - **score**: the document ranking, between 0.0 and 1.0
-        - **payload**: optional inner-index payload we can save for fast access in scoring functions
-        - **replace**: if True, and the document already is in the index, we perform an update and reindex the document
-        - **partial**: if True, the fields specified will be added to the existing document.
-                       This has the added benefit that any fields specified with `no_index`
-                       will not be reindexed again. Implies `replace`
-        - **language**: Specify the language used for document tokenization.
-        - **no_create**: if True, the document is only updated and reindexed if it already exists.
-                         If the document does not exist, an error will be returned. Implies `replace`
-        - **fields** kwargs dictionary of the document fields to be saved and/or indexed.
-                     NOTE: Geo points shoule be encoded as strings of "lon,lat"
+        doc_id :
+            The id of the saved document.
+        nosave : bool
+            If set to true, we just index the document, and don't save a copy of it.
+            This means that searches will just return ids.
+        score : float
+            The document ranking, between 0.0 and 1.0.
+        payload :
+            Optional inner-index payload we can save for fast access in scoring functions.
+        replace : bool
+            If True, and the document already is in the index, we perform an update and reindex the document
+        partial : bool
+            If True, the fields specified will be added to the existing document.
+            This has the added benefit that any fields specified with `no_index`
+            will not be reindexed again. Implies `replace`.
+        language : str
+            Specify the language used for document tokenization.
+        no_create : bool
+            If True, the document is only updated and reindexed if it already exists.
+            If the document does not exist, an error will be returned. Implies `replace`.
+        fields : kwargs
+            kwargs dictionary of the document fields to be saved and/or indexed.
+            **NOTE**: Geo points should be encoded as strings of "lon,lat".
         """
         return self._add_document(
             doc_id,
@@ -255,12 +265,16 @@ class CommandMixin:
         """
         Add a hash document to the index.
 
-        ### Parameters
+        Parameters:
 
-        - **doc_id**: the document's id. This has to be an existing HASH key in Redis that will hold the fields the index needs.
-        - **score**: the document ranking, between 0.0 and 1.0
-        - **replace**: if True, and the document already is in the index, we perform an update and reindex the document
-        - **language**: Specify the language used for document tokenization.
+        doc_id :
+            The document's id. This has to be an existing HASH key in Redis that will hold the fields the index needs.
+        score : float
+            The document ranking, between 0.0 and 1.0.
+        replace : bool
+            If True, and the document already is in the index, we perform an update and reindex the document.
+        language : str
+            Specify the language used for document tokenization.
         """
         return self._add_document_hash(
             doc_id,
@@ -272,12 +286,14 @@ class CommandMixin:
 
     def delete_document(self, doc_id, conn=None, delete_actual_document=False):
         """
-        Delete a document from index
-        Returns 1 if the document was deleted, 0 if not
+        Delete a document from index.
+        Returns 1 if the document was deleted, 0 if not.
+        For more information see `FT.DEL <https://oss.redis.com/redisearch/master/Commands/#ftdel>`_.
 
-        ### Parameters
+        Parameters:
 
-        - **delete_actual_document**: if set to True, RediSearch also delete the actual document if it is in the index
+        delete_actual_document : bool
+            If set to True, RediSearch also delete the actual document if it is in the index.
         """
         args = [DEL_CMD, self.index_name, doc_id]
         if conn is None:
@@ -289,7 +305,7 @@ class CommandMixin:
 
     def load_document(self, id):
         """
-        Load a single document by id
+        Load a single document by id.
         """
         fields = self.client.hgetall(id)
         if six.PY3:
@@ -303,20 +319,23 @@ class CommandMixin:
 
         return Document(id=id, **fields)
 
-    def get(self, *ids):
+    def get_documents(self, *ids):
         """
         Returns the full contents of multiple documents.
+        For more information see `FT.MGET <https://oss.redis.com/redisearch/master/Commands/#ftmget>`_.
 
-        ### Parameters
+        Parameters:
 
-        - **ids**: the ids of the saved documents.
+        ids : list
+            The ids of the saved documents.
         """
 
         return self.client.execute_command(MGET_CMD, self.index_name, *ids)
 
     def info(self):
         """
-        Get info an stats about the the current index, including the number of documents, memory consumption, etc
+        Get info an stats about the the current index, including the number of documents, memory consumption, etc.
+        For more information see `FT.INFO <https://oss.redis.com/redisearch/master/Commands/#ftinfo>`_.
         """
 
         res = self.client.execute_command(INFO_CMD, self.index_name)
@@ -337,12 +356,14 @@ class CommandMixin:
 
     def search(self, query):
         """
-        Search the index for a given query, and return a result of documents
+        Search the index for a given query, and return a result of documents.
+        For more information see `FT.SEARCH <https://oss.redis.com/redisearch/master/Commands/#ftsearch>`_.
 
-        ### Parameters
+        Parameters:
 
-        - **query**: the search query. Either a text for simple queries with default parameters, or a Query object for complex queries.
-                     See RediSearch's documentation on query format
+        query : str or search.Query
+            The search query. Either a text for simple queries with default parameters,
+            or a Query object for complex queries.
         """
         args, query = self._mk_query_args(query)
         st = time.time()
@@ -357,19 +378,30 @@ class CommandMixin:
         )
 
     def explain(self, query):
+        """
+        Return the execution plan for a complex query.
+        For more information see `FT.EXPLAIN <https://oss.redis.com/redisearch/master/Commands/#ftexplain>`_.
+
+        Parameters:
+
+        query : str or search.Query
+            The search query. Either a text for simple queries with default parameters,
+            or a Query object for complex queries.
+        """
         args, query_text = self._mk_query_args(query)
         return self.execute_command(EXPLAIN_CMD, *args)
 
     def aggregate(self, query):
         """
-        Issue an aggregation query
-
-        ### Parameters
-
-        **query**: This can be either an `AggeregateRequest`, or a `Cursor`
-
+        Issue an aggregation query.
         An `AggregateResult` object is returned. You can access the rows from its
-        `rows` property, which will always yield the rows of the result
+        `rows` property, which will always yield the rows of the result.
+        For more information see `FT.AGGREGATE <https://oss.redis.com/redisearch/master/Commands/#ftaggregate>`_.
+
+        Parameters:
+
+        query :
+            This can be either an `AggeregateRequest`, or a `Cursor`.
         """
         if isinstance(query, AggregateRequest):
             has_cursor = bool(query._cursor)
@@ -403,22 +435,25 @@ class CommandMixin:
 
     def spellcheck(self, query, distance=None, include=None, exclude=None):
         """
-        Issue a spellcheck query
+        Issue a spellcheck query.
+        For more information see `FT.SPELLCHECK <https://oss.redis.com/redisearch/master/Commands/#ftspellcheck>`_.
 
-        ### Parameters
+        Parameters:
 
-        **query**: search query.
-        **distance***: the maximal Levenshtein distance for spelling suggestions (default: 1, max: 4).
-        **include**: specifies an inclusion custom dictionary.
-        **exclude**: specifies an exclusion custom dictionary.
+        query :
+            The search query.
+        distance :
+            The maximal Levenshtein distance for spelling suggestions (default: 1, max: 4).
+        include :
+            Specifies an inclusion custom dictionary.
+        exclude :
+            Specifies an exclusion custom dictionary.
         """
         cmd = [SPELLCHECK_CMD, self.index_name, query]
         if distance:
             cmd.extend(["DISTANCE", distance])
-
         if include:
             cmd.extend(["TERMS", "INCLUDE", include])
-
         if exclude:
             cmd.extend(["TERMS", "EXCLUDE", exclude])
 
@@ -461,57 +496,75 @@ class CommandMixin:
         return corrections
 
     def dict_add(self, name, *terms):
-        """Adds terms to a dictionary.
+        """
+        Adds terms to a dictionary.
+        For more information see `FT.DICTADD <https://oss.redis.com/redisearch/master/Commands/#ftdictadd>`_.
 
-        ### Parameters
+        Parameters:
 
-        - **name**: Dictionary name.
-        - **terms**: List of items for adding to the dictionary.
+        name : str
+            Dictionary name.
+        terms : list
+            List of items for adding to the dictionary.
         """
         cmd = [DICT_ADD_CMD, name]
         cmd.extend(terms)
         return self.execute_command(*cmd)
 
     def dict_del(self, name, *terms):
-        """Deletes terms from a dictionary.
+        """
+        Deletes terms from a dictionary.
+        For more information see `FT.DICTDEL <https://oss.redis.com/redisearch/master/Commands/#ftdictdel>`_.
 
-        ### Parameters
+        Parameters:
 
-        - **name**: Dictionary name.
-        - **terms**: List of items for removing from the dictionary.
+        name : str
+            Dictionary name.
+        terms : list
+            List of items for removing from the dictionary.
         """
         cmd = [DICT_DEL_CMD, name]
         cmd.extend(terms)
         return self.execute_command(*cmd)
 
     def dict_dump(self, name):
-        """Dumps all terms in the given dictionary.
+        """
+        Dumps all terms in the given dictionary.
+        For more information see `FT.DICTDUMP <https://oss.redis.com/redisearch/master/Commands/#ftdictdump>`_.
 
-        ### Parameters
+        Parameters:
 
-        - **name**: Dictionary name.
+        name : str
+            Dictionary name.
         """
         cmd = [DICT_DUMP_CMD, name]
         return self.execute_command(*cmd)
 
     def config_set(self, option, value):
-        """Set runtime configuration option.
+        """
+        Set runtime configuration option.
+        For more information see `FT.CONFIG <https://oss.redis.com/redisearch/master/Commands/#ftconfig>`_.
 
-        ### Parameters
+        Parameters:
 
-        - **option**: the name of the configuration option.
-        - **value**: a value for the configuration option.
+        option : str
+            The name of the configuration option.
+        value : str
+            A value for the configuration option.
         """
         cmd = [CONFIG_CMD, "SET", option, value]
         raw = self.execute_command(*cmd)
         return raw == "OK"
 
     def config_get(self, option):
-        """Get runtime configuration option value.
+        """
+        Get runtime configuration option value.
+        For more information see `FT.CONFIG <https://oss.redis.com/redisearch/master/Commands/#ftconfig>`_.
 
-        ### Parameters
+        Parameters:
 
-        - **option**: the name of the configuration option.
+        option : str
+            The name of the configuration option.
         """
         cmd = [CONFIG_CMD, "GET", option]
         res = {}
@@ -523,44 +576,49 @@ class CommandMixin:
 
     def tagvals(self, tagfield):
         """
-        Return a list of all possible tag values
+        Return a list of all possible tag values.
+        For more information see `FT.TAGVALS <https://oss.redis.com/redisearch/master/Commands/#fttagvals>`_.
 
-        ### Parameters
+        Parameters:
 
-        - **tagfield**: Tag field name
+        tagfield : str
+            Tag field name.
         """
-
         return self.execute_command(TAGVALS_CMD, self.index_name, tagfield)
 
     def aliasadd(self, alias):
         """
-        Alias a search index - will fail if alias already exists
+        Alias a search index - will fail if alias already exists.
+        For more information see `FT.ALIASADD <https://oss.redis.com/redisearch/master/Commands/#ftaliasadd>`_.
 
-        ### Parameters
+        Parameters:
 
-        - **alias**: Name of the alias to create
+        alias : str
+            Name of the alias to create.
         """
-
         return self.execute_command(ALIAS_ADD_CMD, alias, self.index_name)
 
     def aliasupdate(self, alias):
         """
-        Updates an alias - will fail if alias does not already exist
+        Updates an alias - will fail if alias does not already exist.
+        For more information see `FT.ALIASUPDATE <https://oss.redis.com/redisearch/master/Commands/#ftaliasupdate>`_.
 
-        ### Parameters
+        Parameters:
 
-        - **alias**: Name of the alias to create
+        alias : str
+            Name of the alias to create.
         """
-
         return self.execute_command(ALIAS_UPDATE_CMD, alias, self.index_name)
 
     def aliasdel(self, alias):
         """
-        Removes an alias to a search index
+        Removes an alias to a search index.
+        For more information see `FT.ALIASDEL <https://oss.redis.com/redisearch/master/Commands/#ftaliasdel>`_.
 
-        ### Parameters
+        Parameters:
 
-        - **alias**: Name of the alias to delete
+        alias : str
+            Name of the alias to delete
         """
         return self.execute_command(ALIAS_DEL_CMD, alias)
 
@@ -568,7 +626,7 @@ class CommandMixin:
         """
         Add suggestion terms to the AutoCompleter engine. Each suggestion has a score and string.
         If kwargs["increment"] is true and the terms are already in the server's dictionary, we increment their scores.
-        More information `here <https://oss.redis.com/redisearch/master/Commands/#ftsugadd>`_.
+        For more information see `FT.SUGADD <https://oss.redis.com/redisearch/master/Commands/#ftsugadd>`_.
         """
         # If Transaction is not set to false it will attempt a MULTI/EXEC which will error
         pipe = self.pipeline(transaction=False)
@@ -587,7 +645,7 @@ class CommandMixin:
     def suglen(self, key):
         """
         Return the number of entries in the AutoCompleter index.
-        More information `here <https://oss.redis.com/redisearch/master/Commands/#ftsuglen>`_.
+        For more information see `FT.SUGLEN <https://oss.redis.com/redisearch/master/Commands/#ftsuglen>`_.
         """
         return self.execute_command(SUGLEN_COMMAND, key)
 
@@ -595,7 +653,7 @@ class CommandMixin:
         """
         Delete a string from the AutoCompleter index.
         Returns 1 if the string was found and deleted, 0 otherwise.
-        More information `here <https://oss.redis.com/redisearch/master/Commands/#ftsugdel>`_.
+        For more information see `FT.SUGDEL <https://oss.redis.com/redisearch/master/Commands/#ftsugdel>`_.
         """
         return self.execute_command(SUGDEL_COMMAND, key, string)
 
@@ -604,7 +662,7 @@ class CommandMixin:
     ):
         """
         Get a list of suggestions from the AutoCompleter, for a given prefix.
-        More information `here <https://oss.redis.com/redisearch/master/Commands/#ftsugget>`_.
+        For more information see `FT.SUGGET <https://oss.redis.com/redisearch/master/Commands/#ftsugget>`_.
 
         Parameters:
 
@@ -649,6 +707,7 @@ class CommandMixin:
         Updates a synonym group.
         The command is used to create or update a synonym group with additional terms.
         Only documents which were indexed after the update will be affected.
+        For more information see `FT.SYNUPDATE <https://oss.redis.com/redisearch/master/Commands/#ftsynupdate>`_.
 
         Parameters:
 
@@ -671,6 +730,7 @@ class CommandMixin:
 
         The command is used to dump the synonyms data structure.
         Returns a list of synonym terms and their synonym group ids.
+        For more information see `FT.SYNDUMP <https://oss.redis.com/redisearch/master/Commands/#ftsyndump>`_.
         """
         raw = self.execute_command(SYNDUMP_CMD, self.index_name)
         return {raw[i]: raw[i + 1] for i in range(0, len(raw), 2)}

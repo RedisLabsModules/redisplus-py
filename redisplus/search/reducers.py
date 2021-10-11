@@ -130,14 +130,16 @@ class first_value(Reducer):
         """
         Selects the first value of the given field within the group.
 
-        ### Parameter
+        Parameters:
 
-        - **field**: Source field used for the value
-        - **byfields**: How to sort the results. This can be either the
-            *class* of `aggregation.Asc` or `aggregation.Desc` in which
+        field:
+            Source field used for the value.
+        byfields:
+            How to sort the results. This can be either the
+            **class** of `aggregation.Asc` or `aggregation.Desc` in which
             case the field `field` is also used as the sort input.
 
-            `byfields` can also be one or more *instances* of `Asc` or `Desc`
+            `byfields` can also be one or more **instances** of `Asc` or `Desc`
             indicating the sort order for these fields
         """
 
@@ -161,17 +163,19 @@ class first_value(Reducer):
 
 class random_sample(Reducer):
     """
-    Returns a random sample of items from the dataset, from the given property
+    Returns a random sample of items from the dataset, from the given property.
     """
 
     NAME = "RANDOM_SAMPLE"
 
     def __init__(self, field, size):
         """
-        ### Parameter
+        Parameters:
 
-        **field**: Field to sample from
-        **size**: Return this many items (can be less)
+        field:
+            Field to sample from.
+        size:
+            Return this many items (can be less).
         """
         args = [field, str(size)]
         super(random_sample, self).__init__(*args)

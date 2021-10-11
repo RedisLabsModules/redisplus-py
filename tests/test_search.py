@@ -834,8 +834,8 @@ def testScorer(client):
 def testGet(client):
     client.ft.create_index((TextField("f1"), TextField("f2")))
 
-    assert [None] == client.ft.get("doc1")
-    assert [None, None] == client.ft.get("doc2", "doc1")
+    assert [None] == client.ft.get_documents("doc1")
+    assert [None, None] == client.ft.get_documents("doc2", "doc1")
 
     client.ft.add_document(
         "doc1", f1="some valid content dd1", f2="this is sample text ff1"
@@ -846,11 +846,11 @@ def testGet(client):
 
     assert [
         ["f1", "some valid content dd2", "f2", "this is sample text ff2"]
-    ] == client.ft.get("doc2")
+    ] == client.ft.get_documents("doc2")
     assert [
         ["f1", "some valid content dd1", "f2", "this is sample text ff1"],
         ["f1", "some valid content dd2", "f2", "this is sample text ff2"],
-    ] == client.ft.get("doc1", "doc2")
+    ] == client.ft.get_documents("doc1", "doc2")
 
 
 @pytest.mark.integrations

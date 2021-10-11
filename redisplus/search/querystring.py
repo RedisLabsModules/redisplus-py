@@ -3,11 +3,12 @@ from six import string_types, integer_types
 
 def tags(*t):
     """
-    Indicate that the values should be matched to a tag field
+    Indicate that the values should be matched to a tag field.
 
-    ### Parameters
+    Parameters:
 
-    - **t**: Tags to search for
+    t:
+        Tags to search for.
     """
     if not t:
         raise ValueError("At least one tag must be specified")
@@ -16,49 +17,49 @@ def tags(*t):
 
 def between(a, b, inclusive_min=True, inclusive_max=True):
     """
-    Indicate that value is a numeric range
+    Indicate that value is a numeric range.
     """
     return RangeValue(a, b, inclusive_min=inclusive_min, inclusive_max=inclusive_max)
 
 
 def equal(n):
     """
-    Match a numeric value
+    Match a numeric value.
     """
     return between(n, n)
 
 
 def lt(n):
     """
-    Match any value less than n
+    Match any value less than n.
     """
     return between(None, n, inclusive_max=False)
 
 
 def le(n):
     """
-    Match any value less or equal to n
+    Match any value less or equal to n.
     """
     return between(None, n, inclusive_max=True)
 
 
 def gt(n):
     """
-    Match any value greater than n
+    Match any value greater than n.
     """
     return between(n, None, inclusive_min=False)
 
 
 def ge(n):
     """
-    Match any value greater or equal to n
+    Match any value greater or equal to n.
     """
     return between(n, None, inclusive_min=True)
 
 
 def geo(lat, lon, radius, unit="km"):
     """
-    Indicate that value is a geo region
+    Indicate that value is a geo region.
     """
     return GeoValue(lat, lon, radius, unit)
 
@@ -68,14 +69,14 @@ class Value(object):
     def combinable(self):
         """
         Whether this type of value may be combined with other values for the same
-        field. This makes the filter potentially more efficient
+        field. This makes the filter potentially more efficient.
         """
         return False
 
     @staticmethod
     def make_value(v):
         """
-        Convert an object to a value, if it is not a value already
+        Convert an object to a value, if it is not a value already.
         """
         if isinstance(v, Value):
             return v
@@ -141,17 +142,18 @@ class Node(object):
         """
         Create a node
 
-        ### Parameters
+        Parameters:
 
-        - **children**: One or more sub-conditions. These can be additional
-            `intersect`, `disjunct`, `union`, `optional`, or any other `Node`
-            type.
+        children:
+            One or more sub-conditions. These can be additional `intersect`,
+            `disjunct`, `union`, `optional`, or any other `Node` type.
 
             The semantics of multiple conditions are dependent on the type of
             query. For an `intersection` node, this amounts to a logical AND,
             for a `union` node, this amounts to a logical `OR`.
 
-        - **kwparams**: key-value parameters. Each key is the name of a field,
+        kwparams:
+            key-value parameters. Each key is the name of a field,
             and the value should be a field value. This can be one of the
             following:
 
@@ -160,24 +162,16 @@ class Node(object):
             - list of either a string or a value
 
 
-        ### Examples
+        Examples:
 
         Field `num` should be between 1 and 10
-        ```
-        intersect(num=between(1, 10)
-        ```
+        >>> intersect(num=between(1, 10)
 
         Name can either be `bob` or `john`
-
-        ```
-        union(name=("bob", "john"))
-        ```
+        >>> union(name=("bob", "john"))
 
         Don't select countries in Israel, Japan, or US
-
-        ```
-        disjunct_union(country=("il", "jp", "us"))
-        ```
+        >>> disjunct_union(country=("il", "jp", "us"))
         """
 
         self.params = []
@@ -245,7 +239,7 @@ class BaseNode(Node):
 class IntersectNode(Node):
     """
     Create an intersection node. All children need to be satisfied in order for
-    this node to evaluate as true
+    this node to evaluate as true.
     """
 
     JOINSTR = " "
@@ -254,7 +248,7 @@ class IntersectNode(Node):
 class UnionNode(Node):
     """
     Create a union node. Any of the children need to be satisfied in order for
-    this node to evaluate as true
+    this node to evaluate as true.
     """
 
     JOINSTR = "|"
@@ -263,7 +257,7 @@ class UnionNode(Node):
 class DisjunctNode(IntersectNode):
     """
     Create a disjunct node. In order for this node to be true, all of its
-    children must evaluate to false
+    children must evaluate to false.
     """
 
     def to_string(self, with_parens=None):
@@ -277,10 +271,9 @@ class DisjunctNode(IntersectNode):
 
 class DistjunctUnion(DisjunctNode):
     """
-    This node is true if *all* of its children are false. This is equivalent to
-    ```
-    disjunct(union(...))
-    ```
+    This node is true if *all* of its children are false. This is equivalent to.
+
+    >>> disjunct(union(...))
     """
 
     JOINSTR = "|"

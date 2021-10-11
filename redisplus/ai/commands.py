@@ -17,12 +17,12 @@ class CommandMixin:
 
     def pipeline(self, transaction: bool = True, shard_hint: bool = None) -> "Pipeline":
         """
-        It follows the same pipeline implementation of native redis client but enables it
-        to access redisai operation as well. This function is experimental in the
+        It follows the same pipeline implementation of native redis client but enables
+        it to access redisai operation as well. This function is experimental in the
         current release.
 
-        Example
-        -------
+        Example:
+
         >>> pipe = con.pipeline(transaction=False)
         >>> pipe = pipe.set('nativeKey', 1)
         >>> pipe = pipe.tensorset('redisaiKey', np.array([1, 2]))
@@ -48,11 +48,12 @@ class CommandMixin:
         """
         It returns a DAG object on which other DAG-allowed operations can be called. For
         more details about DAG in RedisAI, refer to the RedisAI documentation.
+        For more information see `AI.DAGEXECUTE <https://oss.redis.com/redisai/master/commands/#aidagexecute>`_.
 
-        Parameters
-        ----------
+        Parameters:
+
         load : Union[AnyStr, List[AnyStr]]
-            Load the list of given values from the keyspace to DAG scope
+            Load the list of given values from the keyspace to DAG scope.
         persist : Union[AnyStr, List[AnyStr]]
             For each tensor key in the given list, write its values to the keyspace from
             DAG scope after the DAG execution is finished.
@@ -63,19 +64,19 @@ class CommandMixin:
         timeout : int
             The max number on milisecinds that may pass before the request is prossced
             (meaning that the result will not be computed after that time and TIMEDOUT
-            is returned in that case)
+            is returned in that case).
         readonly : bool
-            If True, it triggers AI.DAGRUN_RO, the read only DAG which cannot write (PERSIST) to
-            the keyspace. But since it can't write, it can execute on replicas
+            If True, it triggers AI.DAGEXECUTE_RO, the read only DAG which cannot write (PERSIST) to
+            the keyspace. But since it can't write, it can execute on replicas.
 
 
-        Returns
-        -------
-        Any
-            Dag object which holds other operations permitted inside DAG as attributes
+        Returns:
 
-        Example
-        -------
+        Dag
+            Dag object which holds other operations permitted inside DAG as attributes.
+
+        Example:
+
         >>> con.tensorset('tensor', ...)
         'OK'
         >>> con.modelstore('model', ...)
@@ -95,20 +96,20 @@ class CommandMixin:
         load the backend by using this function or let RedisAI load the required
         backend from the default path on-demand.
 
-        Parameters
-        ----------
+        Parameters:
+
         identifier : str
-            Representing which backend. Allowed values - TF, TFLITE, TORCH & ONNX
+            Representing which backend. Allowed values - TF, TFLITE, TORCH & ONNX.
         path: str
-            Path to the shared object of the backend
+            Path to the shared object of the backend.
 
-        Returns
-        -------
+        Returns:
+
         str
-            'OK' if success, raise an exception otherwise
+            'OK' if success, raise an exception otherwise.
 
-        Example
-        -------
+        Example:
+
         >>> con.loadbackend('TORCH', '/path/to/the/backend/redisai_torch.so')
         'OK'
         """
@@ -131,40 +132,41 @@ class CommandMixin:
     ) -> str:
         """
         Set the model on provided key.
+        For more information see `AI.MODELSTORE <https://oss.redis.com/redisai/master/commands/#aimodelstore>`_.
 
-        Parameters
-        ----------
+        Parameters:
+
         key : AnyStr
-            Key name
+            Key name.
         backend : str
-            Backend name. Allowed backends are TF, TORCH, TFLITE, ONNX
+            Backend name. Allowed backends are TF, TORCH, TFLITE, ONNX.
         device : str
             Device name. Allowed devices are CPU and GPU. If multiple GPUs are available,
-            it can be specified using the format GPU:<gpu number>. For example: GPU:0
+            it can be specified using the format GPU:<gpu number>. For example: ``GPU:0``
         data : bytes
-            Model graph read as bytes string
+            Model graph read as bytes string.
         batch : int
-            Number of batches for doing auto-batching
+            Number of batches for doing auto-batching.
         minbatch : int
-            Minimum number of samples required in a batch for model execution
+            Minimum number of samples required in a batch for model execution.
         minbatchtimeout : int
             The max number of miliseconds for which the engine will not trigger an execution
             if the number of samples is lower than minbatch (after minbatchtimeout is passed,
-            the execution will start even if minbatch jas not reached)
+            the execution will start even if minbatch jas not reached).
         tag : AnyStr
-            Any string that will be saved in RedisAI as tag for the model
+            Any string that will be saved in RedisAI as tag for the model.
         inputs : Union[AnyStr, List[AnyStr]]
-            Input node(s) in the graph. Required only Tensorflow graphs
+            Input node(s) in the graph. Required only Tensorflow graphs.
         outputs : Union[AnyStr, List[AnyStr]]
-            Output node(s) in the graph Required only for Tensorflow graphs
+            Output node(s) in the graph Required only for Tensorflow graphs.
 
-        Returns
-        -------
+        Returns:
+
         str
-            'OK' if success, raise an exception otherwise
+            'OK' if success, raise an exception otherwise.
 
-        Example
-        -------
+        Example:
+
         >>> # Torch model
         >>> model_path = os.path.join('path/to/TorchScriptModel.pt')
         >>> model = open(model_path, 'rb').read()
@@ -207,36 +209,37 @@ class CommandMixin:
     ) -> str:
         """
         Set the model on provided key.
+        For more information see `AI.MODELSET <https://oss.redis.com/redisai/master/commands/#aimodelset>`_.
 
-        Parameters
-        ----------
+        Parameters:
+
         key : AnyStr
-            Key name
+            Key name.
         backend : str
-            Backend name. Allowed backends are TF, TORCH, TFLITE, ONNX
+            Backend name. Allowed backends are TF, TORCH, TFLITE, ONNX.
         device : str
             Device name. Allowed devices are CPU and GPU. If multiple GPUs are available,
-            it can be specified using the format GPU:<gpu number>. For example: GPU:0
+            it can be specified using the format GPU:<gpu number>. For example: ``GPU:0``
         data : bytes
-            Model graph read as bytes string
+            Model graph read as bytes string.
         batch : int
-            Number of batches for doing auto-batching
+            Number of batches for doing auto-batching.
         minbatch : int
-            Minimum number of samples required in a batch for model execution
+            Minimum number of samples required in a batch for model execution.
         tag : AnyStr
-            Any string that will be saved in RedisAI as tag for the model
+            Any string that will be saved in RedisAI as tag for the model.
         inputs : Union[AnyStr, List[AnyStr]]
-            Input node(s) in the graph. Required only Tensorflow graphs
+            Input node(s) in the graph. Required only Tensorflow graphs.
         outputs : Union[AnyStr, List[AnyStr]]
-            Output node(s) in the graph Required only for Tensorflow graphs
+            Output node(s) in the graph Required only for Tensorflow graphs.
 
-        Returns
-        -------
+        Returns:
+
         str
-            'OK' if success, raise an exception otherwise
+            'OK' if success, raise an exception otherwise.
 
-        Example
-        -------
+        Example:
+
         >>> # Torch model
         >>> model_path = os.path.join('path/to/TorchScriptModel.pt')
         >>> model = open(model_path, 'rb').read()
@@ -257,23 +260,24 @@ class CommandMixin:
 
     def modelget(self, key: AnyStr, meta_only=False) -> dict:
         """
-        Fetch the model details and the model blob back from RedisAI
+        Fetch the model details and the model blob back from RedisAI.
+        For more information see `AI.MODELGET <https://oss.redis.com/redisai/master/commands/#aimodelget>`_.
 
-        Parameters
-        ----------
+        Parameters:
+
         key : AnyStr
-            Model key in RedisAI
+            Model key in RedisAI.
         meta_only : bool
-            If True, only the meta data will be fetched, not the model blob
+            If True, only the meta data will be fetched, not the model blob.
 
-        Returns
-        -------
+        Returns:
+
         dict
             A dictionary of model details such as device, backend etc. The model
-            blob will be available at the key 'blob'
+            blob will be available at the key `blob`.
 
-        Example
-        -------
+        Example:
+
         >>> con.modelget('model', meta_only=True)
         {'backend': 'TF', 'device': 'cpu', 'tag': 'v1.0'}
         """
@@ -283,20 +287,21 @@ class CommandMixin:
 
     def modeldel(self, key: AnyStr) -> str:
         """
-        Delete the model from the RedisAI server
+        Delete the model from the RedisAI server.
+        For more information see `AI.MODELDEL <https://oss.redis.com/redisai/master/commands/#aimodeldel>`_.
 
-        Parameters
-        ----------
+        Parameters:
+
         key : AnyStr
-            Key of the model to be deleted
+            Key of the model to be deleted.
 
-        Returns
-        -------
+        Returns:
+
         str
-            'OK' if success, raise an exception otherwise
+            'OK' if success, raise an exception otherwise.
 
-        Example
-        -------
+        Example:
+
         >>> con.modeldel('model')
         'OK'
         """
@@ -315,32 +320,33 @@ class CommandMixin:
         Run the model using input(s) which are already in the scope and are associated
         to some keys. Modelexecute also needs the output key name(s) to store the output
         from the model. The number of outputs from the model and the number of keys
-        provided here must be same. Otherwise, RedisAI throws an error
+        provided here must be same. Otherwise, RedisAI throws an error.
+        For more information see `AI.MODELEXECUTE <https://oss.redis.com/redisai/master/commands/#aimodelexecute>`_.
 
-        Parameters
-        ----------
+        Parameters:
+
         key : str
-            Model key to run
+            Model key to run.
         inputs : Union[AnyStr, List[AnyStr]]
             Tensor(s) which is already saved in the RedisAI using a tensorset call. These
-            tensors will be used as the inputs for the modelexecute
+            tensors will be used as the inputs for the modelexecute.
         outputs : Union[AnyStr, List[AnyStr]]
             keys on which the outputs to be saved. If those keys exist already,
-            modelexecute will overwrite them with new values
+            modelexecute will overwrite them with new values.
         timeout : int
             The max number on milisecinds that may pass before the request is prossced
             (meaning that the result will not be computed after that time and TIMEDOUT
-            is returned in that case
+            is returned in that case.
 
-        Returns
-        -------
+        Returns:
+
         str
-            'OK' if success, raise an exception otherwise
+            'OK' if success, raise an exception otherwise.
 
-        Example
-        -------
+        Example:
+
         >>> con.modelstore('m', 'tf', 'cpu', model_pb,
-        ...              inputs=['a', 'b'], outputs=['mul'], tag='v1.0')
+        ...                inputs=['a', 'b'], outputs=['mul'], tag='v1.0')
         'OK'
         >>> con.tensorset('a', (2, 3), dtype='float')
         'OK'
@@ -364,26 +370,28 @@ class CommandMixin:
         Run the model using input(s) which are already in the scope and are associated
         to some keys. Modelrun also needs the output key name(s) to store the output
         from the model. The number of outputs from the model and the number of keys
-        provided here must be same. Otherwise, RedisAI throws an error
+        provided here must be same. Otherwise, RedisAI throws an error.
 
-        Parameters
-        ----------
+        This is a deprecated function. Use :meth:`~ai.CommandMixin.modelexecute`
+
+        Parameters:
+
         key : str
-            Model key to run
+            Model key to run.
         inputs : Union[AnyStr, List[AnyStr]]
-            Tensor(s) which is already saved in the RedisAI using a tensorset call. These
-            tensors will be used as the input for the modelrun
+            Tensor(s) which is already saved in the RedisAI using a tensorset call.
+            These tensors will be used as the input for the modelrun.
         outputs : Union[AnyStr, List[AnyStr]]
-            keys on which the outputs to be saved. If those keys exist already, modelrun
-            will overwrite them with new values
+            keys on which the outputs to be saved. If those keys exist already,
+            modelrun will overwrite them with new values.
 
-        Returns
-        -------
+        Returns:
+
         str
-            'OK' if success, raise an exception otherwise
+            'OK' if success, raise an exception otherwise.
 
-        Example
-        -------
+        Example:
+
         >>> con.modelstore('m', 'tf', 'cpu', model_pb,
         ...              inputs=['a', 'b'], outputs=['mul'], tag='v1.0')
         'OK'
@@ -402,15 +410,16 @@ class CommandMixin:
         """
         Returns the list of all the models in the RedisAI server. Modelscan API is
         currently experimental and might be removed or changed in the future without
-        warning
+        warning.
+        For more information see `AI.MODELSCAN <https://oss.redis.com/redisai/master/commands/#ai_modelscan>`_.
 
-        Returns
-        -------
+        Returns:
+
         List[List[AnyStr]]
-            List of list of models and tags for each model if they existed
+            List of list of models and tags for each model if they existed.
 
-        Example
-        -------
+        Example:
+
         >>> con.modelscan()
         [['pt_model', ''], ['m', 'v1.2']]
         """
@@ -431,26 +440,27 @@ class CommandMixin:
         dtype: str = None,
     ) -> str:
         """
-        Set the tensor to a key in RedisAI
+        Set the tensor to a key in RedisAI.
+        For more information see `AI.TENSORSET <https://oss.redis.com/redisai/master/commands/#aitensorset>`_.
 
-        Parameters
-        ----------
+        Parameters:
+
         key : AnyStr
-            The name of the tensor
+            The name of the tensor.
         tensor : Union[np.ndarray, list, tuple]
-            A `np.ndarray` object or Python list or tuple
+            A `np.ndarray` object or Python list or tuple.
         shape : Sequence[int]
-            Shape of the tensor. Required if `tensor` is list or tuple
+            Shape of the tensor. Required if `tensor` is list or tuple.
         dtype : str
-            Data type of the tensor. Required if `tensor` is list or tuple
+            Data type of the tensor. Required if `tensor` is list or tuple.
 
-        Returns
-        -------
+        Returns:
+
         str
             'OK' if success, raise an exception otherwise
 
-        Example
-        -------
+        Example:
+
         >>> con.tensorset('a', (2, 3), dtype='float')
         'OK'
         >>> input_array = np.array([2, 3], dtype=np.float32)
@@ -471,28 +481,30 @@ class CommandMixin:
         """
         Retrieve the value of a tensor from the server. By default it returns the numpy
         array but it can be controlled using the `as_type` and `meta_only` argument.
+        For more information see `AI.TENSORGET <https://oss.redis.com/redisai/master/commands/#aitensorget>`_.
 
-        Parameters
-        ----------
+        Parameters:
+
         key : AnyStr
-            The name of the tensor
+            The name of the tensor.
         as_numpy : bool
             If True, returns a numpy.ndarray. Returns the value as a list and the
             metadata in a dictionary if False. This flag also decides how to fetch
-            the value from the RedisAI server, which also has performance implications
+            the value from the RedisAI server, which also has performance implications.
         as_numpy_mutable : bool
-            If True, returns a a mutable numpy.ndarray object by copy the tensor data. Otherwise (as long as_numpy=True)
-            the returned numpy.ndarray will use the original tensor buffer and will be for read-only
+            If True, returns a a mutable numpy.ndarray object by copy the tensor data.
+            Otherwise (as long as_numpy=True)Vthe returned numpy.ndarray will use the
+            original tensor buffer and will be for read-only.
         meta_only : bool
-            If True, the value is not retrieved, only the shape and the type
+            If True, the value is not retrieved, only the shape and the type.
 
-        Returns
-        -------
+        Returns:
+
         Union[dict, np.ndarray]
-            Returns a dictionary of data or a numpy array. Default is numpy array
+            Returns a dictionary of data or a numpy array. Default is numpy array.
 
-        Example
-        -------
+        Example:
+
         >>> con.tensorget('x')
         array([2, 3, 4])
         >>> con.tensorget('x' as_numpy=False)
@@ -519,46 +531,45 @@ class CommandMixin:
         """
         Set the script to RedisAI. The difference from scriptset is that in scriptstore
         you must specify entry points within your script. These functions must have specific
-        signature: 'def entry_point(tensors: List[Tensor], keys: List[str], args: List[str])'.
+        signature: ``def entry_point(tensors: List[Tensor], keys: List[str], args: List[str])``.
         RedisAI uses the TorchScript engine to execute the script. So the script should
         have only TorchScript supported constructs. That being said, it's important to
         mention that using redisai script to do post processing or pre processing for a
         Tensorflow (or any other backend) is completely valid. For more details about
         TorchScript and supported ops, checkout TorchScript documentation.
+        For more information see `AI.SCRIPTSTORE <https://oss.redis.com/redisai/master/commands/#aiscriptstore>`_.
 
-        Parameters
-        ----------
+        Parameters:
+
         key : AnyStr
-            Script key at the server
+            Script key at the server.
         device : str
             Device name. Allowed devices are CPU and GPU. If multiple GPUs are available.
-            it can be specified using the format GPU:<gpu number>. For example: GPU:0
+            it can be specified using the format GPU:<gpu number>. For example: ``GPU:0``
         script : str
-            Script itself, as a Python string
+            Script itself, as a Python string.
         entry_points : Union[str, Sequence[str]]
             A list of functions in the script that may serve as entry point for the
             execution. Each entry point must have the specify signature:
-            def entry_point(tensors: List[Tensor], keys: List[str], args: List[str]))
+            `def entry_point(tensors: List[Tensor], keys: List[str], args: List[str]))`.
             Note that the script may contain additional helper functions that doesn't
             have to follow this signature.
         tag : AnyStr
-            Any string that will be saved in RedisAI as tag for the script
+            Any string that will be saved in RedisAI as tag for the script.
 
-        Returns
-        -------
+        Returns:
+
         str
-            'OK' if success, raise an exception otherwise
+            'OK' if success, raise an exception otherwise.
 
-        Note
-        ----
-        Even though ``script`` is pure Python code, it's a subset of Python language and not
-        all the Python operations are supported. For more details, checkout TorchScript
+        **Note**: Even though `script` is pure Python code, it's a subset of Python language
+        and not all the Python operations are supported. For more details, checkout TorchScript
         documentation. It's also important to note that that the script is executed on a high
-        performance C++ runtime instead of the Python interpreter. And hence ``script`` should
-        not have any import statements (A common mistake people make all the time)
+        performance C++ runtime instead of the Python interpreter. And hence `script` should
+        not have any import statements (A common mistake people make all the time).
 
-        Example
-        -------
+        Example:
+
         >>> script = r'''
         >>> def bar(tensors: List[Tensor], keys: List[str], args: List[str]):
         >>>     a = tensors[0]
@@ -584,33 +595,33 @@ class CommandMixin:
         is completely valid. For more details about TorchScript and supported ops,
         checkout TorchScript documentation.
 
-        Parameters
-        ----------
+        This is a deprecated function. Use :meth:`~ai.CommandMixin.scriptstore`
+
+        Parameters:
+
         key : AnyStr
-            Script key at the server
+            Script key at the server.
         device : str
             Device name. Allowed devices are CPU and GPU. If multiple GPUs are available.
-            it can be specified using the format GPU:<gpu number>. For example: GPU:0
+            it can be specified using the format GPU:<gpu number>. For example: ``GPU:0``.
         script : str
-            Script itself, as a Python string
+            Script itself, as a Python string.
         tag : AnyStr
-            Any string that will be saved in RedisAI as tag for the model
+            Any string that will be saved in RedisAI as tag for the model.
 
-        Returns
-        -------
+        Returns:
+
         str
-            'OK' if success, raise an exception otherwise
+            'OK' if success, raise an exception otherwise.
 
-        Note
-        ----
-        Even though ``script`` is pure Python code, it's a subset of Python language and not
-        all the Python operations are supported. For more details, checkout TorchScript
+        **Note**: Even though `script` is pure Python code, it's a subset of Python language
+        and not all the Python operations are supported. For more details, checkout TorchScript
         documentation. It's also important to note that that the script is executed on a high
-        performance C++ runtime instead of the Python interpreter. And hence ``script`` should
-        not have any import statements (A common mistake people make all the time)
+        performance C++ runtime instead of the Python interpreter. And hence `script` should
+        not have any import statements (A common mistake people make all the time).
 
-        Example
-        -------
+        Example:
+
         >>> script = open(scriptpath).read()
         >>> con.scriptset('ket', 'cpu', script)
         'OK'
@@ -621,22 +632,23 @@ class CommandMixin:
 
     def scriptget(self, key: AnyStr, meta_only=False) -> dict:
         """
-        Get the saved script from RedisAI. Operation similar to model get
+        Get the saved script from RedisAI. Operation similar to model get.
+        For more information see `AI.SCRIPTGET <https://oss.redis.com/redisai/master/commands/#aiscriptget>`_.
 
-        Parameters
-        ----------
+        Parameters:
+
         key : AnyStr
-            Key of the script
+            Key of the script.
         meta_only : bool
-            If True, only the meta data will be fetched, not the script itself
+            If True, only the meta data will be fetched, not the script itself.
 
-        Returns
-        -------
+        Returns:
+
         dict
-            Dictionary of script details which includes the script at the key ``source``
+            Dictionary of script details which includes the script at the key `source`.
 
-        Example
-        -------
+        Example:
+
         >>> con.scriptget('ket', meta_only=True)
         {'device': 'cpu'}
         """
@@ -646,20 +658,21 @@ class CommandMixin:
 
     def scriptdel(self, key: AnyStr) -> str:
         """
-        Delete the script from the RedisAI server
+        Delete the script from the RedisAI server.
+        For more information see `AI.SCRIPTDEL <https://oss.redis.com/redisai/master/commands/#aiscriptdel>`_.
 
-        Parameters
-        ----------
+        Parameters:
+
         key : AnyStr
-            Script key to be deleted
+            Script key to be deleted.
 
-        Returns
-        -------
+        Returns:
+
         str
-            'OK' if success, raise an exception otherwise
+            'OK' if success, raise an exception otherwise.
 
-        Example
-        -------
+        Example:
+
         >>> con.scriptdel('ket')
         'OK'
         """
@@ -676,28 +689,30 @@ class CommandMixin:
         outputs: Union[AnyStr, Sequence[AnyStr]],
     ) -> str:
         """
-        Run an already set script. Similar to modelrun
+        Run an already set script. Similar to modelrun.
 
-        Parameters
-        ----------
+        This is a deprecated function. Use :meth:`~ai.CommandMixin.scriptexecute`
+
+        Parameters:
+
         key : AnyStr
-            Script key
+            Script key.
         function : str
-            Name of the function in the ``script``
+            Name of the function in the `script`.
         inputs : Union[AnyStr, List[AnyStr]]
-            Tensor(s) which is already saved in the RedisAI using a tensorset call. These
-            tensors will be used as the input for the modelrun
+            Tensor(s) which is already saved in the RedisAI using a tensorset call.
+            These tensors will be used as the input for the modelrun.
         outputs : Union[AnyStr, List[AnyStr]]
-            keys on which the outputs to be saved. If those keys exist already, scriptrun
-            will overwrite them with new values
+            Keys on which the outputs to be saved. If those keys exist already,
+            scriptrun will overwrite them with new values.
 
-        Returns
-        -------
+        Returns:
+
         str
-            'OK' if success, raise an exception otherwise
+            'OK' if success, raise an exception otherwise.
 
-        Example
-        -------
+        Example:
+
         >>> con.scriptrun('ket', 'bar', inputs=['a', 'b'], outputs=['c'])
         'OK'
         """
@@ -718,13 +733,14 @@ class CommandMixin:
         """
         Run an already set script. Similar to modelexecute.
         Must specify keys or inputs.
+        For more information see `AI.SCRIPTEXECUTE <https://oss.redis.com/redisai/master/commands/#aiscriptexecute>`_.
 
-        Parameters
-        ----------
+        Parameters:
+
         key : AnyStr
-            Script key
+            Script key.
         function : str
-            Name of the function in the ``script``
+            Name of the function in the `script`.
         keys : Union[AnyStr, Sequence[AnyStr]]
             Denotes the list of Redis key names that the script will access to
             during its execution, for both read and/or write operations.
@@ -742,13 +758,13 @@ class CommandMixin:
             (meaning that the result will not be computed after that time and TIMEDOUT
             is returned in that case).
 
-        Returns
-        -------
-        str
-            'OK' if success, raise an exception otherwise
+        Returns:
 
-        Example
-        -------
+        str
+            'OK' if success, raise an exception otherwise.
+
+        Example:
+
         >>> con.scriptexecute('myscript', 'bar', inputs=['a', 'b'], outputs=['c'])
         'OK'
         >>> con.scriptexecute('myscript{tag}', 'addn',
@@ -766,15 +782,16 @@ class CommandMixin:
     def scriptscan(self) -> List[List[AnyStr]]:
         """
         Returns the list of all the script in the RedisAI server. Scriptscan API is
-        currently experimental and might remove or change in the future without warning
+        currently experimental and might remove or change in the future without warning.
+        For more information see `AI.SCRIPTSCAN <https://oss.redis.com/redisai/master/commands/#ai_scriptscan>`_.
 
-        Returns
-        -------
+        Returns:
+
         List[List[AnyStr]]
-            List of list of scripts and tags for each script if they existed
+            List of list of scripts and tags for each script if they existed.
 
-        Example
-        -------
+        Example:
+
         >>> con.scriptscan()
         [['ket1', 'v1.0'], ['ket2', '']]
         """
@@ -796,18 +813,20 @@ class CommandMixin:
         - How many errors raised
         - etc.
 
-        Parameters
-        ----------
+        For more information see `AI.INFO <https://oss.redis.com/redisai/master/commands/#aiinfo>`_.
+
+        Parameters:
+
         key : AnyStr
             Model key
 
-        Returns
-        -------
-        dict
-            Dictionary of model run details
+        Returns:
 
-        Example
-        -------
+        dict
+            Dictionary of model run details.
+
+        Example:
+
         >>> con.infoget('m')
         {'key': 'm', 'type': 'MODEL', 'backend': 'TF', 'device': 'cpu', 'tag': '',
         'duration': 0, 'samples': 0, 'calls': 0, 'errors': 0}
@@ -818,20 +837,21 @@ class CommandMixin:
 
     def inforeset(self, key: AnyStr) -> str:
         """
-        Reset the run information about the model
+        Reset the run information about the model.
+        For more information see `AI.INFO <https://oss.redis.com/redisai/master/commands/#aiinfo>`_.
 
-        Parameters
-        ----------
+        Parameters:
+
         key : AnyStr
-            Model key
+            Model key.
 
-        Returns
-        -------
+        Returns:
+
         str
-            'OK' if success, raise an exception otherwise
+            'OK' if success, raise an exception otherwise.
 
-        Example
-        -------
+        Example:
+
         >>> con.inforeset('m')
         'OK'
         """

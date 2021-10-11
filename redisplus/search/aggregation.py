@@ -33,16 +33,19 @@ class Reducer(object):
         """
         Set the alias for this reducer.
 
-        ### Parameters
+        Parameters:
 
-        - **alias**: The value of the alias for this reducer. If this is the
+        alias:
+            The value of the alias for this reducer. If this is the
             special value `aggregation.FIELDNAME` then this reducer will be
             aliased using the same name as the field upon which it operates.
             Note that using `FIELDNAME` is only possible on reducers which
             operate on a single field value.
 
-        This method returns the `Reducer` object making it suitable for
-        chaining.
+        Returns:
+
+        Reducer:
+            This method returns the `Reducer` object making it suitable for chaining.
         """
         if alias is FIELDNAME:
             if not self._field:
@@ -185,9 +188,10 @@ class AggregateRequest(object):
         Indicate the fields to be returned in the response. These fields are
         returned in addition to any others implicitly specified.
 
-        ### Parameters
+        Parameters:
 
-        - **fields**: One or more fields in the format of `@field`
+        fields:
+            One or more fields in the format of `@field`
         """
         self._loadfields.extend(fields)
         return self
@@ -196,13 +200,14 @@ class AggregateRequest(object):
         """
         Specify by which fields to group the aggregation.
 
-        ### Parameters
+        Parameters:
 
-        - **fields**: Fields to group by. This can either be a single string,
+        fields:
+            Fields to group by. This can either be a single string,
             or a list of strings. both cases, the field should be specified as
             `@field`.
-        - **reducers**: One or more reducers. Reducers may be found in the
-            `aggregation` module.
+        reducers:
+            One or more reducers. Reducers may be found in the `aggregation` module.
         """
         group = Group(fields, reducers)
         self._aggregateplan.extend(group.build_args())
@@ -213,9 +218,10 @@ class AggregateRequest(object):
         """
         Specify one or more projection expressions to add to each result
 
-        ### Parameters
+        Parameters:
 
-        - **kwexpr**: One or more key-value pairs for a projection. The key is
+        kwexpr:
+            One or more key-value pairs for a projection. The key is
             the alias for the projection, and the value is the projection
             expression itself, for example `apply(square_root="sqrt(@foo)")`
         """
@@ -236,36 +242,28 @@ class AggregateRequest(object):
         Setting a limit on the initial search results may be useful when
         attempting to execute an aggregation on a sample of a large data set.
 
-        ### Parameters
+        Parameters:
 
-        - **offset**: Result offset from which to begin paging
-        - **num**: Number of results to return
+        offset: int
+            Result offset from which to begin paging.
+        num : int
+            Number of results to return.
 
 
         Example of sorting the initial results:
 
-        ```
-        AggregateRequest("@sale_amount:[10000, inf]")\
-            .limit(0, 10)\
-            .group_by("@state", r.count())
-        ```
+        >>> AggregateRequest("@sale_amount:[10000, inf]").limit(0, 10).group_by("@state", r.count())
 
         Will only group by the states found in the first 10 results of the
         query `@sale_amount:[10000, inf]`. On the other hand,
 
-        ```
-        AggregateRequest("@sale_amount:[10000, inf]")\
-            .limit(0, 1000)\
-            .group_by("@state", r.count()\
-            .limit(0, 10)
-        ```
+        >>> AggregateRequest("@sale_amount:[10000, inf]").limit(0, 1000).group_by("@state", r.count().limit(0, 10))
 
         Will group all the results matching the query, but only return the
         first 10 groups.
 
-        If you only wish to return a *top-N* style query, consider using
+        If you only wish to return a `top-N` style query, consider using
         `sort_by()` instead.
-
         """
         limit = Limit(offset, num)
         self._limit = limit
@@ -274,30 +272,26 @@ class AggregateRequest(object):
     def sort_by(self, *fields, **kwargs):
         """
         Indicate how the results should be sorted. This can also be used for
-        *top-N* style queries
+        `top-N` style queries.
 
-        ### Parameters
+        Parameters:
 
-        - **fields**: The fields by which to sort. This can be either a single
+        fields:
+            The fields by which to sort. This can be either a single
             field or a list of fields. If you wish to specify order, you can
             use the `Asc` or `Desc` wrapper classes.
-        - **max**: Maximum number of results to return. This can be used instead
+        max: int
+            Maximum number of results to return. This can be used instead
             of `LIMIT` and is also faster.
 
 
         Example of sorting by `foo` ascending and `bar` descending:
 
-        ```
-        sort_by(Asc("@foo"), Desc("@bar"))
-        ```
+        >>> sort_by(Asc("@foo"), Desc("@bar"))
 
         Return the top 10 customers:
 
-        ```
-        AggregateRequest()\
-            .group_by("@customer", r.sum("@paid").alias(FIELDNAME))\
-            .sort_by(Desc("@paid"), max=10)
-        ```
+        >>> AggregateRequest().group_by("@customer", r.sum("@paid").alias(FIELDNAME)).sort_by(Desc("@paid"), max=10)
         """
         if isinstance(fields, (string_types, SortDirection)):
             fields = [fields]
@@ -312,9 +306,10 @@ class AggregateRequest(object):
         """
         Specify filter for post-query results using predicates relating to values in the result set.
 
-        ### Parameters
+        Parameters:
 
-        - **fields**: Fields to group by. This can either be a single string,
+        fields:
+            Fields to group by. This can either be a single string,
             or a list of strings.
         """
         if isinstance(expressions, string_types):
@@ -358,20 +353,16 @@ class AggregateRequest(object):
 
         if self._with_schema:
             ret.append("WITHSCHEMA")
-
         if self._verbatim:
             ret.append("VERBATIM")
-
         if self._cursor:
             ret += self._cursor
-
         if self._loadfields:
             ret.append("LOAD")
             ret.append(str(len(self._loadfields)))
             ret.extend(self._loadfields)
 
         ret.extend(self._aggregateplan)
-
         ret += self._limit.build_args()
 
         return ret
